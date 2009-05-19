@@ -7,22 +7,13 @@
  * @package thanks
 */
 
-if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
-require FORUM_ROOT.'config.php';
-$lang = (isset($_GET['lang'])) ? $_GET['lang'] : 'English';
-if (file_exists(FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php'))
-	require FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php';
-
-require FORUM_ROOT.'include/dblayer/common_db.php';
-
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content="<?php echo $lang_thanks['ThanksHtml'];?>" />
-<title><?php echo $lang_thanks['ThanksHtml'];?></title>
+<meta name="description" content="'.$lang_thanks['ThanksHtml'].'" />
+<title>'.$lang_thanks['ThanksHtml'].'</title>
 <style type="text/css">
 #thanks-head
 {
@@ -54,8 +45,16 @@ require FORUM_ROOT.'include/dblayer/common_db.php';
 	font-family: Georgia;
 }
 </style></head>
-<body>
-<?php	
+<body>';
+
+if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
+require FORUM_ROOT.'config.php';
+$lang = (isset($_GET['lang'])) ? $_GET['lang'] : 'English';
+if (file_exists(FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php'))
+	require FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php';
+
+require FORUM_ROOT.'include/dblayer/common_db.php';
+
 $post_id = (isset($_GET['id'])) ? intval($_GET['id']) : '';
 if ($post_id < 1)
 	$error .=  ($lang_thanks['error_00']);
@@ -63,7 +62,7 @@ if ($post_id < 1)
 	{
 $page_id = (isset($_GET['page'])) ? intval($_GET['page']) : 0;
 $page_id = $page_id*50;
-// 
+
 $query_thanks = array(
 	'SELECT'	=> 't.thank_date, u.username',
 	'FROM'		=> 'thanks AS t',

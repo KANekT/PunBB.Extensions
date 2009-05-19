@@ -9,7 +9,7 @@
 
 $lang_thanks = array(
 	'Thanks'		=> 'Thanks: ',
-	'ThanksPost'	=> 'Thanks for the post: ',
+	'ThanksForPost'	=> 'Thanks for the post: ',
 	'ThanksHtml'	=> 'Thanks',
 	'Say thanks'	=> 'Say thanks to %s for the post.',
 	'SayThanks'		=> 'Say thanks',
