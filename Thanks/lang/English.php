@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
  * Lang file for thanks
  *

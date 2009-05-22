@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
  * index file for thanks
  *
@@ -6,6 +6,14 @@
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package thanks
 */
+
+if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
+require FORUM_ROOT.'config.php';
+$lang = (isset($_GET['lang'])) ? $_GET['lang'] : 'English';
+if (file_exists(FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php'))
+	require FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php';
+
+require FORUM_ROOT.'include/dblayer/common_db.php';
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -46,14 +54,6 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
 }
 </style></head>
 <body>';
-
-if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
-require FORUM_ROOT.'config.php';
-$lang = (isset($_GET['lang'])) ? $_GET['lang'] : 'English';
-if (file_exists(FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php'))
-	require FORUM_ROOT.'extensions/thanks/lang/'.$lang.'.php';
-
-require FORUM_ROOT.'include/dblayer/common_db.php';
 
 $post_id = (isset($_GET['id'])) ? intval($_GET['id']) : '';
 if ($post_id < 1)

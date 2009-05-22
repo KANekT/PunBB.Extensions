@@ -1,4 +1,4 @@
-﻿function viewThanks(src)
+function viewThanks(src)
 {
 
  viewer = window.open(src, "PREV", "width=300,height=300,toolbar=no,status=no,scrollbars=no,menubar=no,resizable=no");

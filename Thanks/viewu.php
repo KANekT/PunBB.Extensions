@@ -69,8 +69,8 @@ while($row = $forum_db->fetch_assoc($result_thanks))
 		$row['post'] = preg_replace('#\[/#ms','',$row['post']);
 		$row['post'] = preg_replace('#\[(.*?)\](.*?)#ms','$2',$row['post']);
 		$UserThanks .= '<tr>
-		<td><a href="viewtopic.php?id='.$row['topic_id'].'">'.$row['subject'].'</a></td>
-		<td><a href="viewtopic.php?pid='.$row['post_id'].'#'.$row['post_id'].'">'.$row['post'].'</a></td>
+		<td><a href="'.$base_url.'/viewtopic.php?id='.$row['topic_id'].'">'.$row['subject'].'</a></td>
+		<td><a href="'.$base_url.'/viewtopic.php?pid='.$row['post_id'].'#'.$row['post_id'].'">'.$row['post'].'</a></td>
 		<td><i>'.$row['username'].'</i></td>
 		<td>'.format_time($row['thank_date']).'</td>
 		</tr>';
