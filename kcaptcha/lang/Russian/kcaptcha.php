@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Language definitions used in pun_antispam
 $lang_pun_antispam = array(
