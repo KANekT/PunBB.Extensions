@@ -12,20 +12,83 @@
 if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
 
 require FORUM_ROOT.'include/common.php';
+if ($forum_user['g_read_board'] == '0')
+	message($lang_common['No view']);
+else if ($forum_user['g_view_users'] == '0')
+	message($lang_common['No permission']);
+
 if (file_exists(FORUM_ROOT.'extensions/thanks/lang/'.$forum_user['language'].'.php'))
 	require FORUM_ROOT.'extensions/thanks/lang/'.$forum_user['language'].'.php';
 else
 	require FORUM_ROOT.'extensions/thanks/lang/English.php';
+
+// Miscellaneous setup
+$forum_page['show_post_count'] = ($forum_config['o_show_post_count'] == '1' || $forum_user['is_admmod']) ? true : false;
+$forum_page['username'] = (isset($_GET['username']) && $_GET['username'] != '-' && $forum_user['g_search_users'] == '1') ? $_GET['username'] : '';
+$forum_page['show_group'] = (!isset($_GET['show_group']) || intval($_GET['show_group']) < -1 && intval($_GET['show_group']) > 2) ? -1 : intval($_GET['show_group']);
+$forum_page['sort_by'] = (!isset($_GET['sort_by']) || $_GET['sort_by'] != 'username' && $_GET['sort_by'] != 'registered' && ($_GET['sort_by'] != 'num_posts' || !$forum_page['show_post_count'])) ? 'username' : $_GET['sort_by'];
+$forum_page['sort_dir'] = (!isset($_GET['sort_dir']) || strtoupper($_GET['sort_dir']) != 'ASC' && strtoupper($_GET['sort_dir']) != 'DESC') ? 'ASC' : strtoupper($_GET['sort_dir']);
 	
 $user_id = (isset($_GET['id'])) ? intval($_GET['id']) : '';
-if ($forum_user['g_read_board'] == '0')
-	message($lang_common['No view']);
 if ($user_id < 1)
 	message($lang_thanks['error_00']);
 	else 
 	{
-$page_id = (isset($_GET['page'])) ? intval($_GET['page']) : 0;
-$page_id = $page_id*50;
+
+// Fetch thanks count
+$queryCount = array(
+	'SELECT'	=> 'u.thanks',
+	'FROM'		=> 'users AS u',
+	'WHERE'		=> 'u.thanks  > 0'
+);
+$resultCount = $forum_db->query_build($queryCount) or error(__FILE__, __LINE__);
+$forum_page['num_users'] = $forum_db->result($resultCount);
+
+// Determine the user offset (based on $_GET['p'])
+$forum_page['num_pages'] = ceil($forum_page['num_users'] / 50);
+$forum_page['page'] = (!isset($_GET['p']) || !is_numeric($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $forum_page['num_pages']) ? 1 : intval($_GET['p']);
+$forum_page['start_from'] = 50 * ($forum_page['page'] - 1);
+$forum_page['finish_at'] = min(($forum_page['start_from'] + 50), ($forum_page['num_users']));
+
+if ($forum_page['num_users'] > 0)
+	$forum_page['items_info'] = generate_items_info( ($lang_thanks['Thanks']), ($forum_page['start_from'] + 1), $forum_page['num_users']);
+else
+	$forum_page['items_info'] = $lang_thanks['Thanks'];
+
+// Generate paging links
+$forum_page['page_post']['paging'] = '<p class="paging"><span class="pages">'.$lang_common['Pages'].'</span> '.paginate($forum_page['num_pages'], $forum_page['page'], $forum_url['thanks_user'], $lang_common['Paging separator'], $user_id).'</p>';
+
+// Navigation links for header and page numbering for title/meta description
+if ($forum_page['page'] < $forum_page['num_pages'])
+{
+	$forum_page['nav']['last'] = '<link rel="last" href="'.forum_sublink($forum_url['thanks_user'], $forum_url['page'], $forum_page['num_pages'], $user_id).'" title="'.$lang_common['Page'].' '.$forum_page['num_pages'].'" />';
+	$forum_page['nav']['next'] = '<link rel="next" href="'.forum_sublink($forum_url['thanks_user'], $forum_url['page'], ($forum_page['page'] + 1), $user_id).'" title="'.$lang_common['Page'].' '.($forum_page['page'] + 1).'" />';
+}
+if ($forum_page['page'] > 1)
+{
+	$forum_page['nav']['prev'] = '<link rel="prev" href="'.forum_sublink($forum_url['thanks_user'], $forum_url['page'], ($forum_page['page'] - 1), $user_id).'" title="'.$lang_common['Page'].' '.($forum_page['page'] - 1).'" />';
+	$forum_page['nav']['first'] = '<link rel="first" href="'.forum_link($forum_url['thanks_user'], $user_id).'" title="'.$lang_common['Page'].' 1" />';
+}
+
+define('FORUM_ALLOW_INDEX', 1);
+
+define('FORUM_PAGE', 'userthanks');
+require FORUM_ROOT.'header.php';
+
+// START SUBST - <!-- forum_main -->
+ob_start();
+?>
+	<div class="main-head">
+<?php
+
+	if (!empty($forum_page['main_head_options']))
+		echo "\t\t".'<p class="options">'.implode(' ', $forum_page['main_head_options']).'</p>'."\n";
+
+?>
+		<h2 class="hn"><span><?php echo $forum_page['items_info'] ?></span></h2>
+	</div>
+<?
+
 // 
 $query_thanks = array(
 	'SELECT'	=> 't.id, t.post_id, t.thank_date, u.username, t1.subject, t1.id as topic_id, IF(CHAR_LENGTH(p.message)<70, p.message, CONCAT(LEFT(p.message, 70), "...")) as post',
@@ -49,7 +112,7 @@ $query_thanks = array(
 		),
 	),		
 	'WHERE'		=> '(fp.read_forum IS NULL OR fp.read_forum=1) AND t.user_id='.$user_id,
-	'LIMIT'		=> $page_id.',50'
+	'LIMIT'		=> $forum_page['page'].',50'
 );
 $result_thanks = $forum_db->query_build($query_thanks) or error(__FILE__, __LINE__);
 if ($forum_db->num_rows($result_thanks) > 0)
@@ -76,11 +139,19 @@ while($row = $forum_db->fetch_assoc($result_thanks))
 		</tr>';
 	}
 	$UserThanks .= '</tbody></table></div>';
-	message($UserThanks, '',$lang_thanks['Thanks']);
+	echo $UserThanks;
+	//message($UserThanks, '',$lang_thanks['Thanks']);
 }
 else
 {
-	message($lang_thanks['ThanksNo'], '',$lang_thanks['Thanks']);
+	//message($lang_thanks['ThanksNo'], '',$lang_thanks['Thanks']);
 }
+$tpl_temp = forum_trim(ob_get_contents());
+$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
+ob_end_clean();
+// END SUBST - <!-- forum_main -->
+
+require FORUM_ROOT.'footer.php';
+
 }
 ?>
