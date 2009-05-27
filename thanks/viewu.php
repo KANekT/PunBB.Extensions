@@ -39,7 +39,7 @@ if ($user_id < 1)
 $queryCount = array(
 	'SELECT'	=> 'u.thanks',
 	'FROM'		=> 'users AS u',
-	'WHERE'		=> 'u.thanks  > 0'
+	'WHERE'		=> 'u.id='.$user_id
 );
 $resultCount = $forum_db->query_build($queryCount) or error(__FILE__, __LINE__);
 $forum_page['num_users'] = $forum_db->result($resultCount);
@@ -133,7 +133,7 @@ while($row = $forum_db->fetch_assoc($result_thanks))
 		$row['post'] = preg_replace('#\[(.*?)\](.*?)#ms','$2',$row['post']);
 		$UserThanks .= '<tr>
 		<td><a href="'.$base_url.'/viewtopic.php?id='.$row['topic_id'].'">'.$row['subject'].'</a></td>
-		<td><a href="'.$base_url.'/viewtopic.php?pid='.$row['post_id'].'#'.$row['post_id'].'">'.$row['post'].'</a></td>
+		<td><a href="'.$base_url.'/viewtopic.php?pid='.$row['post_id'].'#p'.$row['post_id'].'">'.$row['post'].'</a></td>
 		<td><i>'.$row['username'].'</i></td>
 		<td>'.format_time($row['thank_date']).'</td>
 		</tr>';
