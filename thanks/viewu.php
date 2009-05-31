@@ -112,7 +112,7 @@ $query_thanks = array(
 		),
 	),		
 	'WHERE'		=> '(fp.read_forum IS NULL OR fp.read_forum=1) AND t.user_id='.$user_id,
-	'LIMIT'		=> $forum_page['page'].',50'
+	'LIMIT'		=> $forum_page['start_from'].',50'
 );
 $result_thanks = $forum_db->query_build($query_thanks) or error(__FILE__, __LINE__);
 if ($forum_db->num_rows($result_thanks) > 0)
