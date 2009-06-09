@@ -117,7 +117,7 @@ $query_thanks = array(
 $result_thanks = $forum_db->query_build($query_thanks) or error(__FILE__, __LINE__);
 if ($forum_db->num_rows($result_thanks) > 0)
 {
-	$UserThanks = '<div class="ct-group"><table>
+	$UserThanks = '<div class="ct-group main-content"><table>
 	<thead><tr>
 	<th class="tc0" scope="col" width="25%">'.$lang_thanks['ThanksTopic'].'</th>
 	<th class="tc1" scope="col" width="45%">'.$lang_thanks['ThanksPost'].'</th>

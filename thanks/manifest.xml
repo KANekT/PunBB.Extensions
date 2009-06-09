@@ -11,7 +11,7 @@
 <extension engine="1.0">
 	<id>thanks</id>
 	<title>thanks</title>
-	<version>0.3.2</version>
+	<version>0.3.3</version>
 	<description>This extension lets your members thank someone for a post they posted.</description>
 	<author>KANekT</author>
 	<minversion>1.3</minversion>
