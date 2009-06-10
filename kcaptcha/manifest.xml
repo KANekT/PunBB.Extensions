@@ -14,7 +14,7 @@
 	<extension engine="1.0">
 	<id>kcaptcha</id>
 	<title>Antispam System</title>
-	<version>0.01.20</version>
+	<version>0.2</version>
 	<description>Adds KCAPTCHA to the register, login and guest post form. Based on pun_antispam</description>
 	<author>KANekT</author>
 	<minversion>1.3dev</minversion>

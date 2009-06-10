@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for footer_banner
+ *
+ * @copyright Copyright (C) 2009 KANekT @ http://blog.teamrip.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @package footer_banner
+*/
+-->
+<extension engine="1.0">
+	<id>footer_banner</id>
+	<title>Hit Ua</title>
+	<version>1.0</version>
+	<description>Hit.ua in footer</description>
+	<author>KANekT</author>
+	<minversion>1.3</minversion>
+	<maxtestedon>1.3.4</maxtestedon>
+
+	<hooks>
+		<hook id="ft_about_output_start" priority="1"><![CDATA[
+	?><p>
+	<center>
+<!-- hit.ua -->
+<a href='http://hit.ua/?x=15074' target='_blank'>
+<script language="javascript" type="text/javascript"><!--
+Cd=document;Cr="&"+Math.random();Cp="&s=1";
+Cd.cookie="b=b";if(Cd.cookie)Cp+="&c=1";
+Cp+="&t="+(new Date()).getTimezoneOffset();
+if(self!=top)Cp+="&f=1";
+//--></script>
+<script language="javascript1.1" type="text/javascript"><!--
+if(navigator.javaEnabled())Cp+="&j=1";
+//--></script>
+<script language="javascript1.2" type="text/javascript"><!--
+if(typeof(screen)!='undefined')Cp+="&w="+screen.width+"&h="+
+screen.height+"&d="+(screen.colorDepth?screen.colorDepth:screen.pixelDepth);
+//--></script>
+<script language="javascript" type="text/javascript"><!--
+Cd.write("<img src='http://c.hit.ua/hit?i=15074&g=0&x=5"+Cp+Cr+
+"&r="+escape(Cd.referrer)+"&u="+escape(window.location.href)+
+"' border='0' width='88' height='31' "+
+"alt='hit.ua: посетителей и просмотров за сегодня' title='hit.ua: посетителей и просмотров за сегодня'/>");
+//--></script>
+<noscript>
+<img src='http://c.hit.ua/hit?i=15074&amp;g=0&amp;x=5' border='0' width='88' height='31' alt='hit.ua: посетителей и просмотров за сегодня' title='hit.ua: посетителей и просмотров за сегодня'/>
+</noscript></a>
+<!-- / hit.ua -->
+
+<!-- hit.ua poll -->
+<script language="javascript" type="text/javascript"><!--
+Cd=document;Cd.cookie="b=b";if(Cd.cookie)Cd.write("<sc"+
+"ript language='javascript' type='text/javascript' src="+
+"'http://c.hit.ua/poll?i=15074&c=1&"+Math.random()+"'></sc"+"ript>");
+//--></script>
+<!-- / hit.ua poll -->
+		</center></p>
+		<?php
+		]]></hook>
+	</hooks>
+
+</extension>
