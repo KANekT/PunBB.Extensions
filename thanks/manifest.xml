@@ -83,10 +83,34 @@
 				}
 				full_del_dir($ext_info['path'].'/include/');
 				full_del_dir($ext_info['path'].'/cache/');
+				if (!isset($forum_config['o_thanks_view']))
+				{
+					$query = array(
+					   'INSERT'  => 'conf_name, conf_value',
+					   'INTO'    => 'config',
+					   'VALUES'  => '\'o_thanks_view\', \'0\'' 
+					);
+					$forum_db->query_build($query);
+				}
 			}
 			else if (defined('EXT_CUR_VERSION') && $v == '0.2')
 			{
 				$result = $forum_db->query('ALTER TABLE '.$forum_db->prefix.'users CHANGE thanks thanks INT(10) DEFAULT \'0\'');
+				$query = array(
+				   'INSERT'  => 'conf_name, conf_value',
+				   'INTO'    => 'config',
+				   'VALUES'  => '\'o_thanks_view\', \'0\'' 
+				);
+				$forum_db->query_build($query);
+			}
+			else if (defined('EXT_CUR_VERSION') && $v == '0.3')
+			{
+				$query = array(
+				   'INSERT'  => 'conf_name, conf_value',
+				   'INTO'    => 'config',
+				   'VALUES'  => '\'o_thanks_view\', \'0\'' 
+				);
+				$forum_db->query_build($query);
 			}
 			else
 			{ // it's a fresh install
@@ -119,15 +143,12 @@
 				$forum_db->add_field('users', 'thanks', 'INT(10)', false, 0);
 				$forum_db->add_field('posts', 'thanks', 'INT(10)', false, 0);
 
-					if (!isset($forum_config['o_thanks_view']))
-					{
-						$query = array(
-						   'INSERT'  => 'conf_name, conf_value',
-						   'INTO'    => 'config',
-						   'VALUES'  => '\'o_thanks_view\', \'0\'' 
-						);
-						$forum_db->query_build($query);
-					}
+				$query = array(
+				   'INSERT'  => 'conf_name, conf_value',
+				   'INTO'    => 'config',
+				   'VALUES'  => '\'o_thanks_view\', \'0\'' 
+				);
+				$forum_db->query_build($query);
 			}
 		]]>
 	</install>
