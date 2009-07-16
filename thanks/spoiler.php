@@ -1,5 +1,4 @@
 <?php 
-<!--
 /*
  * spoiler file for thanks
  *
@@ -7,7 +6,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package thanks
 */
--->
+
 if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
 if (!defined('FORUM'))	define('FORUM', 1);
 require FORUM_ROOT.'config.php';
