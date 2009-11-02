@@ -67,12 +67,12 @@ function makeRequest(postS) {
 
 		if (httpThanks.readyState == 4)
 		{
-				document.getElementById('button_sp' + postS).innerHTML = httpThanks.responseText;
-				if (div == '' || div == 'none' ) {
-					document.getElementById('button_sp' + postS).style.display = 'block';
-				} else {
-					document.getElementById('button_sp' + postS).style.display = 'none';
-				}
+			document.getElementById('button_sp' + postS).innerHTML = httpThanks.responseText;
+			if (div == '' || div == 'none' ) {
+				document.getElementById('button_sp' + postS).style.display = 'block';
+			} else {
+				document.getElementById('button_sp' + postS).style.display = 'none';
+			}
 		}
 	};
 
