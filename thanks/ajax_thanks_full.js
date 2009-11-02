@@ -60,6 +60,27 @@ function sendRequestThanks(data)
 	httpThanks.send(data);
 }
 
+function makeRequest(postS) { 
+	httpThanks.onreadystatechange = function()
+	{
+		var div = document.getElementById('button_sp' + postS).style.display;
+
+		if (httpThanks.readyState == 4)
+		{
+			document.getElementById('button_sp' + postS).innerHTML = httpThanks.responseText;
+			if (div == '' || div == 'none' ) {
+				document.getElementById('button_sp' + postS).style.display = 'block';
+			} else {
+				document.getElementById('button_sp' + postS).style.display = 'none';
+			}
+		}
+	};
+
+httpThanks.open('POST', base_url_thanks + '/extensions/thanks/spoiler.php', true); 
+httpThanks.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+httpThanks.send('po=' + postS); 
+
+} 
 
 /*
 	Function creating ajax request object
