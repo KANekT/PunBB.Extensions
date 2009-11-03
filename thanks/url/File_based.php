@@ -9,6 +9,6 @@
  */
 
 	$forum_url['thanks_user'] = 'thanks_user-$1.html';
-	$forum_url['thanks_post'] = 'thanks-$1-lang-$2.html';
+	$forum_url['thanks_post'] = 'extensions/thanks/viewp.php?id=$1&amp;lang=$2';
 
 ?>
