@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE extension SYSTEM "ext-1.0.dtd">
+
+<!--
+/**
+ * Provide jQuery library
+ *
+ * @copyright © dimkalinux@gmail.com
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @package jquery
+ */
+-->
+
+
+<extension engine="1.0">
+	<id>jquery</id>
+	<title>jQuery</title>
+	<version>1.3.2.4</version>
+	<description>Provide jQuery 1.3.2 library</description>
+	<author>dimkalinux@gmail.com</author>
+
+	<minversion>1.3dev</minversion>
+	<maxtestedon>1.3</maxtestedon>
+
+
+	<hooks>
+		<hook id="hd_head" priority="5"><![CDATA[
+			$forum_head['js_jquery'] = '<script type="text/javascript" src="'.$ext_info['url'].'/jquery-1.3.2.min.js"></script>';
+		]]></hook>
+
+		<hook id="co_common"><![CDATA[
+			$pun_extensions_used = array_merge(isset($pun_extensions_used) ? $pun_extensions_used : array(), array($ext_info['id']));
+		]]></hook>
+
+
+		<hook id="ft_about_end" priority="10"><![CDATA[
+			if (!defined('PUN_EXTENSIONS_USED') && !empty($pun_extensions_used)) {
+				define('PUN_EXTENSIONS_USED', 1);
+				echo '<p id="extensions-used">Currently used extensions: '.implode(', ', $pun_extensions_used).'. Copyright &copy; 2008 <a href="http://punbb.informer.com/">PunBB</a></p>';
+			}
+		]]></hook>
+	</hooks>
+</extension>
