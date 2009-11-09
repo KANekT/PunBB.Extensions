@@ -8,7 +8,6 @@
 */
 
 // настройки для подключения к MySQl
-$config = array( 'hostname' => 'localhost', 'username' => 'demo', 'password' => '021331', 'dbname' => 'demo' );
 if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
 
 require FORUM_ROOT.'config.php';
@@ -50,6 +49,9 @@ if( isset($_POST['act']) )
 // Функция выполняем сохранение сообщения в базе данных
 function Send()
 {
+	global $db_prefix;
+	$db_prefix = $db_prefix.'jq_chat';
+
         // тут мы получили две переменные переданные нашим java-скриптом при помощи ajax
         // это:  $_POST['name'] - имя пользователя
         // и $_POST['text'] - сообщение
@@ -63,20 +65,23 @@ function Send()
         $text = mysql_real_escape_string($text); // функция экранирует все спец-символы в unescaped_string , вследствие чего, её можно безопасно использовать в mysql_query()
  
         // добавляем новую запись в таблицу messages
-        mysql_query("INSERT INTO my_messages (name,text) VALUES ('" . $name . "', '" . $text . "')");
+        mysql_query("INSERT INTO $db_prefix (name,text) VALUES ('" . $name . "', '" . $text . "')");
 }
  
  
 // функция выполняем загрузку сообщений из базы данных и отправку их пользователю через ajax виде java-скрипта
 function Load()
 {
+	global $db_prefix;
+	$db_prefix = $db_prefix.'jq_chat';
+
         // тут мы получили переменную переданную нашим java-скриптом при помощи ajax
         // это:  $_POST['last'] - номер последнего сообщения которое загрузилось у пользователя
  
         $last_message_id = intval($_POST['last']); // возвращает целое значение переменной
  
         // выполняем запрос к базе данных для получения 10 сообщений последних сообщений с номером большим чем $last_message_id
-        $query = mysql_query("SELECT * FROM my_messages WHERE ( id > $last_message_id ) ORDER BY id DESC LIMIT 10");
+        $query = mysql_query("SELECT * FROM $db_prefix WHERE ( id > $last_message_id ) ORDER BY id DESC LIMIT 10");
  
         // проверяем есть ли какие-нибудь новые сообщения
         if( mysql_num_rows($query) > 0 )
