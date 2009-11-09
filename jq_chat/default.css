@@ -6,23 +6,13 @@
  * @package jQuery Chat
 */
 
-* {
-        margin: 0;
-        padding: 0;
-}
- 
-body {
-        font: normal normal normal 16px "Trebuchet MS", Arial, Times;
-        color: #000000;
-}
- 
 /* ¬ажное свойство */
 .chat {
-        height: 200px;
-        overflow: auto; /* Ёто позвол€ет отображать полосу прокрутки */
-        position: relative; /* Ёто позвол€ет съезжать тексту в слое, не раст€гива€ страницу */
-        text-align: left;
-        border: solid #818181 1px;
+	height: 200px;
+	overflow: auto; /* Ёто позвол€ет отображать полосу прокрутки */
+	position: relative; /* Ёто позвол€ет съезжать тексту в слое, не раст€гива€ страницу */
+	text-align: left;
+	border: solid #818181 1px;
 }
  
 .chat div {
@@ -30,12 +20,12 @@ body {
 }
  
 .chat span {
-        display: block;
+	display: block;
+	padding: 2px;
 }
  
-input[type=text],textarea {
-        width: 100%;
-        font: normal normal normal 16px "Trebuchet MS", Arial, Times;
+.chatform input[type=text],textarea {
+        width: 80%;
         border: solid #818181 1px;
 }
  
