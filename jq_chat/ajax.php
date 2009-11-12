@@ -7,28 +7,11 @@
  * @package jQuery Chat
 */
 
-// настройки для подключения к MySQl
-if (!defined('FORUM_ROOT'))	define('FORUM_ROOT', '../../');
-
-require FORUM_ROOT.'config.php';
- 
-// подключаемся к MySQL, если не вышло то выходим
-if( !mysql_connect($db_host, $db_username, $db_password) )
-{
-        exit();
-}
-// Выбираем базу данных, если не вышло то выходим
-if( !mysql_select_db($db_name) )
-{
-        exit();
-}
-mysql_query("SET NAMES 'utf8'"); // говорим MySQl'у то что мы будем работать с UTF-8
- 
 Header("Cache-Control: no-cache, must-revalidate"); // говорим браузеру что-бы он не кешировал эту страницу
 Header("Pragma: no-cache");
  
 Header("Content-Type: text/javascript; charset=utf-8"); // говорим браузеру что это javascript в кодировке UTF-8
- 
+
 // проверяем есть ли переменная act (send или load), которая указываем нам что делать
 if( isset($_POST['act']) )
 {
@@ -40,6 +23,8 @@ if( isset($_POST['act']) )
                         break;
                 case "load" : // если она равняется load, вызываем функцию Load()
                         Load();
+                case "delmsg" : // если она равняется load, вызываем функцию Load()
+                        DelMsg();
                         break;
                 default : // если ни тому и не другому  - выходим
         exit();
@@ -49,72 +34,152 @@ if( isset($_POST['act']) )
 // Функция выполняем сохранение сообщения в базе данных
 function Send()
 {
-	global $db_prefix;
-	$db_prefix = $db_prefix.'jq_chat';
+		$chatFile = 'data/chat.dat';
+		$chatLog = 'data/log.log';
 
         // тут мы получили две переменные переданные нашим java-скриптом при помощи ajax
-        // это:  $_POST['name'] - имя пользователя
+        // это: $_POST['name'] - имя пользователя
         // и $_POST['text'] - сообщение
- 
-        $name = substr($_POST['name'], 0, 200); // обрезаем до 200 символов
-        $name = htmlspecialchars($name); // заменяем опасные теги (<h1>,<br>, и прочие) на безопасные
-        $name = mysql_real_escape_string($name); // функция экранирует все спец-символы в unescaped_string , вследствие чего, её можно безопасно использовать в mysql_query()
- 
-        $text = substr($_POST['text'], 0, 200); // обрезаем до 200 символов
-        $text = htmlspecialchars($text); // заменяем опасные теги (<h1>,<br>, и прочие) на безопасные
-        $text = mysql_real_escape_string($text); // функция экранирует все спец-символы в unescaped_string , вследствие чего, её можно безопасно использовать в mysql_query()
- 
-        // добавляем новую запись в таблицу messages
-        mysql_query("INSERT INTO $db_prefix (name,text) VALUES ('" . $name . "', '" . $text . "')");
+		$content = file_get_contents($chatFile);
+		$content = (empty($content)) ? array() : json_decode($content);
+
+		date_default_timezone_set('UTC');
+		$message = (isset($_POST['text'])) ? $_POST['text'] : null;
+		
+		$user = htmlspecialchars($_POST['name']);
+		
+		// check double message
+		$last = end($content);
+		if(!empty($last) && $last[1]===$user && $last[3]===$message) {
+			header('HTTP/1.x 403 Forbidden');
+			exit();
+		}
+		$id = $last[0];
+		$id++;
+
+		// add the new message
+		$content[] = array(
+			$id,
+			$user,
+			date('r'),
+			$message
+		);
+		
+		// remove if there's more than 50 messages
+		while(count($content) > 50) {
+			array_shift($content);
+		}
+		
+		// encode and write
+		$content = json_encode($content);
+		file_put_contents($chatFile, $content);
+		
+		// push the checksum
+		$check = md5($content);
+		$htaccess = file_get_contents('data/.htaccess');
+		$htaccess = preg_replace('`X-json "\\\"\w{32}\\\""`', 'X-json "\"'.$check.'\""', $htaccess);
+		file_put_contents('data/.htaccess', $htaccess);
+					
+		/*$log = file_get_contents($chatLog);
+		$log = (empty($content)) ? array() : json_decode($log);
+
+		date_default_timezone_set('UTC');
+		$message = (isset($_POST['text'])) ? $_POST['text'] : null;
+		
+		$user = htmlspecialchars($_POST['name']);
+		// check double message
+		$last = end($log);
+		if(!empty($last) && $last[1]===$user && $last[3]===$message) {
+			header('HTTP/1.x 403 Forbidden');
+			exit();
+		}
+		$id = $last[0];
+		$id++;
+		
+		// add the new message
+		$log[] = array(
+			$id,
+			$user,
+			date('r'),
+			$message
+		);		
+		
+		$log = json_encode($log);
+		file_put_contents($chatLog, $log);*/
+		
 }
  
  
 // функция выполняем загрузку сообщений из базы данных и отправку их пользователю через ajax виде java-скрипта
 function Load()
 {
-	global $db_prefix;
-	$db_prefix = $db_prefix.'jq_chat';
+		$chat_start = intval($_POST['start']); // возвращает целое значение переменной
+		$chat_end = intval($_POST['end']); // возвращает целое значение переменной
+		$metka = intval($_POST['met']); // возвращает целое значение переменной
+		$mes = intval($_POST['mes']); // возвращает целое значение переменной
+		//$last_message_id = 0;
+		$chatFile = 'data/chat.dat';
 
-        // тут мы получили переменную переданную нашим java-скриптом при помощи ajax
-        // это:  $_POST['last'] - номер последнего сообщения которое загрузилось у пользователя
- 
-        $last_message_id = intval($_POST['last']); // возвращает целое значение переменной
- 
-        // выполняем запрос к базе данных для получения 10 сообщений последних сообщений с номером большим чем $last_message_id
-        $query = mysql_query("SELECT * FROM $db_prefix WHERE ( id > $last_message_id ) ORDER BY id DESC LIMIT 10");
- 
-        // проверяем есть ли какие-нибудь новые сообщения
-        if( mysql_num_rows($query) > 0 )
-        {
-                // начинаем формировать javascript который мы передадим клиенту
-                $js = 'var chat = $("#chat_area");'; // получаем "указатель" на div, в который мы добавим новые сообщения
- 
-                // следующий конструкцией мы получаем массив сообщений из нашего запроса
-                $messages = array();
-                while ( $row = mysql_fetch_array($query) )
-                {
-                        $messages[] = $row;
-                }
- 
-                // записываем номер последнего сообщения
-                // [0] - это вернёт нам первый элемент в массиве $messages, но так как мы выполнили запрос с параметром "DESC" (в обратном порядке),
-                // то это получается номер последнего сообщения в базе данных
-                $last_message_id = $messages[0]['id'];
- 
-                // переворачиваем массив (теперь он в правильном порядке)
-                $messages = array_reverse($messages);
- 
-                // идём по всем элементам массива $messages
-                foreach ( $messages as $value )
-                {
-                        // продолжаем формировать скрипт для отправки пользователю
-                        $js .= 'chat.append("<span>' . $value['name'] . '&raquo; ' . $value['text'] . '</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
-                }
- 
-                $js .= "last_message_id = $last_message_id;"; // запишем номер последнего полученного сообщения, что бы в следующий раз начать загрузку с этого сообщения
- 
-                // отправляем полученный код пользователю, где он будет выполнен при помощи функции eval()
-                echo $js;
-        }
+		$content = file_get_contents($chatFile);
+		$content = (empty($content)) ? array() : json_decode($content);
+
+		if (count($content) > 0)
+		{
+			// начинаем формировать javascript который мы передадим клиенту
+			$js = 'var chat = $("#chat_area");'; // получаем "указатель" на div, в который мы добавим новые сообщения
+
+			if ($mes>count($content)) 
+			{
+				$metka = 0;
+				$cnt = $chat_end;
+			}
+			if ($chat_start == 0) $cnt = 0;
+			else $cnt = $chat_end - $chat_start;
+			if ($metka == 1) $cnt=0;
+			if ($chat_start != $content[0][0] && $chat_start != 0) $cnt=0;
+			for($i=$cnt;$i<count($content);$i++) 
+			{
+				$mydate = substr($content[$i][2], 17, 9);
+
+				$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$mydate.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
+
+			}
+			$start = $content[0][0];
+			$end = $content[0][0]+$i;
+			$js .= "start = $start;";
+			$js .= "end = $end;";
+			echo $js;
+
+		}
+		
+}
+// функция удаляем сообщение из базы данных
+function DelMsg()
+{
+		$chatFile = 'data/chat.dat';
+		$msgId = intval($_POST['msgId']);
+		
+		// get content, seek for the message and delete it
+		$found = false;
+		$content = file_get_contents($chatFile);
+		$content = (empty($content)) ? array() : json_decode($content);
+		foreach($content as $i=>$msg) {
+			if($msg[0] === $msgId) {
+				array_splice($content, $i, 1);
+				$found = true;
+				break;
+			}
+		}
+
+		// return new content or an error
+		if($found) {
+			// encode and write
+			$content = json_encode($content);
+			file_put_contents($chatFile, $content);
+			$check = md5($content);
+			$htaccess = file_get_contents('data/.htaccess');
+			$htaccess = preg_replace('`X-json "\\\"\w{32}\\\""`', 'X-json "\"'.$msgId.$check.'\""', $htaccess);
+			file_put_contents('data/.htaccess', $htaccess);
+			}
 }
 ?>
