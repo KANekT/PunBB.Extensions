@@ -35,11 +35,13 @@ if( isset($_POST['act']) )
 function Send()
 {
 		$chatFile = 'data/chat.dat';
-		$chatLog = 'data/log.log';
+		//$chatLog = 'data/log.log';
 
         // тут мы получили две переменные переданные нашим java-скриптом при помощи ajax
         // это: $_POST['name'] - имя пользователя
         // и $_POST['text'] - сообщение
+		if($_POST['text'] != '')
+		{
 		$content = file_get_contents($chatFile);
 		$content = (empty($content)) ? array() : json_decode($content);
 
@@ -106,7 +108,7 @@ function Send()
 		
 		$log = json_encode($log);
 		file_put_contents($chatLog, $log);*/
-		
+		}
 }
  
  
@@ -122,7 +124,7 @@ function Load()
 
 		$content = file_get_contents($chatFile);
 		$content = (empty($content)) ? array() : json_decode($content);
-
+			
 		if (count($content) > 0)
 		{
 			// начинаем формировать javascript который мы передадим клиенту
@@ -140,8 +142,10 @@ function Load()
 			for($i=$cnt;$i<count($content);$i++) 
 			{
 				$mydate = substr($content[$i][2], 17, 9);
-
-				$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$mydate.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
+				if ($content[$i][3] != '')
+				{
+					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$mydate.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
+				}
 
 			}
 			$start = $content[0][0];
@@ -159,27 +163,30 @@ function DelMsg()
 		$chatFile = 'data/chat.dat';
 		$msgId = intval($_POST['msgId']);
 		
-		// get content, seek for the message and delete it
-		$found = false;
-		$content = file_get_contents($chatFile);
-		$content = (empty($content)) ? array() : json_decode($content);
-		foreach($content as $i=>$msg) {
-			if($msg[0] === $msgId) {
-				array_splice($content, $i, 1);
-				$found = true;
-				break;
+		if ($msgId > 0)
+		{
+			// get content, seek for the message and delete it
+			$found = false;
+			$content = file_get_contents($chatFile);
+			$content = (empty($content)) ? array() : json_decode($content);
+			foreach($content as $i=>$msg) {
+				if($msg[0] === $msgId) {
+					array_splice($content, $i, 1);
+					$found = true;
+					break;
+				}
 			}
-		}
 
-		// return new content or an error
-		if($found) {
-			// encode and write
-			$content = json_encode($content);
-			file_put_contents($chatFile, $content);
-			$check = md5($content);
-			$htaccess = file_get_contents('data/.htaccess');
-			$htaccess = preg_replace('`X-json "\\\"\w{32}\\\""`', 'X-json "\"'.$msgId.$check.'\""', $htaccess);
-			file_put_contents('data/.htaccess', $htaccess);
-			}
+			// return new content or an error
+			if($found) {
+				// encode and write
+				$content = json_encode($content);
+				file_put_contents($chatFile, $content);
+				$check = md5($content);
+				$htaccess = file_get_contents('data/.htaccess');
+				$htaccess = preg_replace('`X-json "\\\"\w{32}\\\""`', 'X-json "\"'.$msgId.$check.'\""', $htaccess);
+				file_put_contents('data/.htaccess', $htaccess);
+				}
+		}
 }
 ?>
