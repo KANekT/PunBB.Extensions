@@ -13,5 +13,6 @@ $lang_hide = array(
 	'Hidden text'				=>	'Hidden text',
 	'Hidden count text begin'	=>	'You need',
 	'Hidden count text end'		=>	'messages or more to view hidden text.',
+	'Hidden text group'			=>  'Hidden text for group ',
 );
 ?>
