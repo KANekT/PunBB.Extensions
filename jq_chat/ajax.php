@@ -137,8 +137,9 @@ function Load()
 			}
 			if ($chat_start == 0) $cnt = 0;
 			else $cnt = $chat_end - $chat_start;
-			if ($metka == 1) $cnt=0;
-			if ($chat_start != $content[0][0] && $chat_start != 0) $cnt=0;
+			if ($metka == 1) $cnt=$mes-1;
+			/*if ($chat_start != $content[0][0] && $chat_start != 0) $cnt=0;*/
+			
 			for($i=$cnt;$i<count($content);$i++) 
 			{
 				$mydate = substr($content[$i][2], 17, 9);
