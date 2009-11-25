@@ -213,6 +213,9 @@ if(!is_writable($ext_info['path'].'/data/chat.dat') || !is_writable($ext_info['p
 			if (!isset($form['guest_read']) || $form['guest_read'] != '1') $form['guest_read'] = '0';
 			if (!isset($form['guest_write']) || $form['guest_write'] != '1') $form['guest_write'] = '0';
 		]]></hook>
-
+		
+		<hook id="co_common"><![CDATA[
+			$pun_extensions_used = array_merge(isset($pun_extensions_used) ? $pun_extensions_used : array(), array($ext_info['id']));
+		]]></hook>
 	</hooks>
 </extension>
