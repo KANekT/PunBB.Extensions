@@ -119,6 +119,7 @@ function Load()
 		$chat_end = intval($_POST['end']); // возвращает целое значение переменной
 		$metka = intval($_POST['met']); // возвращает целое значение переменной
 		$mes = intval($_POST['mes']); // возвращает целое значение переменной
+		$hour = intval($_POST['hour']); // возвращает целое значение переменной
 		//$last_message_id = 0;
 		$chatFile = 'data/chat.dat';
 
@@ -139,13 +140,21 @@ function Load()
 			else $cnt = $chat_end - $chat_start;
 			if ($metka == 1) $cnt=$mes-1;
 			/*if ($chat_start != $content[0][0] && $chat_start != 0) $cnt=0;*/
-			
+			$day4at = '';
 			for($i=$cnt;$i<count($content);$i++) 
 			{
-				$mydate = substr($content[$i][2], 17, 9);
+				$my = strtotime($content[$i][2]);
+				$m_day = gmdate('D Y-m-d ', $my + $hour);
+				$m_day = '<b>'.$m_day.'</b>';
+				$mhour = gmdate('H:i:s', $my + $hour);
+				$myday = $m_day.$mhour;
+				
+				if ($day4at == gmdate('Y-m-d', $my + $hour)) $myday = gmdate('H:i:s', $my + $hour);
+				else $day4at = gmdate('Y-m-d', $my + $hour);
+				
 				if ($content[$i][3] != '')
 				{
-					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$mydate.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
+					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
 				}
 
 			}
