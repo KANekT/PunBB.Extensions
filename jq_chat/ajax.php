@@ -151,6 +151,7 @@ function Load()
 				
 				if ($day4at == gmdate('Y-m-d', $my + $hour)) $myday = gmdate('H:i:s', $my + $hour);
 				else $day4at = gmdate('Y-m-d', $my + $hour);
+				if ($metka == 1) $myday = gmdate('H:i:s', $my + $hour);
 				
 				if ($content[$i][3] != '')
 				{
