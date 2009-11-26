@@ -35,7 +35,6 @@ if( isset($_POST['act']) )
 function Send()
 {
 		$chatFile = 'data/chat.dat';
-		//$chatLog = 'data/log.log';
 
         // тут мы получили две переменные переданные нашим java-скриптом при помощи ajax
         // это: $_POST['name'] - имя пользователя
@@ -48,8 +47,9 @@ function Send()
 		date_default_timezone_set('UTC');
 		$message = (isset($_POST['text'])) ? $_POST['text'] : null;
 		
-		$user = htmlspecialchars($_POST['name']);
-		
+		$user = htmlspecialchars($_POST['user']);
+		$userId = intval($_POST['uid']);
+
 		// check double message
 		$last = end($content);
 		if(!empty($last) && $last[1]===$user && $last[3]===$message) {
@@ -64,7 +64,8 @@ function Send()
 			$id,
 			$user,
 			date('r'),
-			$message
+			$message,
+			$userId
 		);
 		
 		// remove if there's more than 50 messages
@@ -82,32 +83,18 @@ function Send()
 		$htaccess = preg_replace('`X-json "\\\"\w{32}\\\""`', 'X-json "\"'.$check.'\""', $htaccess);
 		file_put_contents('data/.htaccess', $htaccess);
 					
-		/*$log = file_get_contents($chatLog);
-		$log = (empty($content)) ? array() : json_decode($log);
+		
+			if ($_POST['log'] == '1') {
+				$chatLog = 'data/log.log';
+				$log = fopen($chatLog, 'a-');
+				
+				// add the new message
+				$dat = date('Y-m-d H:i:s');
+				$text = $user.' '.$dat.' '.$message."\n";
+				fwrite($log,$text);  // 7
 
-		date_default_timezone_set('UTC');
-		$message = (isset($_POST['text'])) ? $_POST['text'] : null;
-		
-		$user = htmlspecialchars($_POST['name']);
-		// check double message
-		$last = end($log);
-		if(!empty($last) && $last[1]===$user && $last[3]===$message) {
-			header('HTTP/1.x 403 Forbidden');
-			exit();
-		}
-		$id = $last[0];
-		$id++;
-		
-		// add the new message
-		$log[] = array(
-			$id,
-			$user,
-			date('r'),
-			$message
-		);		
-		
-		$log = json_encode($log);
-		file_put_contents($chatLog, $log);*/
+				fclose($log);				
+			}
 		}
 }
  
@@ -120,7 +107,8 @@ function Load()
 		$metka = intval($_POST['met']); // возвращает целое значение переменной
 		$mes = intval($_POST['mes']); // возвращает целое значение переменной
 		$hour = intval($_POST['hour']); // возвращает целое значение переменной
-		//$last_message_id = 0;
+		$metkaDay = intval($_POST['met']); // возвращает целое значение переменной
+		
 		$chatFile = 'data/chat.dat';
 
 		$content = file_get_contents($chatFile);
@@ -140,7 +128,7 @@ function Load()
 			else $cnt = $chat_end - $chat_start;
 			if ($metka == 1) $cnt=$mes-1;
 			/*if ($chat_start != $content[0][0] && $chat_start != 0) $cnt=0;*/
-			$day4at = '';
+			$day4at = $_POST['day4'];
 			for($i=$cnt;$i<count($content);$i++) 
 			{
 				$my = strtotime($content[$i][2]);
@@ -149,13 +137,21 @@ function Load()
 				$mhour = gmdate('H:i:s', $my + $hour);
 				$myday = $m_day.$mhour;
 				
-				if ($day4at == gmdate('Y-m-d', $my + $hour)) $myday = gmdate('H:i:s', $my + $hour);
-				else $day4at = gmdate('Y-m-d', $my + $hour);
-				if ($metka == 1) $myday = gmdate('H:i:s', $my + $hour);
+				if ($day4at == gmdate('Y-m-d', $my + $hour)) 
+				{
+					$myday = gmdate('H:i:s', $my + $hour);
+					if ($metkaDay == 1) $myday = gmdate('H:i:s', $my + $hour);
+				}
+				else 
+				{
+					$day4at = gmdate('Y-m-d', $my + $hour);
+				}
 				
 				if ($content[$i][3] != '')
 				{
-					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");'; // добавить сообщние (<span>Имя &raquo; текст сообщения</span>) в наш div
+					if ($content[$i][4] != 1)
+					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; <a href=\"http://forum.demo/profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
+					else $js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");';
 				}
 
 			}
@@ -163,6 +159,7 @@ function Load()
 			$end = $content[0][0]+$i;
 			$js .= "start = $start;";
 			$js .= "end = $end;";
+			$js .= "day4 = '$day4at'";
 			echo $js;
 
 		}
