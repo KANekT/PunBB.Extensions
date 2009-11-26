@@ -150,7 +150,7 @@ function Load()
 				if ($content[$i][3] != '')
 				{
 					if ($content[$i][4] != 1)
-					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; <a href=\"http://forum.demo/profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
+					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; <a href=\"/profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
 					else $js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");';
 				}
 
