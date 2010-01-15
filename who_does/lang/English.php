@@ -17,6 +17,6 @@ $lang_who_does = array(
 	'No data' => 'No data',
 	'Who_Does features head' => 'Configure Who Online',
 	'Who_Does legend' => 'Configure Who Online',
-	'Who_Does enable' => 'Show user actions Online',
+	'Who_Does enable' => 'Show user actions Online only administrators',
 	'Who_Does enable legend' => 'Enable',
 );

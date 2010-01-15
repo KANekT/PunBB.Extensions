@@ -17,6 +17,6 @@ $lang_who_does = array(
 	'No data'					=>	'Нет данных',
 	'Who_Does features head'	=>	'Настройка Кто Online',
 	'Who_Does legend'			=>	'Настройка Кто Online',
-	'Who_Does enable'			=>	'Показывать действия пользователей Online',
+	'Who_Does enable'			=>	'Показывать действия пользователей Online только Администраторам',
 	'Who_Does enable legend'	=>	'Включить',
 );

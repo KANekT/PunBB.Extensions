@@ -47,7 +47,7 @@ function who_does_view(&$forum_page){
 	$forum_page['crumbs'][] = $lang_who_does['Who_Does'];	
 	
 	$query = array(
-	'SELECT'	=> 'o.user_id, o.ident, o.prev_url',
+	'SELECT'	=> 'o.user_id, o.ident, o.prev_url, o.logged',
 	'FROM'		=> 'online AS o',
 	/*'JOINS'		=> array(
 		array(
@@ -94,17 +94,21 @@ function page_render(&$forum_page){
 			<thead>
 				<tr>
 				<th class="tc3" style="width:20%"><?php echo $lang_who_does['User'] ?></th>
-				<th class="tc3" style="width:75%"><?php echo $lang_who_does['Who Does'] ?></th>
+				<th class="tc3" style="width:50%"><?php echo $lang_who_does['Who Does'] ?></th>
+				<th class="tc3" style="width:25%"><?php echo $lang_who_does['Date'] ?></th>
 				</tr>
 			<tbody>
 <?php foreach ($forum_page['list'] as $current) : 
 /*
  * TODO need forum_url replace
- */			
+ */
+	$timeT = date( 'd-m-Y H:h', $current['logged']);
+
 ?>
 				<tr>					
 					<td><?php echo $current['ident'] ? '<a href="'.forum_link($forum_url['user'], $current['user_id']).'">'. forum_htmlencode($current['ident']).'</a>' :  $lang_who_does['Profile deleted'] ?></td>
-					<td><?php echo $current['prev_url'] ?></td>
+					<td><a href="<?php echo $current['prev_url'] ?>"><?php echo $current['prev_url'] ?></a></td>
+					<td><?php echo $timeT ?></td>
 				</tr>
 <?php endforeach;?>
 			</tbody>
