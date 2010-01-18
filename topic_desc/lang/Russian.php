@@ -7,6 +7,10 @@
 */
 
 $lang_topic = array(
-	'Topic Description'		=> 'Описание',
+	'Topic Description'		=> 	'Описание',
+	'Topic features head'	=>	'Настройка Описание Тем',
+	'Topic legend'			=>	'Настройка Описание Тем',
+	'Topic enable'			=>	'Показывать описание когда пользователь наводит курсор мыши на ссылку темы',
+	'Topic enable legend'	=>	'Включить',
 );
 ?>
