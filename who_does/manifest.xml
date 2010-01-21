@@ -23,7 +23,7 @@
 				$query = array(
 				   'INSERT'  => 'conf_name, conf_value',
 				   'INTO'    => 'config',
-				   'VALUES'  => '\'o_who_does_enabled\', \'1\'' 
+				   'VALUES'  => '\'o_who_does_enabled\', \'0\'' 
 				);
 				$forum_db->query_build($query);
 		]]>
