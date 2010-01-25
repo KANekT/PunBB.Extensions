@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>topic_desc</id>
 	<title>topic description</title>
-	<version>0.4.0</version>
+	<version>0.5.0</version>
 	<description>Topic Description</description>
 	<author>KANekT</author>
 	<minversion>1.3.4</minversion>
@@ -100,7 +100,7 @@
 		<hook id="vf_row_pre_item_subject_merge"><![CDATA[
 		if (!empty($cur_topic['topic_desc']))
 		{
-			if ($forum_config['o_topic_desc'] != '1')
+			if ($forum_config['o_topic_desc'] != '0')
 			{
 				$forum_page['item_body']['subject']['topic_desc'] = '<p><small>'.forum_htmlencode($cur_topic['topic_desc']).'</small></p>';
 			}
@@ -109,7 +109,7 @@
 		<hook id="vf_topic_loop_normal_topic_pre_item_title_merge"><![CDATA[
 		if (!empty($cur_topic['topic_desc']))
 		{
-			if ($forum_config['o_topic_desc'] == '1')
+			if ($forum_config['o_topic_desc'] != '1' )
 			{
 				$forum_page['item_title']['link'] = '<a href="'.forum_link($forum_url['topic'], array($cur_topic['id'], sef_friendly($cur_topic['subject']))).'" alt="'.$cur_topic['topic_desc'].'" title="'.$cur_topic['topic_desc'].'">'.forum_htmlencode($cur_topic['subject']).'</a>';
 
@@ -120,7 +120,7 @@
 			define('FORUM_PAGE', 'ajax_post_edit');
 		]]></hook>
 		<hook id="aop_features_validation"><![CDATA[
-if (!isset($form['topic_desc']) || $form['topic_desc'] != '1') $form['topic_desc'] = '0';
+if (!isset($form['topic_desc'])) $form['topic_desc'] = '0';
 		]]></hook>
 		
 		<hook id="aop_features_message_fieldset_end"><![CDATA[
@@ -138,10 +138,20 @@ if (!isset($form['topic_desc']) || $form['topic_desc'] != '1') $form['topic_desc
 			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
 				<legend class="group-legend"><span><?php echo $lang_topic['Topic legend'] ?></span></legend>
 				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box checkbox">
-						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[topic_desc]" value="1"<?php if ($forum_config['o_topic_desc'] == '1') echo ' checked="checked"' ?> /></span>
-						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_topic['Topic enable legend'] ?></span> <?php echo $lang_topic['Topic enable'] ?></label>
-					</div>
+						<div class="mf-box">
+							<div class="mf-item">
+								<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[topic_desc]" value="0"<?php if ($forum_config['o_topic_desc'] == '0') echo ' checked="checked"' ?> /></span>
+								<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_topic['Topic enable'] ?></label>
+							</div>
+							<div class="mf-item">
+								<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[topic_desc]" value="1"<?php if ($forum_config['o_topic_desc'] == '1') echo ' checked="checked"' ?> /></span>
+								<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_topic['Topic enable mouse'] ?></label>
+							</div>
+							<div class="mf-item">
+								<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[topic_desc]" value="2"<?php if ($forum_config['o_topic_desc'] == '2') echo ' checked="checked"' ?> /></span>
+								<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_topic['Topic enable and mouse'] ?></label>
+							</div>
+						</div>
 				</div>
 			</fieldset>
 <?php		
