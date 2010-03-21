@@ -19,9 +19,9 @@ $lang_thanks = array(
 	'ThanksPost'	=> 'Post',
 	'ThanksAuthor'	=> 'Author',
 	'ThanksData'	=> 'Date',
-	'Thanks label' 	=> 'View Spoiler',
+	'Thanks label' 	=> 'View List Say Thanks',
 	'Thanks desc' 	=> 'Use Spoiler',
-	'ThanksListView'=> 'View Spoiler',
+	'ThanksListView'=> 'View List Say Thanks',
 	'error_00'		=> 'That user does not exist',
 	'error_01'		=> 'You cannot thank a guest!',
 	'error_02'		=> 'You cannot thank yourself!',
@@ -29,5 +29,11 @@ $lang_thanks = array(
 	'error_04'		=> 'You already thanked %s for that post!',
 	'error_05'		=> 'click here to go back to the post',
 	'error_06'		=> 'SQL error',
-);
+
+	'Removed or deleted'	=> 'Removed or deleted',
+	'Profile deleted'	=> 'Profile deleted',
+	'No data' => 'No data',
+	'User Thanks' 	=> 'Thanks of the user ',
+	
+	);
 ?>
