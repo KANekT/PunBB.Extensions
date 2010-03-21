@@ -2,7 +2,7 @@
 /*
  * lang file for jQuery Chat
  *
- * @copyright Copyright (C) 2009 KANekT @ http://blog.teamrip.ru
+ * @copyright Copyright (C) 2009-2010 KANekT @ http://blog.kanekt.ru
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package jQuery Chat
 */
