@@ -71,7 +71,13 @@ var mySettings = {
 		{separator:'---------------' },
 		{name: L.quote, className:'mQuote', openWith:'[quote=]', closeWith:'[/quote]'},
 		{name: L.code, className: 'mCode', openWith:'[code]', closeWith:'[/code]'},
-		{name: L.hide, className: 'mHide', openWith:'[hide]', closeWith:'[/hide]'},
+		{name: L.hide, className:'mHide', dropMenu: [
+			{name: L.hide, className: 'mHide', openWith:'[hide]', closeWith:'[/hide]'},
+			{name: L.hide_m, className: 'mHide', openWith:'[hide=[![' + L.hide_m + ']!]]', closeWith:'[/hide]'},
+			{name: L.hide_gr, className: 'mHide', openWith:'[hide=gr[![' + L.hide_gr + ']!]]', closeWith:'[/hide]'},
+		]},
+		{name: L.search, className: 'mPre', openWith:'[search=[![' + L.search_t1 + ']!]][![' + L.search_t2 + ']!]', closeWith:'[/search]'},
+		{name: L.spoiler, className: 'mSpoiler', openWith:'[spoiler][![' + L.spoiler_text + ']!]', closeWith:'[/spoiler]'},
 		{name: L.smilies, className: "mSmilies", dropMenu:  [
 			{name: L.smilies,	openWith:':)',	className:"col1" },
 			{name: L.smilies,	openWith:':|', className:"col2" },
@@ -86,9 +92,9 @@ var mySettings = {
 
 			{name: L.smilies, 	openWith:':mad:', className:"col10" },
 			{name: L.smilies, 	openWith:':rolleyes:',	className:"col11" },
-			{name: L.smilies,	openWith:':cool:',	className:"col12" },
+			{name: L.smilies,	openWith:':cool:',	className:"col12" }
 		] },
 		{separator:'---------------' },
-		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } },
+		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
 	]
 }

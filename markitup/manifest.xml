@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>markitup</id>
 	<title>markItUp! BB code</title>
-	<version>0.2.0</version>
+	<version>0.3.2</version>
 	<description>jQuery BBcode editor (markItUp! 1.1.6.1) based code - Trustmaster  (c) Cotonti Team </description>
 	<author>KANekT</author>
 	<minversion>1.3.4</minversion>
@@ -26,8 +26,6 @@
 		<hook id="hd_head"><![CDATA[
 if (((FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost']) || in_array(FORUM_PAGE, array('post', 'postedit'))) || $forum_user['pun_bbcode_enabled'])
 {
-	if (!defined('FORUM_PARSER_LOADED')) require FORUM_ROOT.'include/parser.php';
-		
 
 	$forum_head['js_jq_bbcode1'] = '<script type="text/javascript" src="'.$ext_info['url'].'/js/jquery.markitup.js"></script>';
 		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.js'))
@@ -86,9 +84,28 @@ $(document).ready(function()	{
 			$tags[] = 'hide';
 			$tags_fix[] = 'hide';
 			$tags_block[] = 'hide';
+
+			$tags[] = 'search';
+			$tags_fix[] = 'search';
+			$tags_block[] = 'search';
 			
+			$tags_block[]='spoiler';
+		
 			]]></hook>
+		<hook id="ps_preparse_bbcode_start"><![CDATA[
+			//SPOILER
+			$tags[] = 'spoiler';
+			$tags_opened[] = 'spoiler';
+			$tags_closed[] = 'spoiler';
+			
+			$tags_fix[] = 'spoiler';
+		]]></hook>
 		<hook id="ps_do_bbcode_replace"><![CDATA[
+		// Include language
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
 
 		$pattern[] = '#\[s\](.*?)\[/s\]#ms';
 		$replace[] = '<s>$1</s>';
@@ -112,6 +129,16 @@ if (!function_exists('bbcode_size_pregcallback')) {
 	}
 }
 $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~isU', 'bbcode_size_pregcallback', $text);
+
+		$pattern[] = '#\[search=(.*?)\](.*?)\[/search\]#ms';
+		$replace[] = '<a href="search.php?action=search&sort_dir=DESC&show_as=topics&keywords=$1">$2</a>';
+		
+		//spoiler
+			$pattern[] = '#\[spoiler\](.*?)\[/spoiler\]#s';
+			$replace[] = '<div style="border: 1px dotted gray; padding: 4px; color: #4a566e;"> '. $lang_jqbb['str_Spoiler'].' <span style="background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;" onClick="if(this.innerHTML==\''. $lang_jqbb['str_Show'] .'\'){this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'block\';this.innerHTML=\''. $lang_jqbb['str_Hide'] .'\';} else {this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'none\';this.innerHTML=\''. $lang_jqbb['str_Show'] .'\';}">'. $lang_jqbb['str_Show'] .'</span><div style="margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black; display: none;">$1</div></div>';
+			
+			$pattern[] = '#\[spoiler=(.*?)\](.*?)\[/spoiler\]#s';
+			$replace[] = '<div style="border: 1px dotted gray; padding: 4px; color: #4a566e;"> $1 <span style="background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;" onClick="if(this.innerHTML==\''. $lang_jqbb['str_Show'] .'\'){this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'block\';this.innerHTML=\''. $lang_jqbb['str_Hide'] .'\';} else {this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'none\';this.innerHTML=\''. $lang_jqbb['str_Show'] .'\';}">'. $lang_jqbb['str_Show'] .'</span><div style="margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black; display: none;">$2</div></div>';
 		
         ]]></hook>
 	<hook id="ps_parse_message_pre_split"><![CDATA[
@@ -247,14 +274,32 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 				else
 						require $ext_info['path'].'/lang/English.php';
 			?><div class="entry-content">
-				<code>[hide]<?php echo $lang_hide['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
-				<div class="quotebox"><cite><?php echo $lang_hide['Hidden text'] ?></cite><blockquote><p><i><?php echo $lang_hide['Hidden text'] ?></i></blockquote></p></div>
-				<code>[hide=1]<?php echo $lang_hide['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
-				<div class="quotebox"><cite><?php echo $lang_hide['Hidden text'] ?>[1]</cite><blockquote><p><i><?php echo $lang_hide['Hidden text'] ?></i></blockquote></p></div>
-				<code>[hide=gr1]<?php echo $lang_hide['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
-				<div class="quotebox"><cite><?php echo $lang_hide['Hidden text group'] ?>[1]</cite><blockquote><p><i><?php echo $lang_hide['Hidden text group'] ?>1</i></blockquote></p></div>
+				<code>[hide]<?php echo $lang_jqbb['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+				<div class="quotebox"><cite><?php echo $lang_jqbb['Hidden text'] ?></cite><blockquote><p><i><?php echo $lang_jqbb['Hidden text'] ?></i></blockquote></p></div>
+				<code>[hide=1]<?php echo $lang_jqbb['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+				<div class="quotebox"><cite><?php echo $lang_jqbb['Hidden text'] ?>[1]</cite><blockquote><p><i><?php echo $lang_jqbb['Hidden text'] ?></i></blockquote></p></div>
+				<code>[hide=gr1]<?php echo $lang_jqbb['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+				<div class="quotebox"><cite><?php echo $lang_jqbb['Hidden text group'] ?>[1]</cite><blockquote><p><i><?php echo $lang_jqbb['Hidden text group'] ?>1</i></blockquote></p></div>
 			</div><?
 			]]></hook>
+		<hook id="he_new_bbcode_section"><![CDATA[
+		// add lang file
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php')) {
+			require($ext_info['path'].'/lang/'.$forum_user['language'].'.php');
+			} else {
+				require($ext_info['path'].'/lang/English.php');
+			}
+			$lang_help = array_merge($lang_help, $lang_jqbb);
+			?>
+			<div class="ct-box help-box">
+				<h3 class="hn"><span><?php echo $lang_help['List info'] ?></span></h3>
+				<div class="entry-content">
+					<code>[spoiler]<?php echo $lang_help['Spoiler'] ?>[/spoiler]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="border: 1px dotted gray; padding: 4px; color: #4a566e;"> <?php echo $lang_help['str_Spoiler'] ?> <span style="background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;" onClick="if(this.innerHTML=='<?php echo $lang_help['str_Show'] ?>'){this.parentNode.getElementsByTagName('div')[0].style.display = 'block';this.innerHTML='<?php echo $lang_help['str_Hide'] ?>';} else {this.parentNode.getElementsByTagName('div')[0].style.display = 'none';this.innerHTML='<?php echo $lang_help['str_Show'] ?>';}"><?php echo $lang_help['str_Show'] ?></span><div style="margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black; display: none;"><?php echo $lang_help['Spoiler'] ?></div></div></samp>
+				</div>
+			</div>
+			<?php
+		]]></hook>
 		
 		</hooks>
 </extension>

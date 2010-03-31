@@ -21,7 +21,9 @@ var L = {
 	h4:			'Heading 4',
 	h5:			'Heading 5',
 	h6:			'Heading 6',
-	hide:		'Hidden (members-only)',
+	hide:		'Hidden text',
+	hide_m:		'value post',
+	hide_gr:	'numder group',
 	italic:		'Italic',
 	justify:	'Justify',
 	left:		'Left',
@@ -51,5 +53,8 @@ var L = {
 	ul:			'Bulleted list',
 	underline:	'Underline',
 	white:		'White',
-	yellow:		'Yellow'
+	yellow:		'Yellow',
+	search: 'Find',
+	search_t1: 'Search text',
+	search_t2: 'text'
 }
