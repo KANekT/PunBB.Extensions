@@ -18,5 +18,7 @@ $lang_jqbb = array(
 	'str_Spoiler'	=>	'SPOILER',
 	'str_Hide'	=>	'Hide',
 	'str_Show'	=>	'Show',
-);
+	'video_uri'			=>	'http://my.video.com/xyz',
+	'video_display'		=>	'an embedded video player in your post.<br />You can use any video uri from the following services: youtube, dailymotion, vimeo, google video.',
+	);
 ?>

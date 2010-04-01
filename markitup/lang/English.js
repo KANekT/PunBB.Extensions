@@ -54,6 +54,8 @@ var L = {
 	underline:	'Underline',
 	white:		'White',
 	yellow:		'Yellow',
+	video: 'Video',
+	video_t: 'Url video',
 	search: 'Find',
 	search_t1: 'Search text',
 	search_t2: 'text'

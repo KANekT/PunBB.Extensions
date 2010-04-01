@@ -17,6 +17,13 @@
 [quote=][/quote]
 [code][/code]
 [hide][/hide]
+[search=][/search]
+[spoiler=][/spoiler]
+[video][/video]
 
 Смайлы
 :) :| :( :D :o ;) :/ :P :lol: :mad: :rolleyes: :cool:
+
+Тег spoiler 	author Dirk Drijkoningen aka DiD
+Тег size 		author Pepak
+Тег video 		author Neck

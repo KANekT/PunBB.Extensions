@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>markitup</id>
 	<title>markItUp! BB code</title>
-	<version>0.3.2</version>
+	<version>0.4.1</version>
 	<description>jQuery BBcode editor (markItUp! 1.1.6.1) based code - Trustmaster  (c) Cotonti Team </description>
 	<author>KANekT</author>
 	<minversion>1.3.4</minversion>
@@ -24,7 +24,7 @@
 
 	<hooks>
 		<hook id="hd_head"><![CDATA[
-if (((FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost']) || in_array(FORUM_PAGE, array('post', 'postedit'))) || $forum_user['pun_bbcode_enabled'])
+if ((FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost']) || $forum_user['pun_bbcode_enabled'])
 {
 
 	$forum_head['js_jq_bbcode1'] = '<script type="text/javascript" src="'.$ext_info['url'].'/js/jquery.markitup.js"></script>';
@@ -34,14 +34,33 @@ if (((FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost']) || in_array(FOR
 			$forum_head['js_jq_bbcode2'] = '<script type="text/javascript" src="'.$ext_info['url'].'/lang/English.js"></script>';
 	$forum_head['js_jq_bbcode3'] = '<script type="text/javascript" src="'.$ext_info['url'].'/js/set.js"></script>';
 	
-	$forum_head['style_jq_bbcode1'] = '<link rel="stylesheet" type="text/css" media="screen" href="'.$ext_info['url'].'/skins/markitup/style.css" />';
 	$forum_head['style_jq_bbcode2'] = '<link rel="stylesheet" type="text/css" media="screen" href="'.$ext_info['url'].'/style.css" />';
+}
+if (in_array(FORUM_PAGE, array('post', 'postedit')))
+{
 	$forum_head['js_jq_bbcode0'] = '<script language="javascript">
 $(document).ready(function()	{
-    $("textarea").markItUp(mySettings);
+    $("textarea#fld2").markItUp(full);
 });
 </script>';
 }
+else if (FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost'])
+{
+	$forum_head['js_jq_bbcode0'] = '<script language="javascript">
+$(document).ready(function()	{
+    $("textarea#fld1").markItUp(full);
+});
+</script>';
+}
+else if ($forum_user['pun_bbcode_enabled'])
+{
+	$forum_head['js_jq_bbcode0'] = '<script language="javascript">
+$(document).ready(function()	{
+    $("textarea#fld3").markItUp(mini);
+});
+</script>';
+}
+
 		]]></hook>
 
 		<hook id="co_common"><![CDATA[
@@ -90,6 +109,15 @@ $(document).ready(function()	{
 			$tags_block[] = 'search';
 			
 			$tags_block[]='spoiler';
+			
+			// add our tag to the list
+			$tags[] = 'video';
+			$tags_opened[] = 'video';
+			$tags_closed[] = 'video';
+			$tags_inline[] = 'video';
+			$tags_trim[] = 'video';
+			// we must allow url due to do_clickable
+			$tags_limit_bbcode['video'] = array('url');
 		
 			]]></hook>
 		<hook id="ps_preparse_bbcode_start"><![CDATA[
@@ -139,6 +167,10 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 			
 			$pattern[] = '#\[spoiler=(.*?)\](.*?)\[/spoiler\]#s';
 			$replace[] = '<div style="border: 1px dotted gray; padding: 4px; color: #4a566e;"> $1 <span style="background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;" onClick="if(this.innerHTML==\''. $lang_jqbb['str_Show'] .'\'){this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'block\';this.innerHTML=\''. $lang_jqbb['str_Hide'] .'\';} else {this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'none\';this.innerHTML=\''. $lang_jqbb['str_Show'] .'\';}">'. $lang_jqbb['str_Show'] .'</span><div style="margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black; display: none;">$2</div></div>';
+			
+			// add pattern to catch [video]blahblah[/video]
+			$pattern[] = '`\[video\]([^\[]+)\[/video\]`e';
+			$replace[] = 'handle_video_tag(\'$1\')';
 		
         ]]></hook>
 	<hook id="ps_parse_message_pre_split"><![CDATA[
@@ -268,6 +300,72 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 			}
 			$q_message = $text;	
 		]]></hook>
+		<hook id="ps_start"><![CDATA[
+
+// tag handling function
+function handle_video_tag($videoUri) {
+	global $forum_config;
+	$match = array();
+
+	// dirty trick to play arround do_clickable
+	preg_match('`href="([^"]+)"`', stripslashes($videoUri), $match);
+	if(!empty($match[1])) {
+		$videoUri = $match[1];
+	}
+
+	// the services list
+	$service = array(
+		'youtube' => array(
+			'match'=>'`watch\?v=([-_a-z0-9]+)`i',
+			'uri'=>'http://www.youtube.com/v/%s&amp;rel=0',
+			'width'=>425,
+			'height'=>344
+		),
+		'dailymotion' => array(
+			'match'=>'`video/([a-z0-9]+)_`i',
+			'uri'=>'http://www.dailymotion.com/swf/%s&amp;amp;related=0&amp;amp;canvas=medium',
+			'width'=>480,
+			'height'=>381
+		),
+		'vimeo' => array(
+			'match'=>'`/([0-9]+)`',
+			'uri'=>'http://www.vimeo.com/moogaloop.swf?clip_id=%s&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;fullscreen=1',
+			'width'=>400,
+			'height'=>302
+		),
+		'google' => array(
+			'match'=>'`\?docid=(-?[0-9]+)`',
+			'uri'=>'http://video.google.com/googleplayer.swf?docId=%s',
+			'width'=>425,
+			'height'=>364
+		)
+	);
+
+	// extract service's name and check for support
+	preg_match('`^http://(?:[^\.]*\.)?([^\.]*)\.[^/]*/`i', $videoUri, $match);
+	if(empty($match[1]) || !array_key_exists($match[1], $service)) {
+		return '<a href="'.$videoUri.'">[video (unkown provider)]</a>';
+	}
+	$s = $service[$match[1]];
+
+	// extract videoId
+	preg_match($s['match'], $videoUri, $match);
+	if(empty($match[1])) {
+		return '<a href="'.$videoUri.'">[video (cant extract ID)]</a>';
+	}
+	$playerUri = sprintf($s['uri'], $match[1]);
+
+	// display flash player
+	return
+		'<object type="application/x-shockwave-flash" data="'.$playerUri.'" width="'.$s['width'].'" height="'.$s['height'].'">'.
+			'<param name="movie" value="'.$playerUri.'" />'.
+			'<param name="wmode" value="transparent" />'.
+			'<param name="allowfullscreen" value="true" />'.
+			'<p><a href="'.$videoUri.'">[video (flash player not installed)]</a></p>'.
+		'</object>';
+}
+
+		]]></hook>
 		<hook id="he_new_bbcode_text_style"><![CDATA[
 		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
 						require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
@@ -299,6 +397,17 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 				</div>
 			</div>
 			<?php
+$lang_help = array_merge($lang_help, $lang_jqbb);
+?>
+			<div class="ct-box help-box">
+				<h3 class="hn"><span></span></h3>
+<div class="entry-content">
+	<code>[video]<?php echo $lang_help['video_uri'] ?>[/video]</code><span><?php echo $lang_help['produces'] ?></span>
+	<?php echo $lang_help['video_display'] ?>
+</div>
+				</div>
+			</div>
+<?php
 		]]></hook>
 		
 		</hooks>

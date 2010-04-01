@@ -2,7 +2,7 @@
  * MarkItUp! extended settings for PunBB
  */
 
-var mySettings = {
+var full = {
 	previewParserVar: 'text',
 	previewPosition: 'before',
 	previewAutoRefresh: false,
@@ -65,6 +65,7 @@ var mySettings = {
 		{name: L.picture, className: 'mPicture', key:'P', replaceWith:'[img][![' + L.picture_url + ':!:http://]!][/img]'},
 		{name: L.link, className: 'mLink', key:'L', openWith:'[url=[![URL:!:http://]!]]', closeWith:'[/url]', placeHolder: L.link_text},
 		{name: L.email, className: 'mEmail', openWith:'[email=[![' + L.email_addr + ':!:john@doe.com]!]]', closeWith:'[/email]', placeHolder: L.email_text},
+		{name: L.video, className: 'mtable', openWith:'[video][![' + L.video_t + ']!]]', closeWith:'[/video]'},
 		{separator:'---------------' },
 		{name: L.ul, className: 'mUl', openWith:'[list]\n', closeWith:'\n[/list]'},
 		{name: L.li, className: 'mLi', openWith:'[*]', key: 'M', closeWith: '[/*]'},
@@ -97,4 +98,36 @@ var mySettings = {
 		{separator:'---------------' },
 		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
 	]
+}
+// Mini editor
+var mini = {
+		previewParserVar: 'text',
+		previewPosition: 'before',
+		previewAutoRefresh: false,
+		onEnter: {keepDefault: false, replaceWith: '\n'},
+		markupSet: [
+		{name: L.bold, className:'mBold', key:'B', openWith:'[b]', closeWith:'[/b]'},
+		{name: L.italic, className:'mItalic', key:'I', openWith:'[i]', closeWith:'[/i]'},
+		{name: L.link, className: 'mLink', key:'L', openWith:'[url=[![URL:!:http://]!]]', closeWith:'[/url]', placeHolder: L.link_text},
+		{name: L.picture, className: 'mPicture', key:'P', replaceWith:'[img][![' + L.picture_url + ':!:http://]!][/img]'},
+		{name: L.quote, className: 'mQuote', openWith:'[quote=[![' + L.quote_from + ']!]]', closeWith:'[/quote]'},
+		{name: L.smilies, className: "mSmilies", dropMenu:  [
+			{name: L.smilies,	openWith:':)',	className:"col1" },
+			{name: L.smilies,	openWith:':|', className:"col2" },
+			{name: L.smilies, 	openWith:':(', className:"col3" },
+			{name: L.smilies, 	openWith:':D', className:"col4" },
+			{name: L.smilies, 	openWith:':o', className:"col5" },
+			{name: L.smilies,	openWith:';)', className:"col6" },
+
+			{name: L.smilies, 	openWith:':/', className:"col7" },
+			{name: L.smilies, 	openWith:':P',	className:"col8" },
+			{name: L.smilies,	openWith:':lol:',	className:"col9" },
+
+			{name: L.smilies, 	openWith:':mad:', className:"col10" },
+			{name: L.smilies, 	openWith:':rolleyes:',	className:"col11" },
+			{name: L.smilies,	openWith:':cool:',	className:"col12" }
+		] },
+		{separator:'---------------' },
+		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
+		]
 }

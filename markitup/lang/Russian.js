@@ -54,6 +54,8 @@
 	underline:	'Подчеркнутый',
 	white:		'Белый',
 	yellow:		'Желтый',
+	video: 'Видео',
+	video_t: 'Url на видео',
 	search:		'Поиск',
 	search_t1:	'Искомый текст',
 	search_t2:	'Текст'

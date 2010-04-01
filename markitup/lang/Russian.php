@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*
  * lang file for hide
  *
@@ -16,7 +16,9 @@ $lang_jqbb = array(
 	'List info'	=>	'BBCode to hide or show posts or parts of posts.',
 	'Spoiler'	=>	'This text is hidden until clicked.',
 	'str_Spoiler'	=>	'SPOILER',
-	'str_Hide'	=>	'Hide',
-	'str_Show'	=>	'Show',
+	'str_Hide'	=>	'Скрыть',
+	'str_Show'	=>	'Показать',
+	'video_uri'			=>	'http://my.video.com/xyz',
+	'video_display'		=>	'встроенный видео-проигрыватель в сообщении. <br /> Вы можете использовать любой видео URI из: youtube, dailymotion, vimeo, google video.',
 );
 ?>
