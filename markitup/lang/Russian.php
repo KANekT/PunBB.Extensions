@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
  * lang file for hide
  *
@@ -7,18 +7,18 @@
 */
 
 $lang_jqbb = array(
-	'Hidden text guest'		=>    'Вы должны зайти под %s, чтобы увидеть скрытый текст.',
-	'login'                 =>	  'своим именем',
-	'Hidden text'           =>    'Скрытый текст',
-	'Hidden count begin'    =>    'Количество Ваших сообщений должно быть равным',
-	'Hidden count end'      =>    'или более, чтобы увидеть скрытый текст.',
-	'Hidden text group'		=>    'Скрытый текст для группы ',
+	'Hidden text guest'			=>	'Вы должны зайти под %s, чтобы увидеть скрытый текст.',
+	'login'                     =>  'своим именем',
+	'Hidden text'				=>	'Скрытый текст',
+	'Hidden count text begin'	=>	'Количество Ваших сообщений должно быть равным',
+	'Hidden count text end'		=>	'или более, чтобы увидеть скрытый текст.',
+	'Hidden text group'			=>  'Скрытый текст для группы ',
 	'List info'	=>	'BBCode to hide or show posts or parts of posts.',
-	'Spoiler'	=>	'This text is hidden until clicked.',
+	'Spoiler'	=>	'Нажмите на кнопку чтобы увидеть скрытый текст.',
 	'str_Spoiler'	=>	'SPOILER',
 	'str_Hide'	=>	'Скрыть',
 	'str_Show'	=>	'Показать',
 	'video_uri'			=>	'http://my.video.com/xyz',
 	'video_display'		=>	'встроенный видео-проигрыватель в сообщении. <br /> Вы можете использовать любой видео URI из: youtube, dailymotion, vimeo, google video.',
-);
+	);
 ?>

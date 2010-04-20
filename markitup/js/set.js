@@ -13,19 +13,19 @@ var full = {
 		{name: L.underline, className: 'mUnderline', key:'U', openWith:'[u]', closeWith:'[/u]'},
 		{name: L.strike, className: 'mStrike', key:'S', openWith:'[s]', closeWith: '[/s]'},
 		{separator:'---------------' },
-		{name: L.align, className: 'mAlign',
-		dropMenu: [
+		{name: L.align, className: 'mAlign', dropMenu:[
 			{name: L.center, className: 'mCenter', openWith: '[center]', closeWith: '[/center]'},
 			{name: L.justify, className: 'mJustify', openWith: '[justify]', closeWith: '[/justify]'},
 			{name: L.left, className: 'mLeft', openWith: '[left]', closeWith: '[/left]'},
 			{name: L.right, className: 'mRight', openWith: '[right]', closeWith: '[/right]'}
-		]},
-		{name: L.font, className: 'mFonts', key:'F',
-		dropMenu :[
+			]
+		},
+		{name: L.font, className: 'mFonts', key:'F', dropMenu:[
 			{name: L.size, className: 'mFonts', openWith:'[size=[![' + L.size_pt +']!]]', closeWith:'[/size]' },
 			{name: L.h1, className: 'mH1', openWith:'[h]', closeWith:'[/h]' }
-		]},
-		{name: L.color, className:'palette', dropMenu: [
+			]
+		},
+		{name: L.color, className:'palette', dropMenu:[
 			{name: L.yellow,	openWith:'[color=#FCE94F]', closeWith: '[/color]',	className:"col1-1" },
 			{name: L.yellow,	openWith:'[color=#EDD400]', closeWith: '[/color]', 	className:"col1-2" },
 			{name: L.yellow, 	openWith:'[color=#C4A000]', closeWith: '[/color]', 	className:"col1-3" },
@@ -60,26 +60,29 @@ var full = {
 			{name: L.gray, 		openWith:'[color=#888A85]',  closeWith: '[/color]',	className:"col9-1" },
 			{name: L.gray, 		openWith:'[color=#555753]',  closeWith: '[/color]',	className:"col9-2" },
 			{name: L.gray,		openWith:'[color=#000000]',  closeWith: '[/color]',	className:"col9-3" }
-		]},
+			]
+		},
 		{separator:'---------------' },
 		{name: L.picture, className: 'mPicture', key:'P', replaceWith:'[img][![' + L.picture_url + ':!:http://]!][/img]'},
 		{name: L.link, className: 'mLink', key:'L', openWith:'[url=[![URL:!:http://]!]]', closeWith:'[/url]', placeHolder: L.link_text},
 		{name: L.email, className: 'mEmail', openWith:'[email=[![' + L.email_addr + ':!:john@doe.com]!]]', closeWith:'[/email]', placeHolder: L.email_text},
-		{name: L.video, className: 'mtable', openWith:'[video][![' + L.video_t + ']!]]', closeWith:'[/video]'},
+		{name: L.video, className: 'mVideo', openWith:'[video][![' + L.video_t + ']!]', closeWith:'[/video]'},
 		{separator:'---------------' },
 		{name: L.ul, className: 'mUl', openWith:'[list]\n', closeWith:'\n[/list]'},
+		{name: L.ol, className: 'mOl', openWith:'[list=1]\n', closeWith:'\n[/list]'},
 		{name: L.li, className: 'mLi', openWith:'[*]', key: 'M', closeWith: '[/*]'},
 		{separator:'---------------' },
 		{name: L.quote, className:'mQuote', openWith:'[quote=]', closeWith:'[/quote]'},
 		{name: L.code, className: 'mCode', openWith:'[code]', closeWith:'[/code]'},
-		{name: L.hide, className:'mHide', dropMenu: [
+		{name: L.hide, className:'mHide', dropMenu:[
 			{name: L.hide, className: 'mHide', openWith:'[hide]', closeWith:'[/hide]'},
 			{name: L.hide_m, className: 'mHide', openWith:'[hide=[![' + L.hide_m + ']!]]', closeWith:'[/hide]'},
 			{name: L.hide_gr, className: 'mHide', openWith:'[hide=gr[![' + L.hide_gr + ']!]]', closeWith:'[/hide]'},
-		]},
-		{name: L.search, className: 'mPre', openWith:'[search=[![' + L.search_t1 + ']!]][![' + L.search_t2 + ']!]', closeWith:'[/search]'},
+			]
+		},
+		{name: L.search, className: 'mFind', openWith:'[search=[![' + L.search_t1 + ']!]][![' + L.search_t2 + ']!]', closeWith:'[/search]'},
 		{name: L.spoiler, className: 'mSpoiler', openWith:'[spoiler][![' + L.spoiler_text + ']!]', closeWith:'[/spoiler]'},
-		{name: L.smilies, className: "mSmilies", dropMenu:  [
+		{name: L.smilies, className: "mSmilies", dropMenu:[
 			{name: L.smilies,	openWith:':)',	className:"col1" },
 			{name: L.smilies,	openWith:':|', className:"col2" },
 			{name: L.smilies, 	openWith:':(', className:"col3" },
@@ -94,11 +97,13 @@ var full = {
 			{name: L.smilies, 	openWith:':mad:', className:"col10" },
 			{name: L.smilies, 	openWith:':rolleyes:',	className:"col11" },
 			{name: L.smilies,	openWith:':cool:',	className:"col12" }
-		] },
+			]
+		},
 		{separator:'---------------' },
 		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
 	]
 }
+
 // Mini editor
 var mini = {
 		previewParserVar: 'text',
