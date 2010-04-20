@@ -20,11 +20,8 @@ var full = {
 			{name: L.right, className: 'mRight', openWith: '[right]', closeWith: '[/right]'}
 			]
 		},
-		{name: L.font, className: 'mFonts', key:'F', dropMenu:[
-			{name: L.size, className: 'mFonts', openWith:'[size=[![' + L.size_pt +']!]]', closeWith:'[/size]' },
-			{name: L.h1, className: 'mH1', openWith:'[h]', closeWith:'[/h]' }
-			]
-		},
+		{name: L.size, className: 'mFonts', openWith:'[size=[![' + L.size_pt +']!]]', closeWith:'[/size]' },
+		{name: L.h, className: 'mH', openWith:'[h]', closeWith:'[/h]' },
 		{name: L.color, className:'palette', dropMenu:[
 			{name: L.yellow,	openWith:'[color=#FCE94F]', closeWith: '[/color]',	className:"col1-1" },
 			{name: L.yellow,	openWith:'[color=#EDD400]', closeWith: '[/color]', 	className:"col1-2" },
@@ -77,26 +74,26 @@ var full = {
 		{name: L.hide, className:'mHide', dropMenu:[
 			{name: L.hide, className: 'mHide', openWith:'[hide]', closeWith:'[/hide]'},
 			{name: L.hide_m, className: 'mHide', openWith:'[hide=[![' + L.hide_m + ']!]]', closeWith:'[/hide]'},
-			{name: L.hide_gr, className: 'mHide', openWith:'[hide=gr[![' + L.hide_gr + ']!]]', closeWith:'[/hide]'},
+			{name: L.hide_gr, className: 'mHide', openWith:'[hide=gr[![' + L.hide_gr + ']!]]', closeWith:'[/hide]'}
 			]
 		},
 		{name: L.search, className: 'mFind', openWith:'[search=[![' + L.search_t1 + ']!]][![' + L.search_t2 + ']!]', closeWith:'[/search]'},
 		{name: L.spoiler, className: 'mSpoiler', openWith:'[spoiler][![' + L.spoiler_text + ']!]', closeWith:'[/spoiler]'},
 		{name: L.smilies, className: "mSmilies", dropMenu:[
-			{name: L.smilies,	openWith:':)',	className:"col1" },
-			{name: L.smilies,	openWith:':|', className:"col2" },
-			{name: L.smilies, 	openWith:':(', className:"col3" },
-			{name: L.smilies, 	openWith:':D', className:"col4" },
-			{name: L.smilies, 	openWith:':o', className:"col5" },
-			{name: L.smilies,	openWith:';)', className:"col6" },
+			{name: L.no,	openWith:':)',	className:"col1" },
+			{name: L.no,	openWith:':|', className:"col2" },
+			{name: L.no, 	openWith:':(', className:"col3" },
+			{name: L.no, 	openWith:':D', className:"col4" },
+			{name: L.no, 	openWith:':o', className:"col5" },
+			{name: L.no,	openWith:';)', className:"col6" },
 
-			{name: L.smilies, 	openWith:':/', className:"col7" },
-			{name: L.smilies, 	openWith:':P',	className:"col8" },
-			{name: L.smilies,	openWith:':lol:',	className:"col9" },
+			{name: L.no, 	openWith:':/', className:"col7" },
+			{name: L.no, 	openWith:':P',	className:"col8" },
+			{name: L.no,	openWith:':lol:',	className:"col9" },
 
-			{name: L.smilies, 	openWith:':mad:', className:"col10" },
-			{name: L.smilies, 	openWith:':rolleyes:',	className:"col11" },
-			{name: L.smilies,	openWith:':cool:',	className:"col12" }
+			{name: L.no, 	openWith:':mad:', className:"col10" },
+			{name: L.no, 	openWith:':rolleyes:',	className:"col11" },
+			{name: L.no,	openWith:':cool:',	className:"col12" }
 			]
 		},
 		{separator:'---------------' },
@@ -117,20 +114,20 @@ var mini = {
 		{name: L.picture, className: 'mPicture', key:'P', replaceWith:'[img][![' + L.picture_url + ':!:http://]!][/img]'},
 		{name: L.quote, className: 'mQuote', openWith:'[quote=[![' + L.quote_from + ']!]]', closeWith:'[/quote]'},
 		{name: L.smilies, className: "mSmilies", dropMenu:  [
-			{name: L.smilies,	openWith:':)',	className:"col1" },
-			{name: L.smilies,	openWith:':|', className:"col2" },
-			{name: L.smilies, 	openWith:':(', className:"col3" },
-			{name: L.smilies, 	openWith:':D', className:"col4" },
-			{name: L.smilies, 	openWith:':o', className:"col5" },
-			{name: L.smilies,	openWith:';)', className:"col6" },
+			{name: L.no,	openWith:':)',	className:"col1" },
+			{name: L.no,	openWith:':|', className:"col2" },
+			{name: L.no, 	openWith:':(', className:"col3" },
+			{name: L.no, 	openWith:':D', className:"col4" },
+			{name: L.no, 	openWith:':o', className:"col5" },
+			{name: L.no,	openWith:';)', className:"col6" },
 
-			{name: L.smilies, 	openWith:':/', className:"col7" },
-			{name: L.smilies, 	openWith:':P',	className:"col8" },
-			{name: L.smilies,	openWith:':lol:',	className:"col9" },
+			{name: L.no, 	openWith:':/', className:"col7" },
+			{name: L.no, 	openWith:':P',	className:"col8" },
+			{name: L.no,	openWith:':lol:',	className:"col9" },
 
-			{name: L.smilies, 	openWith:':mad:', className:"col10" },
-			{name: L.smilies, 	openWith:':rolleyes:',	className:"col11" },
-			{name: L.smilies,	openWith:':cool:',	className:"col12" }
+			{name: L.no, 	openWith:':mad:', className:"col10" },
+			{name: L.no, 	openWith:':rolleyes:',	className:"col11" },
+			{name: L.no,	openWith:':cool:',	className:"col12" }
 		] },
 		{separator:'---------------' },
 		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
