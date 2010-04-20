@@ -34,7 +34,7 @@ var L = {
 	quote_from:	'Whom this quote is from',
 	red:		'Red',
 	right:		'Right',
-	no:			'',
+	no:		'',
 	size:		'Font size',
 	size_pt:	'Font size (1-7)',
 	smilies:	'Smilies',
