@@ -402,7 +402,7 @@ foreach($combos as $k=>$v) $smilies[$k] = $v;
 		]]></hook>
 		<hook id="ps_do_smilies_end">
 			<![CDATA[
-$text = str_replace('/img/smilies/', $ext_info['path'].'/images/smilies/', $text);
+$text = str_replace($base_url.'/img/smilies/', $ext_info['url'].'/images/smilies/', $text);
 $text = str_replace('width="15" height="15"', '', $text);
 			]]>
 		</hook>			
