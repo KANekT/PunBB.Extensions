@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>markitup</id>
 	<title>markItUp! BB code</title>
-	<version>0.4.4</version>
+	<version>0.5.0</version>
 	<description>jQuery BBcode editor (markItUp! 1.1.7) based code - Trustmaster  (c) Cotonti Team </description>
 	<author>KANekT</author>
 	<minversion>1.3.4</minversion>
@@ -31,7 +31,9 @@ if ((FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost']) || in_array(FORU
 			$forum_head['js_jq_bbcode2'] = '<script type="text/javascript" src="'.$ext_info['url'].'/lang/'.$forum_user['language'].'.js"></script>';
 				else
 			$forum_head['js_jq_bbcode2'] = '<script type="text/javascript" src="'.$ext_info['url'].'/lang/English.js"></script>';
-	$forum_head['js_jq_bbcode3'] = '<script type="text/javascript" src="'.$ext_info['url'].'/js/set.js"></script>';
+	$forum_head['js_jq_bbcode3'] = '<script type="text/javascript" src="'.$ext_info['url'].'/images/smilies/set.js"></script>';
+	$forum_head['js_jq_bbcode4'] = '<script type="text/javascript" src="'.$ext_info['url'].'/js/jqModal.js"></script>';
+	$forum_head['js_jq_bbcode5'] = '<script type="text/javascript" src="'.$ext_info['url'].'/js/set.js"></script>';
 
 	$forum_head['style_jq_bbcode2'] = '<link rel="stylesheet" type="text/css" media="screen" href="'.$ext_info['url'].'/style.css" />';
 }
@@ -47,8 +49,29 @@ $(document).ready(function()	{
 
 if (FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost'] || in_array(FORUM_PAGE, array('profile-signature', 'postedit')))
 {
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+
 	$forum_head['js_jq_bbcode0'] = '<script language="javascript">
 $(document).ready(function()	{
+    $("div.spoiler_m").hide();
+	$("<a class=\"hide_s\">'.$lang_jqbb['str_Show'].'</a> ").insertBefore(".spoiler_m");
+	$("<a class=\"view_s\">'.$lang_jqbb['str_Hide'].'</a> ").insertBefore(".spoiler_m");
+    $("a.view_s").hide();
+	
+
+    $("a.hide_s").click(function(){
+        $(this).parents("div").children("div.spoiler_m").fadeIn(0);
+        $(this).parents("div").children("a.hide_s").hide();
+        $(this).parents("div").children("a.view_s").show();
+    });
+    $("a.view_s").click(function(){
+        $(this).parents("div").children("div.spoiler_m").hide();
+        $(this).parents("div").children("a.view_s").hide();
+        $(this).parents("div").children("a.hide_s").show();
+    });	
     $("textarea#fld1").markItUp(full);
 });
 </script>';
@@ -163,10 +186,10 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 		
 		//spoiler
 			$pattern[] = '#\[spoiler\](.*?)\[/spoiler\]#s';
-			$replace[] = '<div style="border: 1px dotted gray; padding: 4px; color: #4a566e;"> '. $lang_jqbb['str_Spoiler'].' <span style="background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;" onClick="if(this.innerHTML==\''. $lang_jqbb['str_Show'] .'\'){this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'block\';this.innerHTML=\''. $lang_jqbb['str_Hide'] .'\';} else {this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'none\';this.innerHTML=\''. $lang_jqbb['str_Show'] .'\';}">'. $lang_jqbb['str_Show'] .'</span><div style="margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black; display: none; word-wrap: break-word;">$1</div></div>';
+			$replace[] = '<div class="spoiler_h">'. $lang_jqbb['str_Spoiler'].' <div class="spoiler_m">$1</div></div>';
 			
 			$pattern[] = '#\[spoiler=(.*?)\](.*?)\[/spoiler\]#s';
-			$replace[] = '<div style="border: 1px dotted gray; padding: 4px; color: #4a566e;"> $1 <span style="background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;" onClick="if(this.innerHTML==\''. $lang_jqbb['str_Show'] .'\'){this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'block\';this.innerHTML=\''. $lang_jqbb['str_Hide'] .'\';} else {this.parentNode.getElementsByTagName(\'div\')[0].style.display = \'none\';this.innerHTML=\''. $lang_jqbb['str_Show'] .'\';}">'. $lang_jqbb['str_Show'] .'</span><div style="margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black; display: none;">$2</div></div>';
+			$replace[] = '<div class="spoiler_h">$1 <div class="spoiler_m">$2</div></div>';
 			
 			// add pattern to catch [video]blahblah[/video]
 			$pattern[] = '`\[video\]([^\[]+)\[/video\]`e';
@@ -301,7 +324,6 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 			$q_message = $text;	
 		]]></hook>
 		<hook id="ps_start"><![CDATA[
-
 // tag handling function
 function handle_video_tag($videoUri) {
 	global $forum_config;
@@ -370,8 +392,20 @@ function handle_video_tag($videoUri) {
 			'<p><a href="'.$videoUri.'">[video (flash player not installed)]</a></p>'.
 		'</object>';
 }
+//Include our smiley combos
+require $ext_info['path'].'/smile.php';
+
+//Replace the $smilies array with our new one
+$smilies = array();
+foreach($combos as $k=>$v) $smilies[$k] = $v;
 
 		]]></hook>
+		<hook id="ps_do_smilies_end">
+			<![CDATA[
+$text = str_replace('/img/smilies/', $ext_info['path'].'/images/smilies/', $text);
+$text = str_replace('width="15" height="15"', '', $text);
+			]]>
+		</hook>			
 		<hook id="he_new_bbcode_text_style"><![CDATA[
 		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
 						require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';

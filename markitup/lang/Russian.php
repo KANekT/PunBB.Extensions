@@ -14,7 +14,6 @@ $lang_jqbb = array(
 	'Hidden count text end'		=>	'или более, чтобы увидеть скрытый текст.',
 	'Hidden text group'			=>  'Скрытый текст для группы ',
 	'List info'	=>	'BBCode to hide or show posts or parts of posts.',
-	'Spoiler'	=>	'Нажмите на кнопку чтобы увидеть скрытый текст.',
 	'str_Spoiler'	=>	'SPOILER',
 	'str_Hide'	=>	'Скрыть',
 	'str_Show'	=>	'Показать',

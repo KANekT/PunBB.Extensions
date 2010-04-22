@@ -218,56 +218,6 @@
 .markItUp .mSmilies a	{
 	background-image:url(images/emoticon.png);
 }
-.markItUp .mSmilies ul {
-    width: 70px;
-    padding: 1px;
-}
-
-.markItUp .mSmilies li {
-    border: 1px solid white;
-    width: 15px;
-    height: 15px;
-    overflow: hidden;
-    padding: 0px;
-    margin: 0px;
-    float: left;
-}
-.markItUp .mSmilies .col1 a {
-	background: #FCE94F url(../../img/smilies/smile.png);
-}
-.markItUp .mSmilies .col2 a {
-	background: #FCE94F url(../../img/smilies/neutral.png);
-}
-.markItUp .mSmilies .col3 a {
-	background: #FCE94F url(../../img/smilies/sad.png);
-}
-.markItUp .mSmilies .col4 a {
-	background: #FCE94F url(../../img/smilies/big_smile.png);
-}
-.markItUp .mSmilies .col5 a {
-	background: #FCE94F url(../../img/smilies/yikes.png);
-}
-.markItUp .mSmilies .col6 a {
-	background: #FCE94F url(../../img/smilies/wink.png);
-}
-.markItUp .mSmilies .col7 a {
-	background: #FCE94F url(../../img/smilies/hmm.png);
-}
-.markItUp .mSmilies .col8 a {
-	background: #FCE94F url(../../img/smilies/tongue.png);
-}
-.markItUp .mSmilies .col9 a {
-	background: #FCE94F url(../../img/smilies/lol.png);
-}
-.markItUp .mSmilies .col10 a {
-	background: #FCE94F url(../../img/smilies/mad.png);
-}
-.markItUp .mSmilies .col11 a {
-	background: #FCE94F url(../../img/smilies/roll.png);
-}
-.markItUp .mSmilies .col12 a {
-	background: #FCE94F url(../../img/smilies/cool.png);
-}
 
 .markItUp .mClean a {
 	background-image:url(images/clean.png);
@@ -410,3 +360,65 @@
 	color:#FFF;
 	background-color:#3C769D;
 }
+/**
+ * jqModal settings for smilies box
+ */
+
+/* The Window's CSS z-index value is respected (takes priority). If none is supplied,
+	the Window's z-index value will be set to 3000 by default (via jqModal.js). */
+
+.jqmWindow {
+    display: none;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+	
+	overflow: auto;
+
+    background-color: #EEE;
+    color: #333;
+    border: 3px solid white;
+    padding: 7px;
+	text-align: center;
+}
+
+.jqmWindow h4 {
+	border-bottom: 1px dotted #b0c4de;
+	font-size: 14px;
+	margin: 0 0 7px 0;
+	padding: 0 0 5px 0;
+	text-align: left;
+	color: #3E606F;
+}
+
+.jqmWindow p{
+	text-align: right;
+	margin: 15px 0 0 0;
+	font-size: x-small;
+	text-transform: lowercase;
+}
+
+.jqmOverlay { background-color: #000; }
+
+/* Background iframe styling for IE6. Prevents ActiveX bleed-through (<select> form elements, etc.) */
+* iframe.jqm {
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:-1;
+	width: expression(this.parentNode.offsetWidth+'px');
+	height: expression(this.parentNode.offsetHeight+'px');
+}
+
+/* Fixed posistioning emulation for IE6
+     Star selector used to hide definition from browsers other than IE6
+     For valid CSS, use a conditional include instead */
+* html .jqmWindow {
+     position: absolute;
+     top: expression((document.documentElement.scrollTop || document.body.scrollTop) + Math.round(17 * (document.documentElement.offsetHeight || document.body.clientHeight) / 100) + 'px');
+}
+
+.spoiler_m{margin-top: 4px; border-top: 1px dotted gray; font: 90%; color: black;}
+.spoiler_h{border: 1px dotted gray; padding: 4px; color: #4a566e;}
+a.hide_s, a.view_s {background-color: #4a566e; border-left: 1px solid #79859d; border-top: 1px solid #79859d; border-bottom: 1px solid black; border-right: 1px solid black; color: white; padding: 2px; font-size: 0.8em; cursor: pointer;}

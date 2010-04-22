@@ -79,23 +79,7 @@ var full = {
 		},
 		{name: L.search, className: 'mFind', openWith:'[search=[![' + L.search_t1 + ']!]][![' + L.search_t2 + ']!]', closeWith:'[/search]'},
 		{name: L.spoiler, className: 'mSpoiler', openWith:'[spoiler][![' + L.spoiler_text + ']!]', closeWith:'[/spoiler]'},
-		{name: L.smilies, className: "mSmilies", dropMenu:[
-			{name: L.no,	openWith:':)',	className:"col1" },
-			{name: L.no,	openWith:':|', className:"col2" },
-			{name: L.no, 	openWith:':(', className:"col3" },
-			{name: L.no, 	openWith:':D', className:"col4" },
-			{name: L.no, 	openWith:':o', className:"col5" },
-			{name: L.no,	openWith:';)', className:"col6" },
-
-			{name: L.no, 	openWith:':/', className:"col7" },
-			{name: L.no, 	openWith:':P',	className:"col8" },
-			{name: L.no,	openWith:':lol:',	className:"col9" },
-
-			{name: L.no, 	openWith:':mad:', className:"col10" },
-			{name: L.no, 	openWith:':rolleyes:',	className:"col11" },
-			{name: L.no,	openWith:':cool:',	className:"col12" }
-			]
-		},
+		{name: L.smilies, className: "mSmilies", replaceWith: function(markitup) { showSmilies(markitup) } },
 		{separator:'---------------' },
 		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
 	]
@@ -113,23 +97,43 @@ var mini = {
 		{name: L.link, className: 'mLink', key:'L', openWith:'[url=[![URL:!:http://]!]]', closeWith:'[/url]', placeHolder: L.link_text},
 		{name: L.picture, className: 'mPicture', key:'P', replaceWith:'[img][![' + L.picture_url + ':!:http://]!][/img]'},
 		{name: L.quote, className: 'mQuote', openWith:'[quote=[![' + L.quote_from + ']!]]', closeWith:'[/quote]'},
-		{name: L.smilies, className: "mSmilies", dropMenu:  [
-			{name: L.no,	openWith:':)',	className:"col1" },
-			{name: L.no,	openWith:':|', className:"col2" },
-			{name: L.no, 	openWith:':(', className:"col3" },
-			{name: L.no, 	openWith:':D', className:"col4" },
-			{name: L.no, 	openWith:':o', className:"col5" },
-			{name: L.no,	openWith:';)', className:"col6" },
-
-			{name: L.no, 	openWith:':/', className:"col7" },
-			{name: L.no, 	openWith:':P',	className:"col8" },
-			{name: L.no,	openWith:':lol:',	className:"col9" },
-
-			{name: L.no, 	openWith:':mad:', className:"col10" },
-			{name: L.no, 	openWith:':rolleyes:',	className:"col11" },
-			{name: L.no,	openWith:':cool:',	className:"col12" }
-		] },
+		{name: L.smilies, className: "mSmilies", replaceWith: function(markitup) { showSmilies(markitup) } },
 		{separator:'---------------' },
 		{name: L.clean, className:"mClean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } }
 		]
+}
+// Renders and displays smilies dialog
+// Using jqModal, see http://dev.iceburg.net/jquery/jqModal/
+function showSmilies(markitup) {
+	var perRow = smileBox.perRow;
+	if($('#smilies').length != 1) {
+		var smileHtml = '<table class="cells" cellpadding="0">';
+		var code;
+		for(var i = 0; i < smileSet.length; i++) {
+			if(i % perRow == 0) {
+				if(i != 0) smileHtml += '</tr>';
+				smileHtml += '<tr>';
+			}
+			code = smileSet[i].code;
+			code = code.replace(/</g, '&lt;');
+			code = code.replace(/>/g, '&gt;');
+			code = code.replace('/"/g', '&quot;');
+			smileHtml += '<td><a class="smlink" border="0" href="#" name="'+code+'" title="'+smileSet[i].lang+'"><img src="./extensions/markitup/images/smilies/'+smileSet[i].file+'" alt="'+code+'" /></a></td>';
+		}
+		if(i % perRow > 0) {
+			for(var j = i % perRow; j < perRow; j++) {
+				smileHtml += '<td>&nbsp;</td>';
+			}
+		}
+		smileHtml += '</tr></table>';
+		var style = 'margin-left:-'+(smileBox.width/2)+'px;margin-top:-'+(smileBox.height/2)+'px;width:'+smileBox.width+'px;height:'+smileBox.height+'px';
+		$('body').append('<div id="smilies" class="jqmWindow" style="' + style + '"><h4>' + L.smilies + '</h4>' + smileHtml + '<p><a href="#" class="jqmClose">' + L.close + '</a></p></div>');
+		$('#smilies a.smlink').click(function() {
+			emoticon = $(this).attr("name");
+			$.markItUp( { replaceWith: ' ' + emoticon + ' ' } );
+			return false;
+		});
+		$('#smilies').jqm();
+	}
+	$('#smilies').jqmShow();
 }

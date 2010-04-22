@@ -14,7 +14,6 @@ $lang_jqbb = array(
 	'Hidden count text end'		=>	'messages or more to view hidden text.',
 	'Hidden text group'			=>  'Hidden text for group ',
 	'List info'	=>	'BBCode to hide or show posts or parts of posts.',
-	'Spoiler'	=>	'This text is hidden until clicked.',
 	'str_Spoiler'	=>	'SPOILER',
 	'str_Hide'	=>	'Hide',
 	'str_Show'	=>	'Show',
