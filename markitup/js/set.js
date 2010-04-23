@@ -118,7 +118,7 @@ function showSmilies(markitup) {
 			code = code.replace(/</g, '&lt;');
 			code = code.replace(/>/g, '&gt;');
 			code = code.replace('/"/g', '&quot;');
-			smileHtml += '<td><a class="smlink" border="0" href="#" name="'+code+'" title="'+smileSet[i].lang+'"><img src="./extensions/markitup/images/smilies/'+smileSet[i].file+'" alt="'+code+'" /></a></td>';
+			smileHtml += '<td><a class="smlink" href="#" name="'+code+'" title="'+smileSet[i].lang+'"><img src="./extensions/markitup/images/smilies/'+smileSet[i].file+'" alt="'+code+'" border="0" /></a></td>';
 		}
 		if(i % perRow > 0) {
 			for(var j = i % perRow; j < perRow; j++) {
