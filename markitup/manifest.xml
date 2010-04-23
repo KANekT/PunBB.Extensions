@@ -257,7 +257,7 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 					for($i=0;$i<$occurances;$i++) 
 					{ 
 						preg_match("#\[hide=gr(.+?)\].+?\[/hide\]#i", $temp[0][$i],$hide_group);
-						if($forum_user['g_id'] == $hide_group[1] || $forum_page['is_admmod'])
+						if($forum_user['g_id'] == $hide_group[1] || $forum_user['is_admmod'])
 						{
 							$text_hide = preg_replace('#\[hide=gr([0-9]*)](.*?)\[/hide\]#s', '<div class="quotebox"><cite>'.$lang_jqbb['Hidden text group'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div>', $temp[0][$i]);
 						}
@@ -288,7 +288,7 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 					$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', $lang_jqbb['Hidden text'], $text);
 					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', $lang_jqbb['Hidden text'], $text);
 				}
-				else if ($forum_page['is_admmod'])
+				else if ($forum_user['is_admmod'])
 				{
 				}
 				else 
@@ -316,7 +316,7 @@ $text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~
 					for($i=0;$i<$occurances;$i++) 
 					{ 
 						preg_match("#\[hide\=gr(.+?)\].+?\[/hide\]#i", $temp[0][$i],$hide_group);
-						if($forum_user['g_id'] == $hide_group[1] || $forum_page['is_admmod'])
+						if($forum_user['g_id'] == $hide_group[1] || $forum_user['is_admmod'])
 						{
 							$text_hide = preg_replace('#\[hide\=gr([0-9]*)](.*?)\[/hide\]#s', '<div class="quotebox"><cite>'.$lang_jqbb['Hidden text group'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div>', $temp[0][$i]);
 						}
