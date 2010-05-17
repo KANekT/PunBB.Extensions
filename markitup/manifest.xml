@@ -95,9 +95,6 @@ $(document).ready(function()	{
 </script>';
 }
 		]]></hook>
-		<hook id="pf_start"><![CDATA[
-		]]></hook>
-
 		<hook id="co_common"><![CDATA[
 			$pun_extensions_used = array_merge(isset($pun_extensions_used) ? $pun_extensions_used : array(), array($ext_info['id']));
 		]]></hook>
