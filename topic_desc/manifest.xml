@@ -156,5 +156,6 @@ if (!isset($form['topic_desc'])) $form['topic_desc'] = '0';
 			</fieldset>
 <?php		
 				
-		]]></hook>	</hooks>
+		]]></hook>	
+		</hooks>
 </extension>

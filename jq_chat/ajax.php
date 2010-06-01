@@ -4,12 +4,12 @@
  *
  * @copyright Copyright (C) 2009-2010 KANekT @ http://blog.kanekt.ru
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
  * @package jQuery Chat
 */
 
 Header("Cache-Control: no-cache, must-revalidate"); // говорим браузеру что-бы он не кешировал эту страницу
 Header("Pragma: no-cache");
- 
 Header("Content-Type: text/javascript; charset=utf-8"); // говорим браузеру что это javascript в кодировке UTF-8
 
 // проверяем есть ли переменная act (send или load), которая указываем нам что делать
@@ -23,7 +23,8 @@ if( isset($_POST['act']) )
                         break;
                 case "load" : // если она равняется load, вызываем функцию Load()
                         Load();
-                case "delmsg" : // если она равняется load, вызываем функцию Load()
+                        break;
+                case "delmsg" : // если она равняется delmsg, вызываем функцию DelMsg()
                         DelMsg();
                         break;
                 default : // если ни тому и не другому  - выходим
@@ -103,12 +104,9 @@ function Send()
 function Load()
 {
 		$chat_start = intval($_POST['start']); // возвращает целое значение переменной
-		$chat_end = intval($_POST['end']); // возвращает целое значение переменной
-		$metka = intval($_POST['met']); // возвращает целое значение переменной
-		$mes = intval($_POST['mes']); // возвращает целое значение переменной
 		$hour = intval($_POST['hour']); // возвращает целое значение переменной
-		$metkaDay = intval($_POST['met']); // возвращает целое значение переменной
-		
+		$admin = intval($_POST['adm']); // возвращает целое значение переменной
+		$send = intval($_POST['send']); // возвращает целое значение переменной
 		$chatFile = 'data/chat.dat';
 
 		$content = file_get_contents($chatFile);
@@ -118,18 +116,19 @@ function Load()
 		{
 			// начинаем формировать javascript который мы передадим клиенту
 			$js = 'var chat = $("#chat_area");'; // получаем "указатель" на div, в который мы добавим новые сообщения
-
-			if ($mes>count($content)) 
-			{
-				$metka = 0;
-				$cnt = $chat_end;
-			}
-			if ($chat_start == 0) $cnt = 0;
-			else $cnt = $chat_end - $chat_start;
-			if ($metka == 1) $cnt=$mes-1;
-			/*if ($chat_start != $content[0][0] && $chat_start != 0) $cnt=0;*/
+			$c_cnt = count($content);
 			$day4at = $_POST['day4'];
-			for($i=$cnt;$i<count($content);$i++) 
+			$end = $content[$c_cnt-1][0];
+			
+			if ($chat_start == 0) $mmm = 0;
+			else $mmm = $c_cnt - $chat_start;
+			$mmm = $content[$c_cnt-1][0] - $chat_start;
+			$i=$chat_start;
+			if (($content[$c_cnt-1][0] - $chat_start) > 0 && $chat_start != 0)
+			{
+				$i=$c_cnt-1;
+			}
+			while($i <= $c_cnt)
 			{
 				$my = strtotime($content[$i][2]);
 				$m_day = gmdate('D Y-m-d ', $my + $hour);
@@ -137,33 +136,37 @@ function Load()
 				$mhour = gmdate('H:i:s', $my + $hour);
 				$myday = $m_day.$mhour;
 				
-				if ($day4at == gmdate('Y-m-d', $my + $hour)) 
+				if ($day4at == gmdate('D Y-m-d', $my + $hour)) 
 				{
 					$myday = gmdate('H:i:s', $my + $hour);
-					if ($metkaDay == 1) $myday = gmdate('H:i:s', $my + $hour);
 				}
 				else 
 				{
-					$day4at = gmdate('Y-m-d', $my + $hour);
+					$day4at = gmdate('D Y-m-d', $my + $hour);
 				}
-				
+				if ($admin == 1)
+				{
+					$del = '<a onclick=\"DelMsg('.$content[$i][0].')\">X </a>';
+				}
+				else
+				{
+					$del =  '';
+				}
 				if ($content[$i][3] != '')
 				{
 					if ($content[$i][4] != 1)
-					$js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; <a href=\"/profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
-					else $js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");';
+					$js .= 'chat.append("<span class=\"'.$content[$i][0].'\" \">'.$del.$myday.'&raquo; <a href=\"/profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
+					else $js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$del.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");';
 				}
-
+			$i++;
 			}
-			$start = $content[0][0];
-			$end = $content[0][0]+$i;
-			$js .= "start = $start;";
-			$js .= "end = $end;";
-			$js .= "day4 = '$day4at'";
+			
+			$my = strtotime($content[$c_cnt-1][2]);
+			$day4at = gmdate('D Y-m-d', $my + $hour);
+			$js .= "end = $end;send = '1';";
+			$js .= "day4 = '$day4at';";
 			echo $js;
-
 		}
-		
 }
 // функция удаляем сообщение из базы данных
 function DelMsg()
