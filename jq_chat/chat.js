@@ -80,3 +80,10 @@ function DelMsg(msgId) {
 		}
 	); // по завершению вызываем функцию загрузки новых сообщений Load()
 }
+// Функция для обращения к пользователю
+function ReplyMsg(msgId) {
+var text = $("span."+msgId).find("a.reply").eq(0).text();
+if (text) {
+		$("#pac_text").val("[b]"+text+"[/b], ").focus();
+	}
+}

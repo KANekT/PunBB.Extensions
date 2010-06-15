@@ -146,17 +146,24 @@ function Load()
 				}
 				if ($admin == 1)
 				{
-					$del = '<a onclick=\"DelMsg('.$content[$i][0].')\">X </a>';
+					$del = '<a onclick=\"DelMsg('.$content[$i][0].')\">&chi; </a>';
 				}
 				else
 				{
 					$del =  '';
 				}
+				$reply = '<a onclick=\"ReplyMsg('.$content[$i][0].')\">&dArr; </a>';
+				$content[$i][3] = htmlspecialchars($content[$i][3]);
+
+				$bbcode = array("[b]", "[/b]", "[i]", "[/i]"); 
+				$htmlcode = array("<b>", "</b>", "<i>", "</i>"); 
+				$content[$i][3] = str_replace($bbcode, $htmlcode, $content[$i][3]);
+
 				if ($content[$i][3] != '')
 				{
 					if ($content[$i][4] != 1)
-					$js .= 'chat.append("<span class=\"'.$content[$i][0].'\" \">'.$del.$myday.'&raquo; <a href=\"/profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
-					else $js .= 'chat.append("<span class=\"remove\" id=\"'.$content[$i][0].'\">'.$del.$myday.'&raquo; '.$content[$i][1].'&raquo; '.$content[$i][3].'</span>");';
+					$js .= 'chat.append("<span class=\"'.$content[$i][0].'\" \">'.$del.$myday.'&raquo;'.$reply.'<a class=\"reply\" href=\"profile.php?id='.$content[$i][4].'\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
+					else $js .= 'chat.append("<span class=\"'.$content[$i][0].'\" id=\"'.$content[$i][0].'\">'.$del.$myday.'&raquo;'.$reply.'<a class=\"reply\" href=\"#\">'.$content[$i][1].'</a>&raquo; '.$content[$i][3].'</span>");';
 				}
 			$i++;
 			}
