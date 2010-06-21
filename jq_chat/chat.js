@@ -87,3 +87,17 @@ if (text) {
 		$("#pac_text").val("[b]"+text+"[/b], ").focus();
 	}
 }
+$(document).ready(
+    function() { 
+        $("#chat-control").toggle(
+            function () {
+                $("#chat-room").show();
+                $("#chat-control").text('-');
+            },
+            function () {
+                $("#chat-room").hide();
+                $("#chat-control").text('+');
+            }
+        );
+    }
+);
