@@ -20,6 +20,7 @@
 
 	<install>
 		<![CDATA[
+		if (!$forum_db->field_exists('topics', 'post_show_first_post'))
 			$forum_db->add_field('topics', 'post_show_first_post', 'INT(10)', false, 0);
 		]]>
 	</install>

@@ -15,7 +15,7 @@ var day4 = '';
 $(document).ready(function () {
     $("#pac_form").submit(Send); // вешаем на форму с именем и сообщением событие которое срабатывает кодга нажата кнопка "Отправить" или "Enter"
     $("#pac_text").focus(); // по поле ввода сообщения ставим фокус
-    setInterval("Load(0);", 1000); // создаём таймер который будет вызывать загрузку сообщений каждые 1 секунды (1000 миллисекунд)
+    setInterval("Load(0);", 500); // создаём таймер который будет вызывать загрузку сообщений каждые 1 секунды (1000 миллисекунд)
 });  
 
  
@@ -87,17 +87,3 @@ if (text) {
 		$("#pac_text").val("[b]"+text+"[/b], ").focus();
 	}
 }
-$(document).ready(
-    function() { 
-        $("#chat-control").toggle(
-            function () {
-                $("#chat-room").show();
-                $("#chat-control").text('-');
-            },
-            function () {
-                $("#chat-room").hide();
-                $("#chat-control").text('+');
-            }
-        );
-    }
-);

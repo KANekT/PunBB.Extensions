@@ -21,7 +21,7 @@ $lang_jq_chat = array(
 	'Chat guest index'	=>  'Guest can not write the chat',
 	
 	'Manage chat'		=>	'Manage chat',
-	'Manage chat help'	=>	'You can disallow chat on main page',
+	'Chat Enable'		=>	'You can disallow chat on main page',
 	'Chat Disabled'		=>  'The Administrator has forbidden to you use of chat',
 	'Chat adm'			=>	'Force disable chat for this user',
 	'Chat user off'		=>  'You cannot use chat because have switched off',

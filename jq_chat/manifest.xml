@@ -13,7 +13,7 @@
 <extension engine="1.0">
 	<id>jq_chat</id>
 	<title>jQuery Chat</title>
-	<version>0.7.0</version>
+	<version>0.7.1</version>
 	<description>Adds a jQuery chat to the forum index.</description>
 	<author>KANekT</author>
 	<minversion>1.3</minversion>
@@ -62,8 +62,6 @@ if(!is_writable($ext_info['path'].'/data/chat.dat') || !is_writable($ext_info['p
 			$forum_db->add_field('users', 'chat_enable', 'TINYINT(1)', true, '1');
 		if (!$forum_db->field_exists('users', 'chat_disable_adm'))
 			$forum_db->add_field('users', 'chat_disable_adm', 'TINYINT(1)', true, '0');
-				
-
 	]]></install>
 	<uninstall>
 		<![CDATA[
@@ -157,24 +155,83 @@ if(!is_writable($ext_info['path'].'/data/chat.dat') || !is_writable($ext_info['p
 
 		if ($forum_config['o_guest_read'] == '0' && $forum_user['is_guest'])
 		{
-			echo $lang_jq_chat['Chat guest off'];
+?>
+<div class="main-head">
+    <h2 class="hn"><span><span class="item-info"><?php echo $lang_jq_chat['Chat guest off']; ?></span></span></h2>
+</div>
+	<div class="main-subhead"> 
+		<p class="item-summary"> </p> 
+	</div> 
+<?php	
 		}
 		else if ($forum_user['chat_disable_adm'] == '1')
 		{
-			echo $lang_jq_chat['Chat Disabled'];
-		}		
-		else if ($forum_user['chat_enable'] == '0')
-		{
-			echo $lang_jq_chat['Chat user off'];
+?>
+<div class="main-head">
+    <h2 class="hn"><span><span class="item-info"><?php echo $lang_jq_chat['Chat Disabled']; ?></span></span></h2>
+</div>
+	<div class="main-subhead"> 
+		<p class="item-summary"> </p> 
+	</div> 
+<?php
 		}		
 		else
 		{
-
-?>    <div class="main-head">
-        <p class="options"><span class="first-item"><strong><a href="#" id="chat-control">+</a></strong></span></p>
-        <h2 class="hn"><span><span class="item-info"><?php echo $lang_jq_chat['Chat'] ?></span></span></h2>
-    </div>
-<div id="chat-room" class="main-content"  style="display:none;">
+			if ($forum_user['chat_enable'] == '0')
+			{
+	?>
+	<div class="main-head">
+		<p class="options"><span class="first-item"><strong><a href="#" id="chat-control">+</a></strong></span></p>
+		<h2 class="hn"><span><span class="item-info"><?php echo $lang_jq_chat['Chat']; ?></span></span></h2>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(
+		function() { 
+			$("#chat-control").toggle(
+				function () {
+					$("#chat-room").show();
+					$("#chat-control").text('-');
+					$(".chat").scrollTop($(".chat").get(0).scrollHeight);
+				},
+				function () {
+					$("#chat-room").hide();
+					$("#chat-control").text('+');
+			   }
+			);
+		}
+	);		
+	</script>	
+<div id="chat-room" class="main-content" style="display:none;">
+	<?php
+			}
+			else
+			{
+	?>
+	<div class="main-head">
+		<p class="options"><span class="first-item"><strong><a href="#" id="chat-control">-</a></strong></span></p>
+		<h2 class="hn"><span><span class="item-info"><?php echo $lang_jq_chat['Chat']; ?></span></span></h2>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(
+		function() { 
+			$("#chat-control").toggle(
+				function () {
+					$("#chat-room").hide();
+					$("#chat-control").text('+');
+				},
+				function () {
+					$("#chat-room").show();
+					$("#chat-control").text('-');
+					$(".chat").scrollTop($(".chat").get(0).scrollHeight);
+			   }
+			);
+		}
+	);		
+	</script>	
+<div id="chat-room" class="main-content">
+	<?php
+			}
+?>
 
 <!-- Вот в этих 2-х div-ах будут идти наши сообщения из чата -->
 <div class="frm-group group1">
@@ -228,7 +285,7 @@ if(!is_writable($ext_info['path'].'/data/chat.dat') || !is_writable($ext_info['p
 <?php if ($user['id'] == $forum_user['id']): 
 			if ($forum_user['is_admmod'] || $user['chat_disable_adm'] == 0) : ?>						
 							<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[chat_enable]" value="1"<?php if ($user['chat_enable'] == '1') echo ' checked="checked"' ?> /></span>
-							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_jq_chat['Manage chat help'] ?></label>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_jq_chat['Chat Enable'] ?></label>
 <?php		else : ?>
 							<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="disabled" value="1" disabled="disabled" /></span>
 							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_jq_chat['Chat Disabled'] ?></label>
