@@ -73,8 +73,143 @@ function who_does_view(&$forum_page){
 	return page_render($forum_page);
 }
 
+function page_name(&$url_parts){
+	global $forum_db, $lang_who_does;
+	$page_name = $lang_who_does['misc'];
+
+	$current_page = $url_parts[0];
+	$current_p = $url_parts[1];
+	if ($current_page == "viewforum.php"):
+	$current_p = preg_replace('#[a-zA-Z.?=]#si','$1',$current_p);
+	if ($current_p != "")
+	{
+	$query = array(
+	'SELECT'	=> 'f.forum_name',
+	'FROM'		=> 'forums AS f',
+	'WHERE'		=> 'f.id='.$current_p
+	);	
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);	
+	$cc = $forum_db->fetch_row($result);
+	$page_name = $lang_who_does['viewforum'].$cc[0];
+	}
+	else $page_name = $lang_who_does['misc'];
+	endif;
+	if ($current_page == "viewtopic.php"):
+	$page_name = $lang_who_does['viewtopic'];
+	$current_p = preg_replace('#[a-zA-Z.?=]#si','$1',$current_p);
+	if ($current_p != "")
+	{
+	$query = array(
+	'SELECT'	=> 't.subject',
+	'FROM'		=> 'topics AS t',
+		'JOINS'		=> array(
+		array(
+			'LEFT JOIN'		=> 'posts AS p',
+			'ON'			=> 't.id=p.topic_id'
+		),
+	),
+	'WHERE'		=> 't.id='.$current_p .' or p.id='.$current_p
+	);	
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);	
+	$cc = $forum_db->fetch_row($result);
+	$page_name = $lang_who_does['viewtopic'].$cc[0];
+	}
+	else $page_name = $lang_who_does['misc'];
+	endif;
+	if ($current_page == "post.php"):
+	$current_p = preg_replace('#[a-zA-Z.?=-]#si','$1',$current_p);
+	if ($current_p != "")
+	{
+	$query = array(
+	'SELECT'	=> 't.subject',
+	'FROM'		=> 'topics AS t',
+		'JOINS'		=> array(
+		array(
+			'LEFT JOIN'		=> 'posts AS p',
+			'ON'			=> 't.id=p.topic_id'
+		),
+	),
+	'WHERE'		=> 't.id='.$current_p .' or p.id='.$current_p
+	);	
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);	
+	$cc = $forum_db->fetch_row($result);
+	$page_name = $lang_who_does['post'].$cc[0];
+	}
+	else $page_name = $lang_who_does['misc'];
+	endif;
+	if ($current_page == "edit.php"):
+	$current_p = preg_replace('#[a-zA-Z.?=]#si','$1',$current_p);
+	if ($current_p != "")
+	{
+	$query = array(
+	'SELECT'	=> 'p.message, t.subject',
+	'FROM'		=> 'posts AS p',
+		'JOINS'		=> array(
+		array(
+			'LEFT JOIN'		=> 'topics AS t',
+			'ON'			=> 't.id=p.topic_id'
+		),
+	),
+	'WHERE'		=> 'p.id='.$current_p
+	);	
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);	
+	$cc = $forum_db->fetch_row($result);
+	$page_name = sprintf($lang_who_does['edit'],$cc[0],$cc[1]);
+	}
+	else $page_name = $lang_who_does['misc'];
+	endif;
+	if ($current_page == "delete.php"):
+	$current_p = preg_replace('#[a-zA-Z.?=]#si','$1',$current_p);
+	if ($current_p != "")
+	{
+	$query = array(
+	'SELECT'	=> 'p.message, t.subject',
+	'FROM'		=> 'posts AS p',
+		'JOINS'		=> array(
+		array(
+			'LEFT JOIN'		=> 'topics AS t',
+			'ON'			=> 't.id=p.topic_id'
+		),
+	),
+	'WHERE'		=> 'p.id='.$current_p
+	);	
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);	
+	$cc = $forum_db->fetch_row($result);
+	$page_name = sprintf($lang_who_does['delete'],$cc[0],$cc[1]);
+	}
+	else $page_name = $lang_who_does['delete'];
+	endif;
+
+	if ($current_page == "index.php" || $current_page == ""):
+	$page_name = $lang_who_does['index'];
+	endif;
+	if ($current_page == "register.php"):
+	$page_name = $lang_who_does['register'];
+	endif;
+	if ($current_page == "misc.php"):
+	$page_name = $lang_who_does['misc'];
+	endif;
+	if ($current_page == "help.php"):
+	$page_name = $lang_who_does['help'];
+	endif;
+	if ($current_page == "login.php"):
+	$page_name = $lang_who_does['login'];
+	endif;
+	if ($current_page == "profile.php"):
+	$page_name = $lang_who_does['profile'];
+	endif;
+	if ($current_page == "search.php"):
+	$page_name = $lang_who_does['search'];
+	endif;
+	if ($current_page == "userlist.php"):
+	$page_name = $lang_who_does['userlist'];
+	endif;
+
+	return $page_name;
+}
+
 function page_render(&$forum_page){
-	global $lang_who_does, $forum_url, $forum_user, $ext_info, $lang_common;
+	global $lang_who_does, $forum_url, $base_url;
 	
 	$forum_page['group_count'] = $forum_page['fld_count'] = 0;
 	
@@ -99,16 +234,34 @@ function page_render(&$forum_page){
 				</tr>
 			<tbody>
 <?php foreach ($forum_page['list'] as $current) : 
-/*
- * TODO need forum_url replace
- */
-	$timeT = date( 'd-m-Y H:h', $current['logged']);
 
+// Bring in all the rewrite rules
+require FORUM_ROOT.'include/url/Default/rewrite_rules.php';
+
+// Allow extensions to create their own rewrite rules/modify existing rules
+($hook = get_hook('re_rewrite_rules')) ? eval($hook) : null;
+
+$f_url = $base_url;
+if (substr($f_url, -1) != '/') $f_url  = $f_url.'/';
+
+// We create our own request URI with the path removed and only the parts to rewrite included
+$rewritten_url = $request_uri = substr(urldecode($current['prev_url']), strlen($f_url));
+
+foreach ($forum_rewrite_rules as $rule => $rewrite_to)
+{
+	// We have a match!
+	if (preg_match($rule, $request_uri))
+	{
+		$rewritten_url = preg_replace($rule, $rewrite_to, $request_uri);
+	}
+} 
+	$url_parts = explode('?', $rewritten_url);
+	$page_name = page_name($url_parts);
 ?>
 				<tr>					
 					<td><?php echo $current['ident'] ? '<a href="'.forum_link($forum_url['user'], $current['user_id']).'">'. forum_htmlencode($current['ident']).'</a>' :  $lang_who_does['Profile deleted'] ?></td>
-					<td><a href="<?php echo $current['prev_url'] ?>"><?php echo $current['prev_url'] ?></a></td>
-					<td><?php echo $timeT ?></td>
+					<td><a href="<?php echo $current['prev_url'] ?>"><?php echo $page_name; ?></a></td>
+					<td><?php echo format_time($current['logged']) ?></td>
 				</tr>
 <?php endforeach;?>
 			</tbody>
@@ -125,7 +278,6 @@ function page_render(&$forum_page){
 		<h2 class="hn"><span><span class="item-info"></span></span></h2>
 	</div>
 
-	
 <?php 
 	$result = ob_get_contents();
 	ob_end_clean();
