@@ -1,7 +1,8 @@
 <?php
 /*
- * lang file for hide
+ * manifest file for hide
  *
+ * @copyright Copyright (C) 2009 KANekT @ http://blog.teamrip.ru
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package hide
 */

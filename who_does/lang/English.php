@@ -15,9 +15,7 @@ $lang_who_does = array(
 	'Who Does' => 'What does',
 	'Date' => 'Date',
 	'No data' => 'No data',
-	'Who_Does features head' => 'Configure Who Online',
-	'Who_Does legend' => 'Configure Who Online',
-	'Who_Does enable' => 'Show user actions Online',
+	'Who_Does enable' => 'Show User Activity Online only Admin',
 	'Who_Does enable legend' => 'Enable',
 
 	'register' => 'Registering',
@@ -27,10 +25,10 @@ $lang_who_does = array(
 	'login' => 'Logging in',
 	'post' => 'Writes a response in the subject ',
 	'edit' => 'Changes the message %1$s in the subject %2$s',
-	'delete' => 'Removes the answer %1$s in the subject %2$s'
+	'delete' => 'Removes the answer %1$s in the subject %2$s',
 	'profile' => 'A profile',
-	'search' => 'Something is looking for '
-	'userlist' => 'See the list of users'
+	'search' => 'Something is looking for ',
+	'userlist' => 'See the list of users',
 	'viewtopic' => 'Views theme ',
 	'viewforum' => 'The forum ',
 );
