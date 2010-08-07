@@ -26,5 +26,7 @@ $lang_jq_chat = array(
 	'Chat adm'			=>	'Force disable chat for this user',
 	'Chat user off'		=>  'You cannot use chat because have switched off',
 
+	'Message'			=>	'Message: ',
+	'Send'				=>	'Send',
 );
 ?>
