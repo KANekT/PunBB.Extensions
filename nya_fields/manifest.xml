@@ -13,7 +13,7 @@
 <extension engine="1.0">
 	<id>nya_fields</id>
 	<title>Add Fields</title>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<description>Add fields in profile.</description>
 	<author>KANekT</author>
 
@@ -31,10 +31,6 @@
 					'datatype'  => 'VARCHAR(50)',
 					'allow_null'  => false
 				),
-				'fields_desc'  => array(
-					'datatype'  => 'VARCHAR(100)',
-					'allow_null'  => false
-				),
 				'fields_url'  => array(
 					'datatype'  => 'VARCHAR(100)',
 					'allow_null'  => true
@@ -47,6 +43,23 @@
 			'PRIMARY KEY'  	=> array('id'),
 		);
 		$forum_db->create_table('fields', $schema);
+		$schema_lang = array(
+			'FIELDS'  => array(
+				'fields_id'  => array(
+					'datatype'  => 'VARCHAR(10)',
+					'allow_null'  => false
+				),
+				'fields_lang'  => array(
+					'datatype'  => 'VARCHAR(50)',
+					'allow_null'  => false
+				),
+				'fields_value'  => array(
+					'datatype'  => 'VARCHAR(100)',
+					'allow_null'  => true
+				)
+			)
+		);
+		$forum_db->create_table('fields_lang', $schema_lang);
 
 	]]></install>
 
@@ -61,6 +74,7 @@ if (!empty($forum_fields))
 	}
 }
 		$forum_db->drop_table('fields');
+		$forum_db->drop_table('fields_lang');
 	]]></uninstall>
 
 
@@ -83,7 +97,7 @@ if (FORUM_PAGE_SECTION == 'settings')
 	$forum_page['admin_submenu']['settings-fields'] = '<li'.((FORUM_PAGE == 'admin-settings-fields') ? ' class="active"' : '').'><a href="'.forum_link($forum_url['admin_settings_fields']).'">'.$lang_fields['Fields'].'</a></li>';
 }
 ]]></hook>
-		<hook id="pf_start"><![CDATA[
+		<hook id="pf_start, vt_start"><![CDATA[
 	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
 		require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
 	else
@@ -93,34 +107,6 @@ if (FORUM_PAGE_SECTION == 'settings')
 if ($section == 'fields')
 	require $ext_info['path'].'/fields.php';
 ]]></hook>
-
-		<hook id="pf_change_details_identity_personal_fieldset_end"><![CDATA[
-if (file_exists(FORUM_CACHE_DIR.'cache_fields.php')) require FORUM_CACHE_DIR.'cache_fields.php';
-	
-if (!empty($forum_fields))
-{
-		?>
-		<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-			<legend class="group-legend"><strong><?php echo $lang_fields['Fields legend'] ?></strong></legend>
-		<?php
-		$forum_page['item_count'] = 0;
-	foreach ($forum_fields as $fields_key => $cur_fields)
-	{
-		$key = forum_htmlencode($cur_fields['fields_name']);
-		?>
-			<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-				<div class="sf-box text">
-					<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $cur_fields['fields_desc'] ?></span></label><br />
-					<span class="fld-input"><input id="fld<?php echo $forum_page['fld_count'] ?>" type="text" name="form[f_<?php echo $key ?>]" value="<?php echo(isset($form['f_'.$key]) ? forum_htmlencode($form['f_'.$key]) : $user['f_'.$key]) ?>" size="40" maxlength="100" /></span>
-				</div>
-			</div>
-		<?
-	}
-		?>
-		</fieldset>
-		<?php
-	
-}		]]></hook>
 		<hook id="vt_qr_get_posts"><![CDATA[
 if (file_exists(FORUM_CACHE_DIR.'cache_fields.php')) require FORUM_CACHE_DIR.'cache_fields.php';
 
@@ -133,11 +119,10 @@ if (!empty($forum_fields))
 			$query['SELECT'] .= ', u.f_'.$cur_fields['fields_name'];
 		}
 	}
-}		]]></hook>
+}
+		]]></hook>
 		<hook id="vt_row_pre_display">
 			<![CDATA[
-if (file_exists(FORUM_CACHE_DIR.'cache_fields.php')) require FORUM_CACHE_DIR.'cache_fields.php';
-
 if (!empty($forum_fields))
 {
 	foreach ($forum_fields as $fields_key => $cur_fields)
@@ -146,19 +131,49 @@ if (!empty($forum_fields))
 		if ($cur_fields['fields_in_vt'] != '0') {
 			if ($cur_post['f_'.$key] != "")
 			{
-				if($cur_fields['fields_url'] != '')
+				if($cur_fields['fields_url'] != NULL)
 				{
 					$user = '<a href="'.$cur_fields['fields_url'].$cur_post['f_'.$key].'" class="external url">'.$cur_post['f_'.$key].'</a>';
-					$forum_page['author_info']['f_'.$key] = '<li><span>'.$cur_fields['fields_desc'].': '.$user.'</span></li>';
+					$forum_page['author_info']['f_'.$key] = '<li><span>'.$lang_fields_nya[$key].': '.$user.'</span></li>';
 				}
 				else
 				{
-					$forum_page['author_info']['f_'.$key] = '<li><span>'.$cur_fields['fields_desc'].': <strong>'.$cur_post['f_'.$key].'</strong></span></li>';
+					$forum_page['author_info']['f_'.$key] = '<li><span>'.$lang_fields_nya[$key].': <strong>'.$cur_post['f_'.$key].'</strong></span></li>';
 				}
 			}
 		}
 	}
-}			]]></hook>
+}
+			]]></hook>
+
+		<hook id="pf_change_details_identity_personal_fieldset_end"><![CDATA[
+if (file_exists(FORUM_CACHE_DIR.'cache_fields.php')) require FORUM_CACHE_DIR.'cache_fields.php';
+	
+if (!empty($forum_fields))
+{
+		?>
+		<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
+			<legend class="group-legend"><strong><?php echo $lang_fields['Fields legend'] ?></strong></legend>
+		<?php
+		$forum_page['item_count'] = 0;
+
+	foreach ($forum_fields as $fields_key => $cur_fields)
+	{
+		$key = forum_htmlencode($cur_fields['fields_name']);
+		?>
+			<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="sf-box text">
+					<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_fields_nya[$key] ?></span></label><br />
+					<span class="fld-input"><input id="fld<?php echo $forum_page['fld_count'] ?>" type="text" name="form[f_<?php echo $key ?>]" value="<?php echo(isset($form['f_'.$key]) ? forum_htmlencode($form['f_'.$key]) : $user['f_'.$key]) ?>" size="40" maxlength="100" /></span>
+				</div>
+			</div>
+		<?
+	}
+		?>
+		</fieldset>
+		<?php
+}
+		]]></hook>
 
 		<hook id="pf_change_details_identity_validation"><![CDATA[
 if (file_exists(FORUM_CACHE_DIR.'cache_fields.php')) require FORUM_CACHE_DIR.'cache_fields.php';
@@ -190,15 +205,15 @@ if (!empty($forum_fields))
 				if ($forum_config['o_censoring'] == '1') {
 					$user['f_'.$key] = censor_words($user['f_'.$key]);
 				}
-		
-			if($cur_fields['fields_url'] != '')
+				
+			if($cur_fields['fields_url'] != NULL)
 			{
 				$user = '<a href="'.$cur_fields['fields_url'].$user['f_'.$key].'" class="external url">'.$user['f_'.$key].'</a>';
-				$forum_page['user_fields']['f_'.$key] = '<li><span>'.$cur_fields['fields_desc'].': '.$user.'</span></li>';
+				$forum_page['user_fields']['f_'.$key] = '<li><span>'.$lang_fields_nya[$key].': '.$user.'</span></li>';
 			}
 			else
 			{
-				$forum_page['user_fields']['f_'.$key] = '<li><span>'.$cur_fields['fields_desc'].': <strong>'.$user['f_'.$key].'</strong></span></li>';
+				$forum_page['user_fields']['f_'.$key] = '<li><span>'.$lang_fields_nya[$key].': <strong>'.$user['f_'.$key].'</strong></span></li>';
 			}
 		}
 	}
