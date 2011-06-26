@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for thanks
+ *
+ * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
+ * @package thanks
+*/
+-->
+<extension engine="1.0">
+	<id>thanks</id>
+	<title>thanks</title>
+	<version>0.6.2</version>
+	<description>This extension lets your members thank someone for a post they posted.</description>
+	<author>KANekT</author>
+	<minversion>1.3</minversion>
+	<maxtestedon>1.3.4</maxtestedon>
+
+	<install><![CDATA[
+require_once FORUM_ROOT.'extensions/thanks/install.php';
+install();
+
+]]></install>
+	<uninstall><![CDATA[
+require_once FORUM_ROOT.'extensions/thanks/install.php';
+uninstall();
+
+]]></uninstall>
+
+	<hooks>
+		<hook id="co_common"><![CDATA[
+			$pun_extensions_used = array_merge(isset($pun_extensions_used) ? $pun_extensions_used : array(), array($ext_info['id']));
+		]]></hook>
+		<hook id="co_modify_url_scheme">
+			<![CDATA[
+				// Setup the URL rewriting scheme
+				if (file_exists($ext_info['path'].'/url/'.$forum_config['o_sef'].'.php'))
+					require $ext_info['path'].'/url/'.$forum_config['o_sef'].'.php';
+				else
+					require $ext_info['path'].'/url/Default.php';
+			]]>
+		</hook>
+		<hook id="re_rewrite_rules"><![CDATA[
+			$forum_rewrite_rules['/^thanks_user[\/_-]?([0-9]+)(\.html?|\/)?$/i'] = 'misc.php?section=thanks&uid=$1';
+			$forum_rewrite_rules['/^thanks_user[\/_-]?([0-9a-z]+)[\/_-]?(p|page\/)([0-9]+)(\.html?|\/)?$/i'] = 'misc.php?section=thanks&uid=$1&p=$3';
+		]]></hook>
+		<hook id="hd_head"><![CDATA[
+if (FORUM_PAGE == 'viewtopic')
+{
+	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+		require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+	else
+		require $ext_info['path'].'/lang/English.php';
+
+	$ape = 'var base_url_thanks = \''.$base_url.'\';';
+	$ape .= 'var ThanksSaid = \''.$lang_thanks['ThanksSaid'].'\';';
+	$ape .= 'var Thanks = \''.$lang_thanks['Thanks'].'\';';
+	$ape .= 'var ThanksPost = \''.$lang_thanks['ThanksForPost'].'\';';
+	
+	if ($forum_config['o_thanks_view'] == '1')
+	{
+		$forum_head['apk_css'] = '<style>
+		.spoiler{
+			background: #daa520;
+			border: 3px dashed navy;
+			display: none;
+		}
+		</style>';
+	}
+	$forum_head['apk_js'] = '<script type="text/javascript" src="'.$ext_info['url'].'/ajax_thanks.js"></script>';
+	$forum_head['apk_js2'] = '<script type="text/javascript">'."\n".$ape."\n".'</script>';
+}
+					     ]]></hook>
+		<hook id="vt_row_pre_display">
+			<![CDATA[
+				if ($cur_post['uThanks'] > 0)
+				{
+					$forum_page['author_info']['thanks'] =  '<li><span>'.$lang_thanks['Thanks'].'<a href="'.forum_link($forum_url['thanks_user'], $cur_post['poster_id']).'" rel="nofollow" id="u'.$cur_post['id'].'">'.$cur_post['uThanks'].'</a></span></li>';
+				}	
+				if ($cur_post['pThanks'] > 0 AND isset($forum_page['author_info']['thanks']))
+				{
+					if ($forum_config['o_thanks_view'] == '0')
+					{
+						$forum_page['author_info']['thanks'] .=  '<li><span>'.$lang_thanks['ThanksForPost'].'<a href="'.forum_link($forum_url['thanks_post'], array($cur_post['id'],$forum_user['language'])).'" onclick="return viewThanks(this.href);" target="PREV" rel="nofollow" id="n'.$cur_post['id'].'">'.$cur_post['pThanks'].'</a></span></li>';
+					}
+					else
+					{
+						$forum_page['author_info']['thanks'] .=  '<li><span>'.$lang_thanks['ThanksForPost'].' '.$cur_post['pThanks'].'</span></li>';
+					}
+				}
+				$forum_page['author_info']['thanks_span'] =  '<li><span id="t'.$cur_post['id'].'"></span></li>';
+			]]>
+		</hook>
+		<hook id="vt_row_pre_post_actions_merge"><![CDATA[
+			$say_thanks = sprintf($lang_thanks['Say thanks'], $cur_post['username']);
+			
+			if($forum_user['id'] != 1 AND $forum_user['id'] != $cur_post['poster_id'] AND !$cur_post['tId'] > 0 )
+			{
+				$forum_page['post_actions']['thanks'] = '<span id="button_t'.$cur_post['id'].'"><a id="thanks'.$cur_post['id'].'" href="javascript:apk_thanks('.$cur_post['poster_id'].', '.$forum_user['id'].', '.$cur_post['id'].', '.$cur_post['uThanks'].', '.$cur_post['pThanks'].')" title="'.$say_thanks.'" rel="nofollow">'.$lang_thanks['SayThanks'].'</a></span>';
+					
+
+			}
+				if ($forum_config['o_thanks_view'] == '1' AND $cur_post['pThanks'] > 0)
+				{
+					$forum_page['post_actions']['spoiler'] = '
+					<div id="b_sp'.$cur_post['id'].'" style="float: left;"><a id="thanks'.$cur_post['id'].'" href="javascript:makeRequest('.$cur_post['id'].')" title="'.$say_thanks.'" rel="nofollow">'.$lang_thanks['ThanksListView'].'</a></div>
+					<div style="clear: both"></div>
+					<div id="button_sp'.$cur_post['id'].'" class="spoiler"></div>';
+				}
+			]]>
+		</hook>
+		<hook id="vt_qr_get_posts"><![CDATA[
+				$query['SELECT'] .= ', u.thanks as uThanks, p.thanks as pThanks, ts.id as tId';
+				$query['JOINS'][] = array(
+					'LEFT JOIN'	=> 'thanks AS ts',
+					'ON'		=> '(ts.user_thanked_id='.$forum_user['id'].' and p.id=ts.post_id)'
+				);
+			]]>
+		</hook>
+		<hook id="mi_new_action"><![CDATA[
+		$section = isset($_GET['section']) ? $_GET['section'] : null;
+		/*if (($forum_config['o_who_does_enabled'] == '1' && $forum_user['is_admmod']) || $forum_config['o_who_does_enabled'] == '0' )
+		{*/
+
+if ($section == 'thanks') {
+	
+	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+		require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+	else
+		require $ext_info['path'].'/lang/English.php';
+		
+	require $ext_info['path'].'/functions.php';
+	
+	$forum_page = array();
+
+	$thanks_text = thanks_get_page($forum_page);
+		
+	define('FORUM_PAGE', 'thanks');
+	require FORUM_ROOT.'header.php';
+
+	ob_start();	
+		
+	echo $thanks_text;
+	
+	$tpl_temp = trim(ob_get_contents());
+	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
+	ob_end_clean();
+	
+	require FORUM_ROOT.'footer.php';
+}
+		/*}*/
+		]]></hook>
+		<hook id="pf_view_details_pre_header_load,pf_change_details_about_pre_header_load">
+			<![CDATA[
+				if ($user['thanks'] > 0)
+				{
+					$forum_page['user_info']['thanks'] = '<li><span>'.$lang_thanks['Thanks'].'<a href="'.forum_link($forum_url['thanks_user'], $id).'" rel="nofollow"><strong class="fn">'.$user['thanks'].'</strong></a></span></li>';
+				}
+			]]>
+		</hook>
+		<hook id="ul_start, pf_start">
+			<![CDATA[
+				if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+					require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+				else
+					require $ext_info['path'].'/lang/English.php';
+			]]>
+		</hook>
+		<hook id="ul_qr_get_users"><![CDATA[
+				$query['SELECT'] .= ', u.thanks as uThanks';
+			]]>
+		</hook>
+		<hook id="ul_results_row_pre_data_output">
+			<![CDATA[
+				$forum_page['table_row']['thank'] = '<td class="tc'.count($forum_page['table_row']).'">'.$user_data['uThanks'].'</td>';
+			]]>
+		</hook>
+		<hook id="ul_qr_get_user_count">
+			<![CDATA[
+				if(isset($_GET['sort_by']))
+				{
+					if($_GET['sort_by'] == 'uThanks')
+						$forum_page['sort_by'] = 'uThanks';
+				}
+			]]>
+		</hook>
+		<hook id="ul_results_pre_header_output">
+			<![CDATA[
+					$forum_page['table_header']['thank'] = '<th class="tc'.count($forum_page['table_header']).'" scope="col">'.$lang_thanks['ThanksHtml'].'</th>';
+			]]>
+		</hook>
+		<hook id="ul_new_sort_by_option"><![CDATA[
+		?>
+						<option value="uThanks"<?php if ($forum_page['sort_by'] == 'uThanks') echo ' selected="selected"' ?>><?php echo $lang_thanks['ThanksList'] ?></option>
+						<?php
+			]]>
+		</hook>
+		<hook id="aop_features_validation"><![CDATA[
+			if (!isset($form['thanks_view']) || $form['thanks_view'] != '1') $form['thanks_view'] = '0';
+		]]></hook>
+
+		<hook id="aop_features_pre_general_fieldset_end"><![CDATA[
+				if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+					require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+				else
+					require $ext_info['path'].'/lang/English.php';
+?>
+			<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="sf-box checkbox">
+					<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[thanks_view]" value="1"<?php if ($forum_config['o_thanks_view'] == '1') echo ' checked="checked"' ?> /></span>
+					<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_thanks['Thanks label'] ?></span> <?php echo $lang_thanks['Thanks desc'] ?></label>
+				</div>
+			</div>
+<?php
+		]]></hook>		
+		</hooks>
+
+</extension>
