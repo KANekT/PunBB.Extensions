@@ -12,7 +12,10 @@
 if (!defined('FORUM'))
 	die();
 	
-function get_count() {
+require_once 'cache.php';
+	
+function get_count() 
+{
 	global $forum_db;
 	$uid = intval($_GET['uid']);
 
@@ -27,6 +30,46 @@ function get_count() {
 	list($count) = $forum_db->fetch_row($result);
 
 	return $count;
+}
+function check_warn($forum_warn) {
+	$cnt = 0; // Кол-во предупреждений
+	$uid = 0; // ID User
+	$warn = 0; // Is Update Warn?
+	foreach ($forum_warn as $cur_warn)
+	{
+		if($cur_warn['uid'] == $uid || $uid == 0)
+		{
+			$uid=$cur_warn['uid'];
+			if($cur_warn['time'] + $cur_warn['exp'] < time()) $cnt++;
+		}
+		else 
+		{
+			$warn_group='';
+			if($cnt==0)	$warn_group='group_id=warn_group_id, warn_group_id=0';
+			
+			if($cnt==1 && $cur_warn['warn_edit']>0) $warn_group='group_id='.$config['o_warn_group_sig'];
+			if($cnt==2 && $cur_warn['warn_edit']>0) $warn_group='group_id='.$config['o_warn_group_ava'];
+			if($cnt>2 && $cur_warn['warn_edit']>0) $warn_group='group_id='.$config['o_warn_group_read'];
+			
+			if ($warn_group != '')
+			{
+				
+				$query = array(
+					'UPDATE'	=> 'users',
+					'SET'		=> $warn_group,
+					'WHERE'		=> 'id='.$uid
+				);
+				$forum_db->query_build($query) or error(__FILE__, __LINE__);
+				$warn = 1;
+			}
+			
+			$cnt=0;
+			$uid=$cur_warn['uid'];
+			if($cur_warn['time'] + $cur_warn['exp'] < time()) $cnt++;	
+		}
+	}
+	if ($warn != 0)
+		generate_warn_cache();	
 }
 function mi_get_page(&$forum_page){
 	global $forum_url, $forum_user, $forum_config, $lang_common;
@@ -60,11 +103,20 @@ function mi_get_page(&$forum_page){
 	message($lang_common['Bad request']);
 }
 function warn_add(&$forum_page){
-	global $forum_config, $forum_db, $forum_user, $forum_url, $lang_warn;
+	global $forum_config, $forum_db, $forum_user, $forum_url, $lang_warn, $lang_common;
 	
 	$pid = isset($_GET['pid']) ? intval($_GET['pid']) : message($lang_common['Bad request']);
+	$uid = isset($_GET['uid']) ? intval($_GET['uid']) : message($lang_common['Bad request']);
+	
+	$message = forum_linebreaks(forum_trim($_POST['req_message']));
+	if ($message == '')
+		$forum_page['errors'][] = ($lang_warn['No message']);
+	else if (strlen($message) > $forum_config['o_warn_maxmessage'])
+		$forum_page['errors'][] = sprintf($lang_warn['Too long message'],$forum_config['o_warn_maxmessage']);
 	
 	$expiries = isset($_POST['expiries']) ? intval($_POST['expiries']) : message($lang_common['Bad request']);
+	$group = isset($_POST['group']) ? intval($_POST['group']) : message($lang_common['Bad request']);
+	isset($_POST['edit']) ? $edit=1 : $edit=0;
 	
 	if (!isset($_POST['csrf_token']) && (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== generate_form_token(($_GET['method']=='plus' ? forum_link($forum_url['warn_plus'], array($pid, $forum_page['uid'])) : forum_link($forum_url['warn_minus'], array($pid, $forum_page['uid']))))))
 		csrf_confirm_form();
@@ -72,35 +124,45 @@ function warn_add(&$forum_page){
 	($_GET['method'] == 'plus') ? $method=1 : $method=0;
 			
 	$query = array(
-		'SELECT'	=> 'expire, method',
+		'SELECT'	=> 'expire, method, time',
 		'FROM'		=> 'warnings',
-		'WHERE'		=> 'pid='.$pid.' AND from_uid='.$forum_user['id']
+		'WHERE'		=> 'pid='.$pid.' AND uid='.$uid,
+		'ORDER BY'	=> 'time'
 	);
 	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
 	
-	$expire_old = 0;
-	$cnt = ''; //������� ��������������
-	$group = '';//��������� ������
+	$expire_plus = 0;
+	$expire_minus = 0;
+	$cnt='warn_count=warn_count+1, '; //Увеличиваем счетчик предупреждений
+	$now = time();
 	while ($cur_warn = $forum_db->fetch_assoc($result))
 	{
-		if($cur_warn['method'] == $method) $expire_old=$cur_warn['expire'];
-		if($cur_warn['method'] == 1) $expire_plus=$cur_warn['expire'];
-		if($cur_warn['method'] == 0) $expire_minus=$cur_warn['expire'];
+		if($cur_warn['method'] == 1) 
+		{
+			if ($cnt != '') $warn_first = $cur_warn['time'];//Время первого предупреждения
+			if ($cnt != '') $cnt='';//Если уже добавляли предупреждение
+			$expire_plus+=$cur_warn['expire'];
+		}
+		if($cur_warn['method'] == 0) $expire_minus+=$cur_warn['expire'];
 	}
-	//�������: ������ ����� ����������� �� ����� ��� ���������.
 
-	$message = forum_linebreaks(forum_trim($_POST['req_message']));
+	(!isset($warn_first) && $method == 0) ? message($lang_warn['Error minus']) : $warn_first=$now;
+	// вычисляем срок окончания действия
+	$expire = $expiries * 86400; //Время наказания в секундах 
 	
-	/// ��������� ���� ��������� ��������
-	$now = time();
-	$expire = $expiries * 86400;
-	$difference = $expiries * 86400 - $expire_old;
+	$warn_end_old =  $warn_first + $expire_plus + $expire_minus;
+	($method == 1) ? $warn_end = $warn_end_old + $expire : $warn_end = $warn_end_old - $expire;
 	
-	if ($message == '')
-		$forum_page['errors'][] = ($lang_warn['No message']);
-	else if (strlen($message) > $forum_config['o_warn_maxmessage'])
-		$forum_page['errors'][] = sprintf($lang_warn['Too long message'],$forum_config['o_warn_maxmessage']);
-
+	if($warn_first>$warn_end) 
+	{
+		$expire = $expire + $warn_end - $warn_first; 
+		($method == 1) ? $warn_end = $warn_end_old + $expire : $warn_end = $warn_end_old - $expire;
+	}
+	if($expire < 0) message($lang_common['Bad request']);//Разница не может быть меньше нуля
+	if($expire == 0) message($lang_warn['Error minus expire']);
+	
+	$message .= sprintf($lang_warn['Expiries Edit'],$expiries);
+	
 	$query = array(
 		'SELECT'	=> 'p.topic_id, u.warn_expiries, u.group_id, u.warn_group_id',
 		'FROM'		=> 'posts AS p',
@@ -110,7 +172,7 @@ function warn_add(&$forum_page){
 				'ON'			=> 'p.poster_id=u.id'
 			)
 		),
-		'WHERE'		=> 'p.id='.$pid.' AND p.poster_id='.$forum_page['uid'],
+		'WHERE'		=> 'p.id='.$pid.' AND p.poster_id='.$uid,
 		'LIMIT'		=> '0, 1'
 	);	
 	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
@@ -119,44 +181,36 @@ function warn_add(&$forum_page){
 		message($lang_common['Bad request']);
 
 	$target = $forum_db->fetch_assoc($result);
-
-	if ($method == 0 && $expire>=$expire_plus) {$difference=$expire_plus; $expire=$expire_plus; $group = ', warn_group_id='.$target['warn_group_id'].', group_id='.$target['warn_group_id'];}
-
+	
+	
 	if (empty($forum_page['errors'])) {
-		//Add voice
-		if ($expire_old == 0)
-		{
-			if ($target['warn_expiries'] == 0) $difference+=$now;
-			$query = array(
-				'INSERT'	=> 'uid, from_uid, reason, time, tid, pid, expire, method',
-				'INTO'		=> 'warnings',
-				'VALUES'	=> '\''.$forum_page['uid'].'\', '.$forum_user['id'].', \''.$forum_db->escape($message).'\', '.$now.', '.$target['topic_id'].', '.$pid.', '.$expire.', '.$method);
-			if($method == 1) $cnt='warn_count=warn_count+1, ';
-			
-			$group = ', warn_group_id='.$target['group_id'].', group_id='.$forum_config['o_warn_group'];
-		}
-		else
-		{
-			$query = array(
-				'UPDATE'	=> 'warnings',
-				'SET'		=> 'reason=\''.$forum_db->escape($message).'\', expire='.$expire,
-				'WHERE'		=> 'pid='.$pid.' AND from_uid='.$forum_user['id'].' AND method='.$method
-			);
-			//if ($method == 1 && isset($expire_minus)){ if ($expire>$expire_minus) {$group = ', warn_group_id='.$target['group_id'].', group_id='.$forum_config['o_warn_group'];}}
-		}
-		$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);	
+		//Добавляем предупреждение
+		if($method == 0) $expire = -$expire; 
+		$query = array(
+			'INSERT'	=> 'uid, from_uid, reason, time, tid, pid, expire, method',
+			'INTO'		=> 'warnings',
+			'VALUES'	=> $uid.', '.$forum_user['id'].', \''.$forum_db->escape($message).'\', '.$now.', '.$target['topic_id'].', '.$pid.', '.$expire.', '.$method);
+		$forum_db->query_build($query) or error(__FILE__, __LINE__);
 
-		$method == 1 ? $expiries='warn_expiries=warn_expiries+'.$difference : $expiries='warn_expiries=warn_expiries-'.$difference;
-		$method == 1 ? $lang_warn_red=$lang_warn['Redirect Message warning add'] : $lang_warn_red=$lang_warn['Redirect Message warning minus'];
+		//Для первого предупреждения
+		if($target['warn_expiries'] == '0') $expire = $expire + $now;
+		$warn_expiries = 'warn_expiries=warn_expiries+'.$expire.', ';
 		
+		$warn_group = 'group_id='.$group.', ';
+		if($target['warn_group_id'] == '0') $warn_group .= 'warn_group_id='.$target['group_id'].',';
+			
+		($edit == 1) ? $warn_expiries .= 'warn_edit=1' : $warn_expiries .= 'warn_edit=0';
 		$query = array(
 			'UPDATE'	=> 'users',
-			'SET'		=> $cnt.$expiries.$group,
-			'WHERE'		=> 'id='.$forum_page['uid']
+			'SET'		=> $warn_group.$cnt.$warn_expiries,
+			'WHERE'		=> 'id='.$uid
 		);
 		$forum_db->query_build($query) or error(__FILE__, __LINE__);		
-		
-		redirect(forum_link($forum_url['post'], $pid), $lang_warn_red);	
+
+		generate_warn_cache();	
+
+		($method == 1) ? $lang_redirect=$lang_warn['Redirect Message warning add'] : $lang_redirect=$lang_warn['Redirect Message warning minus'];		
+		redirect(forum_link($forum_url['post'], $pid), $lang_redirect);	
 	}	
 	else {
 		$forum_page['req_message'] = $message;
@@ -164,7 +218,7 @@ function warn_add(&$forum_page){
 	}		
 }
 function mi_view_add(&$forum_page){
-	global $lang_warn, $forum_url, $base_url, $forum_config, $forum_user;
+	global $lang_warn, $forum_url, $base_url, $forum_config, $forum_user, $lang_common;
 	
 	if ($forum_user['is_guest'])
 		message($lang_common['No permission']);
@@ -247,7 +301,8 @@ function page_render(&$forum_page){
 	global $lang_warn, $forum_url, $base_url;
 	
 	$forum_page['group_count'] = $forum_page['fld_count'] = 0;
-	
+	if (!defined('FORUM_PARSER_LOADED'))
+		require FORUM_ROOT.'include/parser.php';	
 	ob_start();
 ?>	
 
@@ -269,6 +324,8 @@ function page_render(&$forum_page){
 			</thead>
 			<tbody>
 <?php foreach ($forum_page['list'] as $current) : 
+$current['reason'] = forum_htmlencode($current['reason']);
+$current['reason'] = str_replace("\n", "<br />", $current['reason']);
 ?>
 				<tr>					
 					<td><?php echo $current['from_uid'] ? '<a href="'.forum_link($forum_url['user'], $current['from_uid']).'">'. forum_htmlencode($current['username']).'</a>' :  $lang_warn['Profile deleted'] ?></td>
@@ -276,7 +333,7 @@ function page_render(&$forum_page){
 				</tr>
 				<tr>					
 					<td><?php echo $current['method']==1 ? $lang_warn['Plus'] :  $lang_warn['Minus'] ?></td>
-					<td><div class="entry-content"><p><?php echo forum_htmlencode($current['reason']); ?><br/>
+					<td><div class="entry-content"><p><?php echo $lang_warn['Reason'].': '.$current['reason']; ?><br/>
 					<?php echo $lang_warn['For topic']; echo forum_htmlencode($current['subject']) ? '<a class="permalink" href="'.forum_link($forum_url['post'], $current['pid']).'" rel="bookmark">'.forum_htmlencode($current['subject']).'</a>' :  $lang_warn['Profile deleted'] ?>
 					</p></div></td>
 				</tr>
@@ -302,15 +359,16 @@ function page_render(&$forum_page){
 	return $result;
 }
 function form_render(&$forum_page){
-	global $lang_warn, $forum_url, $forum_user, $forum_db, $base_url, $lang_common;
+	global $lang_warn, $forum_url, $forum_config, $forum_user, $forum_db, $base_url, $lang_common;
 
 	($_GET['method'] == 'plus') ? $method=1 : $method=0;
 	$pid = isset($_GET['pid']) ? intval($_GET['pid']) : message($lang_common['Bad request']);
+	$uid = isset($_GET['uid']) ? intval($_GET['uid']) : message($lang_common['Bad request']);
 	
 	$query = array(
-		'SELECT'	=> 'reason, expire',
+		'SELECT'	=> 'expire',
 		'FROM'		=> 'warnings',
-		'WHERE'		=> 'pid='.$pid.' AND from_uid='.$forum_user['id'].' AND method='.$method
+		'WHERE'		=> 'pid='.$pid.' AND uid='.$uid.' AND method='.$method
 	);
 	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
 		
@@ -318,10 +376,24 @@ function form_render(&$forum_page){
 			$warn = $forum_db->fetch_assoc($result);
 			$expire = $warn['expire']/86400;
 	else:
-	//if($method==0) message($lang_warn['Minimum warnings']);
-	$warn['reason'] = '';
 	$expire = 1;
 	endif;
+	
+	$query = array(
+		'SELECT'	=> 'group_id, warn_edit',
+		'FROM'		=> 'users',
+		'WHERE'		=> 'id='.$uid
+	);
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
+	$warn_user = $forum_db->fetch_assoc($result);
+	
+	$query = array(
+		'SELECT'	=> 'g_id, g_user_title',
+		'FROM'		=> 'groups',
+		'WHERE'		=> 'g_id in ('.$forum_config['o_warn_group_sig'].','.$forum_config['o_warn_group_ava'].','.$forum_config['o_warn_group_read'].')',
+		'ORDER BY'	=> 'g_id',
+	);
+	$result_gr = $forum_db->query_build($query) or error(__FILE__, __LINE__);
 	
 	$forum_page['group_count'] = $forum_page['item_count'] = $forum_page['fld_count'] = 0;
 	
@@ -366,13 +438,33 @@ function form_render(&$forum_page){
 							<option value="30" <?php if($expire==30) echo 'selected'; ?> >1 <?php echo $lang_warn['Month'] ?></option>
 							<option value="60" <?php if($expire==60) echo 'selected'; ?> >2 <?php echo $lang_warn['Months'] ?></option>
 							<option value="90" <?php if($expire==90) echo 'selected'; ?> >3 <?php echo $lang_warn['Months'] ?></option>
-							</select></span>
+							</optgroup></select></span>
 						</div>
 					</div>
-			<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+						<div class="sf-box select">
+							<label for="fld<?php echo ++$forum_page['fld_count'] ?>">
+								<span><?php echo $lang_warn['Group Warn'] ?></span>
+							</label><br />
+							<span class="fld-input"><select id="fld<?php echo $forum_page['fld_count'] ?>" name="group">
+							<optgroup label="<?php echo $lang_warn['Group Warn'] ?>">
+<?php while ($current = $forum_db->fetch_assoc($result_gr))
+		{ ?>
+							<option value="<?php echo $current['g_id'] ?>" <?php if($warn_user['group_id']==$current['g_id']) echo 'selected'; ?> ><?php echo $current['g_user_title'] ?></option>
+<?php } ?>
+							</optgroup></select></span>
+						</div>
+					</div>					
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box checkbox">
+						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="edit" value="1"<?php if ($warn_user['warn_edit'] == '1') echo ' checked="checked"' ?> /></span>
+						<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_warn['Warn group edit'] ?></label>
+					</div>
+				</div>
+				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
 				<div class="txt-box textarea">
 					<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_warn['Form reason'] ?></span></label><br />
-					<div class="txt-input"><span class="fld-input"><textarea cols='60' rows='10' wrap='soft' name="req_message" class='textinput'><?php echo (!empty($forum_page['errors'])) ? $forum_page['req_message'] : null; echo $warn['reason']; ?></textarea></span></div>
+					<div class="txt-input"><span class="fld-input"><textarea cols='60' rows='10' name="req_message" class='textinput'><?php echo (!empty($forum_page['errors'])) ? $forum_page['req_message'] : null; ?></textarea></span></div>
 				</div>
 			</div>
 			</fieldset>

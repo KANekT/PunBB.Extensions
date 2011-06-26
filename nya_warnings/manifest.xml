@@ -13,100 +13,18 @@
 <extension engine="1.0">
 	<id>nya_warnings</id>
 	<title>.Warnings</title>
-	<version>0.1.0</version>
+	<version>0.3.0</version>
 	<description>Warnings</description>
 	<author>KANekT</author>
-
 	<minversion>1.3.4</minversion>
-	<maxtestedon>1.3.4</maxtestedon>
-
+	<maxtestedon>1.3.5</maxtestedon>
 	<install><![CDATA[
-		$schema = array(
-			'FIELDS'  => array(
-				'id'  => array(
-					'datatype'  => 'SERIAL',
-					'allow_null'  => false
-				),
-				'uid'  => array(
-					'datatype'  => 'INT(10)',
-					'allow_null'  => false
-				),
-				'from_uid'  => array(
-					'datatype'  => 'INT(10)',
-					'allow_null'  => false
-				),
-				'reason'  => array(
-					'datatype'  => 'VARCHAR(300)',
-					'allow_null'  => true
-				),
-				'method'  => array(
-					'datatype'  => 'TINYINT(1)',
-					'allow_null'  => false
-				),
-				'expire'  => array(
-					'datatype'  => 'INT(10)',
-					'allow_null'  => false
-				),
-				'pid'  => array(
-					'datatype'  => 'INT(10)',
-					'allow_null'  => false
-				),
-				'tid'  => array(
-					'datatype'  => 'INT(10)',
-					'allow_null'  => false
-				),
-				'warn_popup_show'  => array(
-					'datatype'  => 'TINYINT(1)',
-					'allow_null'  => false
-				),
-				'time'  => array(
-					'datatype'  => 'INT(10)',
-					'allow_null'  => false
-				)
-			),
-			'PRIMARY KEY'  	=> array('id'),
-			'INDEXES'		=> array(
-				'warn_post_id_idx'	=> array('pid')
-			)
-		);
-		$forum_db->create_table('warnings', $schema);
-		if (!$forum_db->field_exists('users', 'warn_expiries'))
-			$forum_db->add_field('users', 'warn_expiries', 'INT(10)', false, 0);
-		if (!$forum_db->field_exists('users', 'warn_count'))
-			$forum_db->add_field('users', 'warn_count', 'INT(10)', false, 0);
-		if (!$forum_db->field_exists('users', 'warn_group_id'))
-			$forum_db->add_field('users', 'warn_group_id', 'INT(10)', false, 0);
-		$query = array(
-		   'INSERT'  => 'conf_name, conf_value',
-		   'INTO'    => 'config',
-		   'VALUES'  => '\'o_warn_enabled\', \'1\'' 
-		);
-		$forum_db->query_build($query);
-		$query = array(
-		   'INSERT'  => 'conf_name, conf_value',
-		   'INTO'    => 'config',
-		   'VALUES'  => '\'o_warn_group\', \'3\'' 
-		);
-		$forum_db->query_build($query);
-		$query = array(
-		   'INSERT'  => 'conf_name, conf_value',
-		   'INTO'    => 'config',
-		   'VALUES'  => '\'o_warn_maxmessage\', \'100\'' 
-		);
-		$forum_db->query_build($query);
-
+		require_once FORUM_ROOT.'extensions/nya_warnings/install.php';
+		install();
 	]]></install>
-
 	<uninstall><![CDATA[
-	$forum_db->drop_table('warnings');
-	$forum_db->drop_field('users', 'warn_expiries');
-	$forum_db->drop_field('users', 'warn_count');
-	$forum_db->drop_field('users', 'warn_group_id');
-	$query = array(
-		'DELETE' => 'config',
-		'WHERE'		=> 'conf_name in (\'o_warn_enabled\', \'o_warn_group\', \'o_warn_maxmessage\')',
-	);
-	$forum_db->query_build($query);
+		require_once FORUM_ROOT.'extensions/nya_warnings/install.php';
+		uninstall();
 	]]></uninstall>
 	<hooks>
 		<hook id="vt_start">
@@ -115,22 +33,8 @@
 					require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
 				else
 					require $ext_info['path'].'/lang/English.php';
-				$query = array(
-					'UPDATE'	=> 'users',
-					'SET'		=> 'group_id=warn_group_id',
-					'WHERE'		=> 'warn_expiries<='.time().' AND warn_group_id>0 AND warn_group_id<>'.$forum_config['o_warn_group']
-				);	
-				$forum_db->query_build($query) or error(__FILE__, __LINE__);
 			]]>
 		</hook>
-		<hook id="in_start, vf_start"><![CDATA[
-			$query = array(
-				'UPDATE'	=> 'users',
-				'SET'		=> 'group_id=warn_group_id',
-				'WHERE'		=> 'warn_expiries <> 0 AND warn_expiries<='.time()
-			);	
-			$forum_db->query_build($query) or error(__FILE__, __LINE__);
-		]]></hook>
 		<hook id="vt_qr_get_posts">
 		<![CDATA[
 				$query['SELECT'] .= ', u.warn_count as uWarn';
@@ -149,11 +53,14 @@ if ($forum_config['o_warn_enabled'] == 1){
         $forum_page['author_info']['warn'] .= '<a class="warn" href="'.forum_link($forum_url['warn_plus'], array($cur_post['id'],$cur_post['poster_id'])).'">+</a>&nbsp;';
        	$forum_page['author_info']['warn'] .= $cur_post['uWarn'];
         $forum_page['author_info']['warn'] .= '&nbsp;<a class="warn" href="'. forum_link($forum_url['warn_minus'], array($cur_post['id'],$cur_post['poster_id'])) .'">-</a>'; 
-    }  
+    }
     else {
        	$forum_page['author_info']['warn'] .= $cur_post['uWarn'];
     }
 		$forum_page['author_info']['warn'] .= '</span></li>';
+		
+		if ($cur_post['g_id']==$forum_config['o_warn_group_sig'] || $cur_post['g_id']==$forum_config['o_warn_group_ava'] || $cur_post['g_id']==$forum_config['o_warn_group_read']) $forum_page['message']['signature'] = '';
+		if ($cur_post['g_id']==$forum_config['o_warn_group_ava'] || $cur_post['g_id']==$forum_config['o_warn_group_read']) $forum_page['author_ident']['avatar']  = '';
 }					
 		]]>
 		</hook>
@@ -161,14 +68,11 @@ if ($forum_config['o_warn_enabled'] == 1){
 $section = isset($_GET['section']) ? $_GET['section'] : null;
 		if ($forum_config['o_warn_enabled'] == '1' )
 		{
-
 if ($section == 'warn') {
 	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
 		require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
 	else
 		require $ext_info['path'].'/lang/English.php';
-		
-	require $ext_info['path'].'/functions.php';
 	
 	$forum_page = array();
 	
@@ -197,7 +101,7 @@ if ($section == 'warn') {
 					require $ext_info['path'].'/lang/English.php';
 		
 if ($forum_config['o_warn_enabled'] == 1){
-	$forum_page['user_info']['warn'] = '<li><span><a href="'.forum_link($forum_url['warn_view'], $id).'">'.$lang_warn['Warnings'].':  '.$user['warn_count'].'</a>';
+	$forum_page['user_info']['warn'] = '<li><span><a href="'.forum_link($forum_url['warn_view'], $id).'">'.$lang_warn['Warnings'].':  '.$user['warn_count'].'</a></span></li>';
 }
 		]]></hook>		
 		<hook id="co_modify_url_scheme"><![CDATA[
@@ -206,6 +110,19 @@ if (file_exists($ext_info['path'].'/url/'.$forum_config['o_sef'].'.php'))
 else
 	require $ext_info['path'].'/url/Default.php';
 		]]></hook>
+		<hook id="co_common"><![CDATA[	
+if (!defined('FORUM_WARN_LOADED'))
+{		
+	require $ext_info['path'].'/functions.php';
+	if (file_exists(FORUM_CACHE_DIR.'cache_warn.php'))
+	{
+		require FORUM_CACHE_DIR.'cache_warn.php';
+		check_warn($forum_warn);
+	}
+	else
+		generate_warn_cache();
+}
+		]]></hook>		
 		<hook id="re_rewrite_rules"><![CDATA[
 $forum_rewrite_rules['/^warn[\/_-]?(\.html?|\/)?$/i'] = 'misc.php?section=warn';
 $forum_rewrite_rules['/^warn[\/_-]?(p|page\/)([0-9]+)(\.html?|\/)?$/i'] = 'misc.php?section=warn&p=$1';
@@ -214,7 +131,6 @@ $forum_rewrite_rules['/^warn[\/_-]?(p|page\/)([0-9]+)(\.html?|\/)?$/i'] = 'misc.
 if (!isset($form['warn_enabled']) || $form['warn_enabled'] != '1') $form['warn_enabled'] = '0';
 $form['warn_maxmessage'] = intval($form['warn_maxmessage']);
 		]]></hook>
-		
 		<hook id="aop_features_message_fieldset_end"><![CDATA[
 				if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
 					require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
@@ -242,70 +158,6 @@ $form['warn_maxmessage'] = intval($form['warn_maxmessage']);
 				</div>
 			</fieldset>
 <?php		
-				
 		]]></hook>
-		<hook id="agr_default_group_fieldset_end"><![CDATA[
-				if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
-					require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
-				else
-					require $ext_info['path'].'/lang/English.php';
-?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><span><?php echo $lang_warn['Default group legend'] ?></span></legend>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box select">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_warn['Default group label'] ?></span></label><br />
-						<span class="fld-input"><select id="fld<?php echo $forum_page['fld_count'] ?>" name="warn_group">
-<?php
-
-$query = array(
-	'SELECT'	=> 'g.g_id, g.g_title',
-	'FROM'		=> 'groups AS g',
-	'WHERE'		=> 'g_id>'.FORUM_GUEST.' AND g_moderator=0',
-	'ORDER BY'	=> 'g.g_title'
-);
-
-$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
-while ($cur_group = $forum_db->fetch_assoc($result))
-{
-	if ($cur_group['g_id'] == $forum_config['o_warn_group'])
-		echo "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.forum_htmlencode($cur_group['g_title']).'</option>'."\n";
-	else
-		echo "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.forum_htmlencode($cur_group['g_title']).'</option>'."\n";
-}
-
-?>
-						</select></span>
-					</div>
-				</div>
-			</fieldset>
-<?php		
-		]]></hook>
-		<hook id="agr_set_default_group_form_submitted"><![CDATA[
-			$warn_id = intval($_POST['warn_group']);
-			
-			if ($warn_id == FORUM_ADMIN || $warn_id == FORUM_GUEST)
-				message($lang_common['Bad request']);
-				
-			$query = array(
-				'SELECT'	=> 'g.g_id',
-				'FROM'		=> 'groups AS g',
-				'WHERE'		=> 'g.g_id='.$warn_id.' AND g.g_moderator=0',
-				'LIMIT'		=> '1'
-			);
-
-			$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
-			if (!$forum_db->num_rows($result))
-				message($lang_common['Bad request']);
-				
-			$query = array(
-				'UPDATE'	=> 'config',
-				'SET'		=> 'conf_value='.$warn_id,
-				'WHERE'		=> 'conf_name=\'o_warn_group\''
-			);
-			
-			$forum_db->query_build($query) or error(__FILE__, __LINE__);
-		]]></hook>
-		</hooks>
 	</hooks>
 </extension>
