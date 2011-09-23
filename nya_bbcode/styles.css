@@ -1,0 +1,68 @@
+/* Styles for pun_extended_bbcode extension */
+div#box{
+	border: 3px double #1F537B;
+	background-color: #fff;
+	padding: 2px;
+}
+div.note-outerbox{
+	color: #1F537B;
+	background-color: white;
+	padding: 4px;
+	border: 1px solid #b1b1b1;
+}
+div.note-innerbox{
+	background-color: #1F537B;
+	border: 1px solid #4a566e;
+	padding: 1px;
+	text-align: center;
+	color: white;
+}
+div#spoiler-container{
+	border: 1px dotted gray;
+	padding: 4px;
+	color: #333333;
+}
+.spoiler-in{
+	background: #1F537B;
+	color: #fff;
+	border: 1px solid silver;
+	cursor: pointer;
+}
+.spoiler-out{
+	background: #fff !important ;
+	border: 1px solid black !important;
+	color: #1F537B !important;
+	cursor: pointer;
+	margin: 5px;
+}
+div#spoiler-hidebox{
+	margin-top: 4px;
+	border-top: 1px dotted gray;
+	font: 90%;
+	color: #333333;
+	display: none;
+}
+
+.brd .entry-content .css-center{
+	text-align: center;
+}
+.brd .entry-content .css-center p{
+	text-align: center;
+}
+.brd .entry-content .css-right{
+	text-align: right;
+}
+.brd .entry-content .css-right p{
+	text-align: right;
+}
+.brd .entry-content .css-justify{
+	text-align: justify;
+}
+.brd .entry-content .css-justify p{
+	text-align: justify;
+}
+
+acronym {
+	border-bottom: 1px dashed #1F537B !important; /* Подчеркивание текста */
+	color: gray; /* Цвет текста */
+}
