@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for CLEditor
+ *
+ * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
+ * @package CLEditor
+*/
+-->
+<extension engine="1.0">
+	<id>nya_bbcode</id>
+	<title>Nya extended BBcodes</title>
+	<version>beta</version>
+	<description>BB code 
+[center][/center][justify][/justify][left][/left][right][/right]
+[size=][/size][hide][/hide][search=][/search][spoiler=][/spoiler]
+[video][/video]
+Tag s, hide, search [KANekT]
+Tag center, justify, left, right, note, highlight, box and spoiler [DiD]
+Tag size [Pepak]
+Tag video [Neck]
+Tag Acronym [Kurkov Sergei]
+</description>
+	<author>KANekT</author>
+	<minversion>1.3.4</minversion>
+	<maxtestedon>1.3.4</maxtestedon>
+
+	<hooks>
+		<hook id="hd_head"><![CDATA[
+if (FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost'] || in_array(FORUM_PAGE, array('profile-signature', 'postedit')))
+{
+		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+			require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+		else
+			require $ext_info['path'].'/lang/English.php';
+			$forum_head['style_nya_extended_jscode'] = '<script type="text/javascript">
+</script>
+';
+		$forum_head['style_nya_extended_bbcode'] = '<link rel="stylesheet" type="text/css" media="screen" href="'.$ext_info['url'].'/styles.css" />';
+}
+		]]></hook>
+		<hook id="pun_bbcode_pre_tags_merge"><![CDATA[
+			$tags_without_attr[] = 's';
+			$tags_without_attr[] = 'center';
+			$tags_without_attr[] = 'right';
+			$tags_without_attr[] = 'justify';
+			$tags_without_attr[] = 'spoiler';
+			$tags_without_attr[] = 'box';
+			$tags_without_attr[] = 'video';
+			$tags_with_attr[] = 'highlight';
+			$tags_with_attr[] = 'note';
+			$tags_with_attr[] = 'hide';
+			$tags_with_attr[] = 'acronym';
+			$tags_with_attr[] = 'search';
+			$tags_with_attr[] = 'size';
+		]]></hook>
+		<hook id="pun_bbcode_buttons_output_loop_start"><![CDATA[
+			if ($forum_user['pun_bbcode_use_buttons'])
+			{
+				if (file_exists($ext_info['path'].'/buttons/'.$forum_user['style'].'/'))
+					$buttons_path = $ext_info['url'].'/buttons/'.$forum_user['style'];
+				else
+					$buttons_path = $ext_info['url'].'/buttons/Oxygen';
+			}
+		]]></hook>
+		
+		<hook id='ps_do_bbcode_replace'><![CDATA[
+		// Include language
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+		//s
+			$pattern[] = '#\[s\](.*?)\[/s\]#ms';
+			$replace[] = '<s>$1</s>';
+		//center
+			$pattern[] = '#\[center\](.*?)\[/center\]#ms';
+			$replace[] = '</p><div class="css-center"><p>$1</p></div><p>';
+		//right
+			$pattern[] = '#\[right\](.*?)\[/right\]#ms';
+			$replace[] = '</p><div class="css-right"><p>$1</p></div><p>';
+		//left
+			$pattern[] = '#\[left\](.*?)\[/left\]#ms';
+			$replace[] = '</p><p>$1</p><p>';
+		//justify
+			$pattern[] = '#\[justify\](.*?)\[/justify\]#ms';
+			$replace[] = '</p><div class="css-justify"><p>$1</p></div><p>';
+		//note
+			$pattern[] = '#\[note?\=(.*?)](.*?)\[/note\]#ms';
+			$replace[] = '<div class="note-outerbox"><div class="note-innerbox">'.$lang_nya_bbcode['str_Note'].'$1</div>$2</div>';
+		//highlight
+			$pattern[] = '#\[highlight=([a-zA-Z]{3,20}|\#[0-9a-fA-F]{6}|\#[0-9a-fA-F]{3})](.*?)\[/highlight\]#s';
+			$replace[] = '<span style="background-color: $1">$2</span>';
+		//box
+			$pattern[] = '#\[box\](.*?)\[/box\]#ms';
+			$replace[] = '<p><div id="box">$1</div></p>';
+		//spoiler
+			$pattern[] = '#\[spoiler\](.*?)\[/spoiler\]#s';
+			$replace[] = '<div id="spoiler-container"><div class="spoiler-in" onClick="if(this.className==\'spoiler-in\'){this.parentNode.getElementsByTagName(\'div\')[1].style.display = \'block\';this.className = \'spoiler-out\';} else {this.className=\'spoiler-in\';this.parentNode.getElementsByTagName(\'div\')[1].style.display = \'none\';}">'.$lang_nya_bbcode['str_Spoiler'].'</div><div id="spoiler-hidebox">$1</div></div>';
+			
+			$pattern[] = '#\[spoiler=(.*?)\](.*?)\[/spoiler\]#ms';
+			$replace[] = '<div id="spoiler-container"><div class="spoiler-in" onClick="if(this.className==\'spoiler-in\'){this.parentNode.getElementsByTagName(\'div\')[1].style.display = \'block\';this.className = \'spoiler-out\';} else {this.className=\'spoiler-in\';this.parentNode.getElementsByTagName(\'div\')[1].style.display = \'none\';}">$1</div><div id="spoiler-hidebox">$2</div></div>';
+		// add pattern to catch [video]blahblah[/video]
+			$pattern[] = '`\[video\]([^\[]+)\[/video\]`e';
+			$replace[] = 'handle_video_tag(\'$1\')';
+		//acronym
+			$pattern[] = '#\[acronym=([^\[]+?)\](.*?)\[/acronym\]#ms';
+			$replace[] = '<acronym class="border-bottom:1px dotted blue;" title="$1">$2</acronym>';
+		//search
+			$pattern[] = '#\[search=(.*?)\](.*?)\[/search\]#ms';
+			$replace[] = '<a href="search.php?action=search&sort_dir=DESC&show_as=topics&keywords=$1">$2</a>';
+		//size
+		if (!function_exists('bbcode_size_pregcallback')) {
+			function bbcode_size_pregcallback($matches) {
+				$sizes = array('1'=>'xx-small', '2'=>'x-small', '3'=>'small', '4'=>'medium', '5'=>'large', '6'=>'x-large', '7'=>'xx-large', 
+					'+1'=>'150%', '+2'=>'200%', '+3'=>'300%', '-1'=>'80%', '-2'=>'60%', '-3'=>'40%');
+				if (isset($sizes[$matches[1]]))
+					return '<span style="font-size: '.$sizes[$matches[1]].';">'.$matches[2].'</span>';
+				else
+					return $matches[0];
+			}
+		}
+		$text = preg_replace_callback('~\\[size=([1-7]|[+-][1-3])\\]([^<>]*)\\[/size\\]~isU', 'bbcode_size_pregcallback', $text);
+
+		]]></hook>
+		
+		<hook id='ps_preparse_tags_start'><![CDATA[
+			// add our tag to the list
+			$tags[] = 's';
+			$tags_opened[] = 's';
+			$tags_closed[] = 's';
+			$tags_inline[] = 's';
+			$tags_trim[] = 's';
+
+			//CENTER
+			$tags[] = 'center';
+			
+			$tags_opened[] = 'center';
+			$tags_closed[] = 'center';
+			$tags_inline[] = 'center';
+			$tags_trim[] = 'center';
+			$tags_fix[] = 'center';
+			
+			//RIGHT
+			$tags[] = 'right';
+			
+			$tags_opened[] = 'right';
+			$tags_closed[] = 'right';
+			$tags_inline[] = 'right';
+			$tags_trim[] = 'right';
+			$tags_fix[] = 'right';
+			
+			//RIGHT
+			$tags[] = 'left';
+			
+			$tags_opened[] = 'left';
+			$tags_closed[] = 'left';
+			$tags_inline[] = 'left';
+			$tags_trim[] = 'left';
+			$tags_fix[] = 'left';
+
+			//JUSTIFY
+			$tags[] = 'justify';
+			
+			$tags_opened[] = 'justify';
+			$tags_closed[] = 'justify';
+			$tags_inline[] = 'justify';
+			$tags_trim[] = 'justify';
+			$tags_fix[] = 'justify';
+			
+			//NOTE
+			$tags[] = 'note';
+			
+			$tags_opened[] = 'note';
+			$tags_closed[] = 'note';
+			$tags_inline[] = 'note';
+			
+			$tags_fix[] = 'note';
+			
+			//HIGHLIGHT
+			$tags[] = 'highlight';
+			
+			$tags_opened[] = 'highlight';
+			$tags_closed[] = 'highlight';
+			$tags_inline[] = 'highlight';
+			
+			$tags_fix[] = 'highlight';
+			
+			//BOX
+			$tags[] = 'box';
+			
+			$tags_opened[] = 'box';
+			$tags_closed[] = 'box';
+			$tags_inline[] = 'box';
+			
+			$tags_limit_bbcode['*'][] = 'box';
+			$tags_limit_bbcode['url'][] = 'box';
+			$tags_limit_bbcode['email'][] = 'box';
+			$tags_limit_bbcode['img'][] = 'box';
+			
+			$tags_fix[] = 'box';
+			
+			//SPOILER
+			$tags[] = 'spoiler';
+			$tags_opened[] = 'spoiler';
+			$tags_closed[] = 'spoiler';
+			
+			$tags_fix[] = 'spoiler';
+			
+			// Hide
+			$tags[] = 'hide';
+			$tags_fix[] = 'hide';
+			$tags_block[] = 'hide';
+
+			$tags[] = 'search';
+			$tags_fix[] = 'search';
+			$tags_block[] = 'search';
+			
+			$tags[] = 'video';
+			$tags_opened[] = 'video';
+			$tags_closed[] = 'video';
+			$tags_inline[] = 'video';
+			$tags_trim[] = 'video';
+			// we must allow url due to do_clickable
+			$tags_limit_bbcode['video'] = array('url');
+			
+			$tags[] = 'acronym';
+			$tags_limit_bbcode['*'][] = 'acronym';
+
+		]]></hook>
+
+		<hook id="he_start"><![CDATA[
+		// Include language
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+		]]></hook>
+	<hook id="ps_parse_message_pre_split"><![CDATA[
+		global $forum_url;
+		
+		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+						require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+				else
+						require $ext_info['path'].'/lang/English.php';
+		
+			if (strpos($text, 'hide') !== false && strpos($text, '/hide') !== false)
+			{
+				if ($forum_user['is_guest'])
+				{
+					$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', '[code]'.sprintf($lang_nya_bbcode['Hidden text guest'], '<a href="'.forum_link($forum_url['login']).'">'.$lang_nya_bbcode['login'].'</a>').'[/code]', $text);
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', '[code]'.sprintf($lang_nya_bbcode['Hidden text guest'], '<a href="'.forum_link($forum_url['login']).'">'.$lang_nya_bbcode['login'].'</a>').'[/code]', $text);
+				}
+				else if ($forum_user['is_admmod'])
+				{
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $text);
+					$text = preg_replace('#\[hide](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text'].':</cite><blockquote><p><i>$1</i></p></blockquote></div><p>', $text);
+				}
+				else 
+				{
+					$text = preg_replace('#\[hide](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text'].':</cite><blockquote><p><i>$1</i></p></blockquote></div><p>', $text);
+					
+					$occurances = preg_match_all("#\[hide\=.+?\](.+?)\[/hide\]#is", $text, $temp); 
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide\=(.+?)\].+?\[/hide\]#s", $temp[0][$i],$hide_count);
+						if($forum_user['num_posts'] >= $hide_count[1])
+						{
+							$text_hide = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $temp[0][$i]);
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide=([0-9]*)](.*?)\[/hide\]#s", '<b>['.$lang_nya_bbcode['Hidden count begin'].' '.$hide_count[1].' '.$lang_nya_bbcode['Hidden count end'].']</b>', $temp[0][$i]);
+							
+						}
+						if (isset($text_hide))
+						{
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+				
+				preg_match("#\[hide=gr.+?\].+?\[/hide\]#i", $text, $hide_group);
+				if (strpos($text, 'hide=gr') !== false && strpos($text, '/hide') !== false)
+				{
+					$occurances = preg_match_all("#\[hide=gr.+?\](.+?)\[/hide\]#is", $text, $temp); 
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide=gr(.+?)\].+?\[/hide\]#i", $temp[0][$i],$hide_group);
+						if($forum_user['g_id'] == $hide_group[1] || $forum_user['is_admmod'])
+						{
+							$text_hide = preg_replace('#\[hide=gr([0-9]*)](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text group'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $temp[0][$i]);
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide=gr([0-9]*)](.*?)\[/hide\]#s", '<b>['.$lang_nya_bbcode['Hidden text group'].' '.$hide_group[1].']</b>', $temp[0][$i]);
+						}
+						if (isset($text_hide))
+						{
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+			}
+
+	]]></hook>
+	<hook id="po_modify_quote_info"><![CDATA[
+		$text = $q_message;
+		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+						require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+				else
+						require $ext_info['path'].'/lang/English.php';
+						
+			if (strpos($text, 'hide') !== false && strpos($text, '/hide') !== false)
+			{
+				if ($forum_user['is_guest'])
+				{
+					$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', $lang_nya_bbcode['Hidden text'], $text);
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', $lang_nya_bbcode['Hidden text'], $text);
+				}
+				else if ($forum_user['is_admmod'])
+				{
+				}
+				else 
+				{
+					$occurances = preg_match_all("#\[hide\=.+?\](.+?)\[/hide\]#is", $text, $temp); 
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide\=(.+?)\].+?\[/hide\]#s", $temp[0][$i],$hide_count);
+
+						if($forum_user['num_posts'] >= $hide_count[1])
+						{
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide=([0-9]*)](.*?)\[/hide\]#s", $lang_nya_bbcode['Hidden text'], $temp[0][$i]);
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+				
+				preg_match("#\[hide\=gr(.+?)\].+?\[/hide\]#i", $text, $hide_group);
+				if (isset($hide_group[1]))
+				{
+					$occurances = preg_match_all("#\[hide\=gr.+?\](.+?)\[/hide\]#is", $text, $temp); 
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide\=gr(.+?)\].+?\[/hide\]#i", $temp[0][$i],$hide_group);
+						if($forum_user['g_id'] == $hide_group[1] || $forum_user['is_admmod'])
+						{
+							$text_hide = preg_replace('#\[hide\=gr([0-9]*)](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text group'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $temp[0][$i]);
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide\=gr([0-9]*)](.*?)\[/hide\]#s", '<b>['.$lang_nya_bbcode['Hidden text group'].' '.$hide_group[1].']</b>', $temp[0][$i]);
+						}
+						if (isset($text_hide))
+						{
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+			}
+			$q_message = $text;	
+		]]></hook>
+	<hook id="ft_about_pre_copyright" priority="1"><![CDATA[
+	if (FORUM_PAGE == 'viewtopic' && !empty($pun_quote_js_arrays))
+	{
+		$text = $pun_quote_js_arrays;
+		if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+						require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+				else
+						require $ext_info['path'].'/lang/English.php';
+						
+			if (strpos($text, 'hide') !== false && strpos($text, '/hide') !== false)
+			{
+				if (!$forum_user['is_admmod'])
+				{
+					$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', $lang_nya_bbcode['Hidden text'], $text);
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', $lang_nya_bbcode['Hidden text'], $text);
+				}
+				
+				preg_match("#\[hide\=gr(.+?)\].+?\[/hide\]#i", $text, $hide_group);
+				if (isset($hide_group[1]))
+				{
+					$occurances = preg_match_all("#\[hide\=gr.+?\](.+?)\[/hide\]#is", $text, $temp); 
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide\=gr(.+?)\].+?\[/hide\]#i", $temp[0][$i],$hide_group);
+						if($forum_user['g_id'] == $hide_group[1] || $forum_user['is_admmod'])
+						{
+							$text_hide = preg_replace('#\[hide\=gr([0-9]*)](.*?)\[/hide\]#s', '</p><div class="quotebox"><cite>'.$lang_nya_bbcode['Hidden text group'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $temp[0][$i]);
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide\=gr([0-9]*)](.*?)\[/hide\]#s", '<b>['.$lang_nya_bbcode['Hidden text group'].' '.$hide_group[1].']</b>', $temp[0][$i]);
+						}
+						if (isset($text_hide))
+						{
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+			}
+			$pun_quote_js_arrays = $text;	
+	}
+		]]></hook>
+		<hook id="he_new_bbcode_section"><![CDATA[
+		// add lang file
+			$lang_help = array_merge($lang_help, $lang_nya_bbcode);
+			?>
+			<div class="ct-box help-box">
+				<h3 class="hn"><span><?php echo $lang_help['List info'] ?></span></h3>
+				<div class="entry-content">
+					<code>[s]<?php echo $lang_help['s text'] ?>[/s]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><s><?php echo $lang_help['s text'] ?></s></samp>
+				</div>			
+				<br />
+				<div class="entry-content">
+					<code>[center]<?php echo $lang_help['Center'] ?>[/center]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="text-align: center;"><?php echo $lang_help['Center'] ?></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[right]<?php echo $lang_help['Right'] ?>[/right]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="text-align: right;"><?php echo $lang_help['Right'] ?></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[left]<?php echo $lang_help['Left'] ?>[/left]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="text-align: left;"><?php echo $lang_help['Left'] ?></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[justify]<?php echo $lang_help['Justify'] ?>[/justify]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="text-align: justify;"><?php echo $lang_help['Justify'] ?></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[note=TraumaHound]<?php echo $lang_help['Note'] ?>[/note]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="color: #1F537B;background-color: white;padding: 4px;border: 1px solid #b1b1b1;"><div style="background-color: #1F537B;border: 1px solid #4a566e;padding: 1px;text-align: center;color: white;"><?php echo $lang_help['str_Note'] ?>TraumaHound</div><?php echo $lang_help['Note'] ?></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[highlight=#FFFF00]<?php echo $lang_help['Highlight'] ?>[/highlight]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><span style="background-color: #FFFF00;"><?php echo $lang_help['Highlight'] ?></span></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[box]<?php echo $lang_help['Box'] ?>[/box]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<samp><div style="border: 3px double #1F537B;background-color: #fff;padding: 2px;"><?php echo $lang_help['Box'] ?></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[spoiler]<?php echo $lang_help['Spoiler'] ?>[/spoiler]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<style>.spoiler-in{	background: #1F537B;color: #fff;border: 1px solid silver;cursor: pointer;}.spoiler-out{background: #fff !important ;border: 1px solid black !important;color: #1F537B !important;cursor: pointer;margin: 5px;}#spoiler-hidebox{border-top: 1px dotted gray;display: none;}#spoiler-container{border: 1px dotted gray;}</style>
+					<samp><div id="spoiler-container"><div class="spoiler-in" onClick="if(this.className=='spoiler-in'){this.parentNode.getElementsByTagName('div')[1].style.display = 'block';this.className = 'spoiler-out';} else {this.className='spoiler-in';this.parentNode.getElementsByTagName('div')[1].style.display = 'none';}"><?php echo $lang_help['str_Spoiler'] ?></div><div id="spoiler-hidebox"><?php echo $lang_help['Spoiler'] ?></div></div></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[video]<?php echo $lang_help['video_uri'] ?>[/video]</code><span><?php echo $lang_help['produces'] ?></span>
+					<?php echo $lang_help['video_display'] ?>
+					<object width="480" height="385"><param name="movie" value="http://www.youtube.com/v/MwSzzT-C9tE?fs=1&amp;hl=ru_RU"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/MwSzzT-C9tE?fs=1&amp;hl=ru_RU" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[acronym=<?php echo $lang_help['acronym text'] . ']' . $lang_help['acronym'] ?>[/acronym]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<style>acronym {border-bottom: 1px dashed blue;}</style>
+					<samp><acronym title="<?php echo $lang_help['acronym text'] . '">' . $lang_help['acronym'] ?></acronym></samp>
+				</div>
+				<br />
+				<div class="entry-content">
+					<code>[search=<?php echo $lang_help['search text'] . ']' . $lang_help['search'] ?>[/search]</code><span><?php echo $lang_help['produces'] ?></span>
+					<samp><p><a href="search.php?action=search&sort_dir=DESC&show_as=topics&keywords=<?php echo $lang_help['search text'] ?>"><?php echo $lang_help['search'] ?></a></p></samp>
+				</div>			
+				<br />
+				<div class="entry-content">
+					<code>[hide]<?php echo $lang_help['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<div class="quotebox"><cite><?php echo $lang_help['Hidden text'] ?></cite><blockquote><p><i><?php echo $lang_help['Hidden text'] ?></i></blockquote></p></div>
+					<code>[hide=1]<?php echo $lang_help['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<div class="quotebox"><cite><?php echo $lang_help['Hidden text'] ?>[1]</cite><blockquote><p><i><?php echo $lang_help['Hidden text'] ?></i></blockquote></p></div>
+					<code>[hide=gr1]<?php echo $lang_help['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<div class="quotebox"><cite><?php echo $lang_help['Hidden text group'] ?>[1]</cite><blockquote><p><i><?php echo $lang_help['Hidden text group'] ?>1</i></p></blockquote></div>
+				</div>
+			</div>
+<?php
+		]]></hook>
+		<hook id="ps_start"><![CDATA[
+
+// tag handling function
+function handle_video_tag($videoUri) {
+	global $forum_config;
+	$match = array();
+
+	// dirty trick to play arround do_clickable
+	preg_match('`href="([^"]+)"`', stripslashes($videoUri), $match);
+	if(!empty($match[1])) {
+		$videoUri = $match[1];
+	}
+
+	// the services list
+	$service = array(
+		'youtube' => array(
+			'match'=>'`watch\?v=([-_a-z0-9]+)`i',
+			'uri'=>'http://www.youtube.com/v/%s&amp;rel=0',
+			'width'=>425,
+			'height'=>344
+		),
+		'rutube' => array(
+			'match'=>'`[a-z0-9]+\.html\?v=([a-z0-9]+)`i',
+			'uri'=>'http://rutube.ru/tracks/%s',
+			'video_uri'=>'http://video.rutube.ru/%s',
+			'width'=>470,
+			'height'=>353
+		),
+		'dailymotion' => array(
+			'match'=>'`video/([a-z0-9]+)_`i',
+			'uri'=>'http://www.dailymotion.com/swf/%s&amp;amp;related=0&amp;amp;canvas=medium',
+			'width'=>480,
+			'height'=>381
+		),
+		'vimeo' => array(
+			'match'=>'`/([0-9]+)`',
+			'uri'=>'http://www.vimeo.com/moogaloop.swf?clip_id=%s&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;fullscreen=1',
+			'width'=>400,
+			'height'=>302
+		),
+		'google' => array(
+			'match'=>'`\?docid=(-?[0-9]+)`',
+			'uri'=>'http://video.google.com/googleplayer.swf?docId=%s',
+			'width'=>425,
+			'height'=>364
+		)
+	);
+
+	// extract service's name and check for support
+	preg_match('`^http://(?:[^\.]*\.)?([^\.]*)\.[^/]*/`i', $videoUri, $match);
+	if(empty($match[1]) || !array_key_exists($match[1], $service)) {
+		return '<a href="'.$videoUri.'">[video (unkown provider)]</a>';
+	}
+	$s = $service[$match[1]];
+
+	// extract videoId
+	preg_match($s['match'], $videoUri, $match);
+	if(empty($match[1])) {
+		return '<a href="'.$videoUri.'">[video (cant extract ID)]</a>';
+	}
+	$playerUri = sprintf($s['uri'], $match[1]);
+
+	// display flash player
+	return
+		'<object type="application/x-shockwave-flash" data="'.$playerUri.'" width="'.$s['width'].'" height="'.$s['height'].'">'.
+			'<param name="movie" value="'.$playerUri.'" />'.
+			'<param name="wmode" value="transparent" />'.
+			'<param name="allowfullscreen" value="true" />'.
+			'<p><a href="'.$videoUri.'">[video (flash player not installed)]</a></p>'.
+		'</object>';
+}
+
+		]]></hook>		
+		</hooks>
+</extension>
