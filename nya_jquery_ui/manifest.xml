@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE extension SYSTEM "ext-1.0.dtd">
+
+
+<extension engine="1.0">
+	<id>nya_jquery_ui</id>
+	<title>jQuery UI</title>
+	<description>Extension that provide jQueryUI lib (version 1.8.16)</description>
+	<author>KANekT</author>
+	<version>0.1.0</version>
+
+	<minversion>1.4RC1</minversion>
+	<maxtestedon>1.4</maxtestedon>
+	
+	<dependencies>
+		<dependency>pun_jquery</dependency>
+	</dependencies>
+
+
+	<install><![CDATA[
+		forum_config_add('o_nya_jquery_ui_include_method', '0');
+	]]></install>
+
+	<uninstall><![CDATA[
+		forum_config_remove('o_nya_jquery_ui_include_method');
+	]]></uninstall>
+
+	<!-- -->
+	<hooks>
+
+		<!-- -->
+		<hook id="es_essentials"><![CDATA[
+			define('JQUERY_UI_INCLUDE_METHOD_LOCAL', 0);
+			define('JQUERY_UI_INCLUDE_METHOD_GOOGLE', 1);
+
+			define('JQUERY_UI_VERSION', '1.8.16');
+			require $ext_info['path'].'/ui.php';
+		]]></hook>
+
+		<hook id="aop_features_gzip_fieldset_end"><![CDATA[
+			if (!isset($lang_nya_jquery_ui)) {
+				if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/lang.php')) {
+					require $ext_info['path'].'/lang/'.$forum_user['language'].'/lang.php';
+				} else {
+					require $ext_info['path'].'/lang/English/lang.php';
+				}
+			}
+
+			// Reset counter
+			$forum_page['group_count'] = $forum_page['item_count'] = 0;
+?>
+			<div class="content-head">
+				<h2 class="hn"><span><?php echo sprintf($lang_nya_jquery_ui['Setup jquery'], JQUERY_UI_VERSION) ?></span></h2>
+			</div>
+
+			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><strong><?php echo sprintf($lang_nya_jquery_ui['Setup jquery legend'], JQUERY_UI_VERSION) ?></strong></legend>
+				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<legend><span><?php echo $lang_nya_jquery_ui['Include method'] ?></span></legend>
+					<div class="mf-box">
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[nya_jquery_ui_include_method]" value="<?php echo JQUERY_UI_INCLUDE_METHOD_LOCAL; ?>"<?php if ($forum_config['o_nya_jquery_ui_include_method'] == JQUERY_UI_INCLUDE_METHOD_LOCAL) echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_nya_jquery_ui['Include method local label'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[nya_jquery_ui_include_method]" value="<?php echo JQUERY_UI_INCLUDE_METHOD_GOOGLE; ?>"<?php if ($forum_config['o_nya_jquery_ui_include_method'] == JQUERY_UI_INCLUDE_METHOD_GOOGLE) echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_nya_jquery_ui['Include method google label'] ?></label>
+						</div>
+					</div>
+				</fieldset>
+			</fieldset>
+
+<?php
+		]]></hook>
+
+
+		<!-- -->
+		<hook id="aop_features_validation"><![CDATA[
+			if (isset($form['nya_jquery_ui_include_method']))
+			{
+				$form['nya_jquery_ui_include_method'] = intval($form['nya_jquery_ui_include_method'], 10);
+				if (($form['nya_jquery_ui_include_method'] < JQUERY_UI_INCLUDE_METHOD_LOCAL) || ($form['nya_jquery_ui_include_method'] > JQUERY_UI_INCLUDE_METHOD_GOOGLE))
+				{
+					$form['nya_jquery_ui_include_method'] = JQUERY_UI_INCLUDE_METHOD_LOCAL;
+				}
+			}
+			else
+			{
+				$form['nya_jquery_ui_include_method'] = JQUERY_UI_INCLUDE_METHOD_LOCAL;
+			}
+		]]></hook>
+
+
+		<!-- load js from url -->
+		<hook id="ft_js_include" priority="4"><![CDATA[
+			switch ($forum_config['o_nya_jquery_ui_include_method'])
+			{
+				case JQUERY_UI_INCLUDE_METHOD_GOOGLE:
+					$ext_nya_jquery_ui_url = '//jquery-ui.googlecode.com/svn/tags/'.NYA_JQUERY_UI_VERSION.'/ui/minified/';
+					break;
+
+				case JQUERY_UI_INCLUDE_METHOD_LOCAL:
+				default:
+					$ext_nya_jquery_ui_url = $ext_info['url'].'/js/';
+					break;
+			}
+			
+			if (!empty($ext_jQuery_UI->cssUI))
+			{
+				foreach ($ext_jQuery_UI->cssUI as $name => $ui_url)
+				{
+				if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css'))
+					$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css';
+				else
+					$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$ui_url.'.css';
+					$forum_loader->add_js('$.get(\''.$ext_nya_jquery_ui_css.'\');', array('type' => 'inline', 'weight' => 76));
+				}
+			}
+			
+			if (!empty($ext_jQuery_UI->jsUI))
+			{
+				foreach ($ext_jQuery_UI->jsUI as $name => $ui_url)
+				{
+					$forum_loader->add_js($ext_nya_jquery_ui_url.$ui_url.'.js', array('type' => 'url', 'async' => false, 'weight' => 77));
+				}
+			}
+
+		]]></hook>
+
+	</hooks>
+</extension>
