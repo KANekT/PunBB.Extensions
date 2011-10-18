@@ -3,7 +3,7 @@
 if (!defined('FORUM'))
 	die();
 
-$lang_nya_jqueryui = array(
+$lang_nya_jquery_ui = array(
 	'Setup jquery'						=> 'jQueryUI (version %s)',
 	'Setup jquery legend'				=> 'jQueryUI (version %s)',
 

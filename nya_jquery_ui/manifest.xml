@@ -7,7 +7,7 @@
 	<title>jQuery UI</title>
 	<description>Extension that provide jQueryUI lib (version 1.8.16)</description>
 	<author>KANekT</author>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 
 	<minversion>1.4RC1</minversion>
 	<maxtestedon>1.4</maxtestedon>
@@ -90,31 +90,38 @@
 			}
 		]]></hook>
 
+		<hook id="ft_about_pre_copyright"><![CDATA[
+					if (!empty($ext_jQuery_UI->cssUI))
+					{
+						echo '<style>
+						';
+						foreach ($ext_jQuery_UI->cssUI as $name => $ui_url)
+						{
+							if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css'))
+								$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css';
+							else
+								$ext_nya_jquery_ui_css = $ext_info['url'].'/css/Oxygen/'.$ui_url.'.css';
+								
+							echo '@import "'.$ext_nya_jquery_ui_css.'";
+							';
+						}
+						echo '</style>
+						';
+					}
+		]]></hook>
 
 		<!-- load js from url -->
 		<hook id="ft_js_include" priority="4"><![CDATA[
 			switch ($forum_config['o_nya_jquery_ui_include_method'])
 			{
 				case JQUERY_UI_INCLUDE_METHOD_GOOGLE:
-					$ext_nya_jquery_ui_url = '//jquery-ui.googlecode.com/svn/tags/'.NYA_JQUERY_UI_VERSION.'/ui/minified/';
+					$ext_nya_jquery_ui_url = '//jquery-ui.googlecode.com/svn/tags/'.JQUERY_UI_VERSION.'/ui/minified/';
 					break;
 
 				case JQUERY_UI_INCLUDE_METHOD_LOCAL:
 				default:
 					$ext_nya_jquery_ui_url = $ext_info['url'].'/js/';
 					break;
-			}
-			
-			if (!empty($ext_jQuery_UI->cssUI))
-			{
-				foreach ($ext_jQuery_UI->cssUI as $name => $ui_url)
-				{
-				if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css'))
-					$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css';
-				else
-					$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$ui_url.'.css';
-					$forum_loader->add_js('$.get(\''.$ext_nya_jquery_ui_css.'\');', array('type' => 'inline', 'weight' => 76));
-				}
 			}
 			
 			if (!empty($ext_jQuery_UI->jsUI))
