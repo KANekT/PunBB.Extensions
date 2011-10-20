@@ -7,7 +7,7 @@
 	<title>jQuery UI</title>
 	<description>Extension that provide jQueryUI lib (version 1.8.16)</description>
 	<author>KANekT</author>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 
 	<minversion>1.4RC1</minversion>
 	<maxtestedon>1.4</maxtestedon>
@@ -19,10 +19,12 @@
 
 	<install><![CDATA[
 		forum_config_add('o_nya_jquery_ui_include_method', '0');
+		forum_config_add('o_nya_jquery_ui_include_css', '0');
 	]]></install>
 
 	<uninstall><![CDATA[
 		forum_config_remove('o_nya_jquery_ui_include_method');
+		forum_config_remove('o_nya_jquery_ui_include_css');
 	]]></uninstall>
 
 	<!-- -->
@@ -35,6 +37,33 @@
 
 			define('JQUERY_UI_VERSION', '1.8.16');
 			require $ext_info['path'].'/ui.php';
+		]]></hook>
+
+		<hook id="hd_head" priority="6"><![CDATA[
+			if ($forum_config['o_nya_jquery_ui_include_css'] == '1')
+			{
+				// Load CSS
+				if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/jquery-ui.css'))
+					$forum_loader->add_css($ext_info['url'].'/css/'.$forum_user['style'].'/jquery-ui.css', array('type' => 'url', 'weight' => '90', 'media' => 'screen'));
+				else
+					$forum_loader->add_css($ext_info['url'].'/css/Oxygen/jquery-ui.css', array('type' => 'url', 'weight' => '90', 'media' => 'screen'));
+				
+				if (!empty($ext_jQuery_UI->UI_style_url))
+				{
+					foreach ($ext_jQuery_UI->UI_style_url as $name => $ui_style_url)
+					{
+						$forum_loader->add_css($ui_style_url, array('type' => 'url', 'weight' => '90', 'media' => 'screen'));
+					}
+				}
+				if (!empty($ext_jQuery_UI->UI_style))
+				{
+					foreach ($ext_jQuery_UI->UI_style as $name => $ui_style)
+					{
+						$forum_loader->add_css($ui_style, array('type' => 'inline', 'weight' => '91', 'media' => 'screen'));
+					}
+				}
+
+			}
 		]]></hook>
 
 		<hook id="aop_features_gzip_fieldset_end"><![CDATA[
@@ -68,6 +97,12 @@
 						</div>
 					</div>
 				</fieldset>
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box checkbox">
+						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_nya_jquery_ui['Head CSS legend'] ?></span> <?php echo $lang_nya_jquery_ui['Head CSS'] ?></label>
+						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[nya_jquery_ui_include_css]" value="1"<?php if ($forum_config['o_nya_jquery_ui_include_css'] == '1') echo ' checked="checked"' ?> /></span>
+					</div>
+				</div>
 			</fieldset>
 
 <?php
@@ -88,26 +123,42 @@
 			{
 				$form['nya_jquery_ui_include_method'] = JQUERY_UI_INCLUDE_METHOD_LOCAL;
 			}
+			if (!isset($form['nya_jquery_ui_include_css']) || $form['nya_jquery_ui_include_css'] != '1') $form['nya_jquery_ui_include_css'] = '0';
 		]]></hook>
 
 		<hook id="ft_about_pre_copyright"><![CDATA[
-					if (!empty($ext_jQuery_UI->cssUI))
+			if ($forum_config['o_nya_jquery_ui_include_css'] == '0' &&  !empty($ext_jQuery_UI->UI_css))
+			{
+				echo '<style>
+				';
+				foreach ($ext_jQuery_UI->UI_css as $name => $ui_url)
+				{
+					if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css'))
+						$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css';
+					else
+						$ext_nya_jquery_ui_css = $ext_info['url'].'/css/Oxygen/'.$ui_url.'.css';
+							
+					echo '@import "'.$ext_nya_jquery_ui_css.'";
+					';
+				}
+				if (!empty($ext_jQuery_UI->UI_style_url))
+				{
+					foreach ($ext_jQuery_UI->UI_style_url as $name => $ui_style_url)
 					{
-						echo '<style>
-						';
-						foreach ($ext_jQuery_UI->cssUI as $name => $ui_url)
-						{
-							if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css'))
-								$ext_nya_jquery_ui_css = $ext_info['url'].'/css/'.$forum_user['style'].'/'.$ui_url.'.css';
-							else
-								$ext_nya_jquery_ui_css = $ext_info['url'].'/css/Oxygen/'.$ui_url.'.css';
-								
-							echo '@import "'.$ext_nya_jquery_ui_css.'";
-							';
-						}
-						echo '</style>
-						';
+						echo '@import "'.$ui_style_url.'";
+					';
 					}
+				}
+				if (!empty($ext_jQuery_UI->UI_style))
+				{
+					foreach ($ext_jQuery_UI->UI_style as $name => $ui_style)
+					{				
+						echo $ui_style;
+					}
+				}
+				echo '</style>
+				';
+			}
 		]]></hook>
 
 		<!-- load js from url -->
@@ -124,14 +175,13 @@
 					break;
 			}
 			
-			if (!empty($ext_jQuery_UI->jsUI))
+			if (!empty($ext_jQuery_UI->UI_js))
 			{
-				foreach ($ext_jQuery_UI->jsUI as $name => $ui_url)
+				foreach ($ext_jQuery_UI->UI_js as $name => $ui_url)
 				{
 					$forum_loader->add_js($ext_nya_jquery_ui_url.$ui_url.'.js', array('type' => 'url', 'async' => false, 'weight' => 77));
 				}
 			}
-
 		]]></hook>
 
 	</hooks>

@@ -11,6 +11,8 @@ $lang_nya_jquery_ui = array(
 
 	'Include method local label'		=> 'Local',
 	'Include method google label'		=> 'Google SVN ',
+	'Head CSS'							=> 'Include in Head one file',
+	'Head CSS legend'					=> 'Include CSS',
 );
 
 ?>
