@@ -227,4 +227,3 @@ class jQueryUI {
 }
 
 $ext_jQuery_UI = new jQueryUI();
-?>
