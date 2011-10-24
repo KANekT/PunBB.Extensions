@@ -7,7 +7,7 @@
 	<title>jQuery UI</title>
 	<description>Extension that provide jQueryUI lib (version 1.8.16)</description>
 	<author>KANekT</author>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 
 	<minversion>1.4RC1</minversion>
 	<maxtestedon>1.4</maxtestedon>

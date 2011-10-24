@@ -156,67 +156,67 @@ class jQueryUI {
 				break;
 
 			case "Blind":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Blind"] = "jquery.effects.blind.min";
 				break;
 
 			case "Bounce":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Bounce"] = "jquery.effects.bounce.min";
 				break;
 
 			case "Clip":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Clip"] = "jquery.effects.clip.min";
 				break;
 
 			case "Drop":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Drop"] = "jquery.effects.drop.min";
 				break;
 
 			case "Explode":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Explode"] = "jquery.effects.explode.min";
 				break;
 
 			case "Fade":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Fade"] = "jquery.effects.fade.min";
 				break;
 
 			case "Fold":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Fold"] = "jquery.effects.fold.min";
 				break;
 
 			case "Highlight":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Highlight"] = "jquery.effects.highlight.min";
 				break;
 
 			case "Pulsate":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Pulsate"] = "jquery.effects.pulsate.min";
 				break;
 
 			case "Scale":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Scale"] = "jquery.effects.scale.min";
 				break;
 
 			case "Shake":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Shake"] = "jquery.effects.shake.min";
 				break;
 
 			case "Slide":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Slide"] = "jquery.effects.slide.min";
 				break;
 
 			case "Transfer":
-				$this->UI_js["Core"] = "jquery.effects.core.min";
+				$this->UI_js["eCore"] = "jquery.effects.core.min";
 				$this->UI_js["Transfer"] = "jquery.effects.transfer.min";
 				break;
 
