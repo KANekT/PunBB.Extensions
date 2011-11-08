@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE extension SYSTEM "ext-1.0.dtd">
+
+<!--
+***********************************************************************
+
+    PunBB 1.4 Extension - online_plus
+    Copyright (C) 2009  YonasH (www.yonash.pl)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+
+***********************************************************************
+-->
+
+<extension engine="1.0">
+	<id>online_plus</id>
+	<title>Improved online list</title>
+	<version>1.4.0</version>
+	<description>Add new facilities to online list. Configurable in Administration > Settings > Features.</description>
+	<author>YonasH</author>
+
+	<minversion>1.4RC2</minversion>
+	<maxtestedon>1.4</maxtestedon>
+
+	<install><![CDATA[ 	
+		// Add extension options to the config table
+		$online_plus_config = array(
+			'o_online_plus_guests' => '1',
+			'o_online_plus_mask' => '66.249 = Google\n',
+			'o_online_plus_today' => '1',
+			'o_online_plus_week' => '0',
+			'o_online_plus_duplicate' => '1',
+			'o_online_plus_today_show' => '1',
+			'o_online_plus_week_show' => '1',
+			'o_online_plus_order' => '0'
+		);
+
+		foreach ($online_plus_config as $conf_name => $conf_value)
+		{
+			forum_config_add($conf_name, $conf_value);
+		}
+
+		if (!$forum_db->index_exists('users', 'last_visit_idx'))
+			$forum_db->add_index('users', 'last_visit_idx', array('last_visit'));
+ 	]]></install>
+
+	<uninstall><![CDATA[
+		// Delete extension options from the config
+		forum_config_remove(array(
+			'o_online_plus_guests',
+			'o_online_plus_mask',
+			'o_online_plus_today',
+			'o_online_plus_week',
+			'o_online_plus_duplicate',
+			'o_online_plus_today_show',
+			'o_online_plus_week_show',
+			'o_online_plus_order'
+		));
+	]]></uninstall>
+
+	<hooks>
+
+<!-- #### online list mod #### -->
+
+		<hook id="in_users_online_qr_get_online_info"><![CDATA[
+if (($forum_user['g_id'] == FORUM_ADMIN || $forum_user['g_moderator']) && $forum_config['o_online_plus_guests'] == '1')
+{
+	$guests = array();
+	//setup IP masks array
+	if ($forum_config['o_online_plus_mask'] != '' && preg_match_all('#(.*?)\s*=\s*(.*?)\n#s', $forum_config['o_online_plus_mask']."\n", $ip_mask))
+	{
+		$ip_masks = array();
+		$num_masks = count($ip_mask[1]);
+		for ($i = 0; $i < $num_masks; ++$i)
+			$ip_masks[$ip_mask[1][$i]] = $ip_mask[2][$i];
+	}
+}
+else
+	$guests = false;
+		]]></hook>
+
+		<hook id="in_users_online_add_online_user_loop" priority="10"><![CDATA[
+if (is_array($guests) && $forum_user_online['user_id'] == 1)
+{
+	$currhost = $forum_user_online['ident'];
+	if (isset($ip_masks))
+		foreach ($ip_masks as $ip_key => $ip_val)
+			if (strpos($forum_user_online['ident'], strval($ip_key)) === 0)
+				$forum_user_online['ident'] = $ip_val;
+
+	$guests[] = '<a href="'.forum_link($forum_url['get_host'], $currhost).'">'.forum_htmlencode($forum_user_online['ident']).'</a>';
+}
+		]]></hook>
+
+		<hook id="in_new_online_data"><![CDATA[
+if (!$forum_user['is_guest'] || $forum_config['o_online_plus_today_show'] == '0' || $forum_config['o_online_plus_week_show'] == '0')
+{
+	$show_today = ($forum_config['o_online_plus_today'] != '0' && (!$forum_user['is_guest'] || $forum_config['o_online_plus_today_show'] == '0'));
+	$show_week = ($forum_config['o_online_plus_week'] != '0' && (!$forum_user['is_guest'] || $forum_config['o_online_plus_week_show'] == '0'));
+	
+	$currtime = time();
+	$timediff = ($forum_user['timezone'] + $forum_user['dst']) * 3600;
+	
+	if ($show_today)
+	{
+		if ($forum_config['o_online_plus_today'] == '2')
+			$limitd = $currtime - 86400;
+		else
+			$limitd = strtotime(gmdate('Y-m-d', $currtime + $timediff)) - $timediff;
+		$limit = $limitd;
+	}
+	else
+		$limitd = 0;
+	if ($show_week)
+	{
+		if ($forum_config['o_online_plus_week'] == '2')
+			$limit = $currtime - 604800;
+		else
+		{
+			$limit = strtotime('last Monday', $currtime + $timediff) - $timediff;
+			if ($currtime - $limit > 604800)
+				$limit += 604800;
+		}
+	}
+	
+	$orderby = ($forum_config['o_online_plus_order'] == '0') ? 'username' : 'last_visit';
+	if ($forum_config['o_online_plus_order'] == '1')
+		$orderby .= ' DESC';
+	
+	$query = array(
+        'SELECT'    => 'id, group_id, username, last_visit AS visit',
+        'FROM'        => 'users',
+        'WHERE'        => 'group_id > 0 AND last_visit > '.$limit, 
+        'ORDER BY'    => $orderby
+    );
+	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
+	$forum_page['num_today'] = $forum_page['num_week'] = 0;
+	$online_today = $online_week = array();
+	while ($forum_user_online = $forum_db->fetch_assoc($result))
+	{
+		if (!$show_week || ($show_today && $forum_user_online['visit'] > $limitd))
+		{
+			$online_today[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
+			if ($show_week && $forum_config['o_online_plus_duplicate'] == '1')
+				$online_week[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
+			++$forum_page['num_today'];
+			++$forum_page['num_week'];
+		}
+		else
+		{
+			$online_week[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
+			++$forum_page['num_week'];
+		}
+	}
+	
+	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php'))
+		require $ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php';
+	else
+		require $ext_info['path'].'/lang/English/'.$ext_info['id'].'.php';
+	
+	if (empty($users)) echo '<p>&nbsp;</p>';
+	
+	if (!empty($guests)):
+?>
+	<div class="online-plus-font"><h3 class="hn"><span><?php echo $lang_online_plus['Guests'] ?></span></h3>
+	<p><?php echo implode($lang_index['Online list separator'], $guests) ?></p></div>
+<?php endif;
+if ($forum_config['o_online_plus_today'] != '0' && !empty($online_today)): ?>
+	<div class="online-plus"></div>
+	<div class="online-plus-font"><h3 class="hn"><span><?php printf(($forum_config['o_online_plus_today'] == '1' ? $lang_online_plus['Today'] : $lang_online_plus['Last day']), '<strong>'.$forum_page['num_today'].'</strong>') ?></span></h3>
+	<p><?php echo implode($lang_index['Online list separator'], $online_today) ?></p></div>
+<?php endif;
+if ($forum_config['o_online_plus_week'] != '0' && !empty($online_week)): ?>
+	<div class="online-plus"></div>
+	<div class="online-plus-font"><h3 class="hn"><span><?php printf(($forum_config['o_online_plus_week'] == '1' ? $lang_online_plus['This week'] : $lang_online_plus['Last week']), '<strong>'.$forum_page['num_week'].'</strong>') ?></span></h3>
+	<p><?php echo implode($lang_index['Online list separator'], $online_week) ?></p></div>
+<?php endif;
+}
+		]]></hook>
+
+<!-- #### admin panel settings #### -->
+
+		<hook id="aop_features_validation"><![CDATA[
+if (!isset($form['online_plus_guests']) || $form['online_plus_guests'] != '1') $form['online_plus_guests'] = '0';
+if (!isset($form['online_plus_duplicate']) || $form['online_plus_duplicate'] != '1') $form['online_plus_duplicate'] = '0';
+if (!isset($form['online_plus_today_show']) || $form['online_plus_today_show'] != '1') $form['online_plus_today_show'] = '0';
+if (!isset($form['online_plus_week_show']) || $form['online_plus_week_show'] != '1') $form['online_plus_week_show'] = '0';
+		]]></hook>
+
+		<hook id="aop_features_general_fieldset_end"><![CDATA[
+if ($forum_config['o_users_online'] == '1')
+{
+	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'_admin.php'))
+		require $ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'_admin.php';
+	else
+		require $ext_info['path'].'/lang/English/'.$ext_info['id'].'_admin.php';
+
+	// Reset counter
+	$forum_page['group_count'] = $forum_page['item_count'] = 0;
+?>
+			<div class="content-head">
+				<h2 class="hn"><span><?php echo $lang_online_plus['Online plus'] ?></span></h2>
+			</div>
+			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><span><?php echo $lang_online_plus['Online plus legend 1'] ?></span></legend>
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box checkbox">
+						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_guests]" value="1"<?php if ($forum_config['o_online_plus_guests'] == '1') echo ' checked="checked"' ?> /></span>
+						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_online_plus['Guests'] ?></span> <?php echo $lang_online_plus['Guests label'] ?></label>
+					</div>
+				</div>
+				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="txt-box textarea">
+						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_online_plus['Guests mask'] ?></span><small><?php echo $lang_online_plus['Guests mask help'] ?></small></label>
+						<div class="txt-input"><span class="fld-input"><textarea id="fld<?php echo $forum_page['fld_count'] ?>" name="form[online_plus_mask]" rows="3" cols="55"><?php echo forum_htmlencode($forum_config['o_online_plus_mask']) ?></textarea></span></div>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><span><?php echo $lang_online_plus['Online plus legend 2'] ?></span></legend>
+				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<legend><span><?php echo $lang_online_plus['Today label'] ?></span></legend>
+					<div class="mf-box">
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_today]" value="0"<?php if ($forum_config['o_online_plus_today'] == '0') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Today 0'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_today]" value="1"<?php if ($forum_config['o_online_plus_today'] == '1') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Today 1'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_today]" value="2"<?php if ($forum_config['o_online_plus_today'] == '2') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Today 2'] ?></label>
+						</div>
+					</div>
+				</fieldset>
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box checkbox">
+						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_today_show]" value="1"<?php if ($forum_config['o_online_plus_today_show'] == '1') echo ' checked="checked"' ?> /></span>
+						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_online_plus['Display'] ?></span> <?php echo $lang_online_plus['For users only'] ?></label>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><span><?php echo $lang_online_plus['Online plus legend 3'] ?></span></legend>
+				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<legend><span><?php echo $lang_online_plus['Week label'] ?></span></legend>
+					<div class="mf-box">
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_week]" value="0"<?php if ($forum_config['o_online_plus_week'] == '0') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Week 0'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_week]" value="1"<?php if ($forum_config['o_online_plus_week'] == '1') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Week 1'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_week]" value="2"<?php if ($forum_config['o_online_plus_week'] == '2') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Week 2'] ?></label>
+						</div>
+					</div>
+				</fieldset>
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box checkbox">
+						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_week_show]" value="1"<?php if ($forum_config['o_online_plus_week_show'] == '1') echo ' checked="checked"' ?> /></span>
+						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_online_plus['Display'] ?></span> <?php echo $lang_online_plus['For users only'] ?></label>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><span><?php echo $lang_online_plus['Online plus legend 4'] ?></span></legend>
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box checkbox">
+						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_duplicate]" value="1"<?php if ($forum_config['o_online_plus_duplicate'] == '1') echo ' checked="checked"' ?> /></span>
+						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_online_plus['Duplicate'] ?></span> <?php echo $lang_online_plus['Duplicate label'] ?></label>
+					</div>
+				</div>
+				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<legend><span><?php echo $lang_online_plus['Order label'] ?></span></legend>
+					<div class="mf-box">
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_order]" value="0"<?php if ($forum_config['o_online_plus_order'] == '0') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Order 0'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_order]" value="1"<?php if ($forum_config['o_online_plus_order'] == '1') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Order 1'] ?></label>
+						</div>
+						<div class="mf-item">
+							<span class="fld-input"><input type="radio" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[online_plus_order]" value="2"<?php if ($forum_config['o_online_plus_order'] == '2') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_online_plus['Order 2'] ?></label>
+						</div>
+					</div>
+				</fieldset>
+			</fieldset>
+<?php
+}
+		]]></hook>
+
+<!-- #### common #### -->
+
+		<hook id="hd_head"><![CDATA[
+if (defined('FORUM_PAGE') && FORUM_PAGE == 'index')
+{
+	if (file_exists($ext_info['path'].'/style/'.$forum_user['style'].'/'.$ext_info['id'].'.css'))
+		$forum_loader->add_css($ext_info['path'].'/style/'.$forum_user['style'].'/'.$ext_info['id'].'.css', array('type' => 'url', 'media' => 'screen'));
+	else
+		$forum_loader->add_css($ext_info['path'].'/style/Oxygen/'.$ext_info['id'].'.css', array('type' => 'url', 'media' => 'screen'));
+}
+		]]></hook>
+
+	</hooks>
+</extension>
