@@ -9,9 +9,9 @@
  */
 
 $forum_url['vote_posts_view'] = 'vote_posts_view-$1.html';
+$forum_url['vote_posts_view_user'] = 'vote_posts_user-$1.html';
 $forum_url['vote_posts_by_id'] = 'vote_posts_id-$1.html';
 $forum_url['vote_posts_delete'] = 'vote_posts_delete-$1.html';
-$forum_url['vote_posts_plus'] = 'vote_posts_plus-$1-$2.html';
-$forum_url['vote_posts_minus'] = 'vote_posts_minus-$1-$2.html';
-$forum_url['vote_posts_comment']	= 'vote_posts_reply-$1.html';
+$forum_url['vote_posts_up'] = 'vote_posts_up-$1-$2.html';
+$forum_url['vote_posts_down'] = 'vote_posts_down-$1-$2.html';
 
