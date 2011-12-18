@@ -26,12 +26,12 @@
 <extension engine="1.0">
 	<id>online_plus</id>
 	<title>Improved online list</title>
-	<version>1.4.0</version>
+	<version>1.4.1</version>
 	<description>Add new facilities to online list. Configurable in Administration > Settings > Features.</description>
-	<author>YonasH</author>
+	<author>YonasH, for 1.4 KANekT</author>
 
 	<minversion>1.4RC2</minversion>
-	<maxtestedon>1.4</maxtestedon>
+	<maxtestedon>1.4.1</maxtestedon>
 
 	<install><![CDATA[ 	
 		// Add extension options to the config table
@@ -106,6 +106,11 @@ if (is_array($guests) && $forum_user_online['user_id'] == 1)
 		<hook id="in_new_online_data"><![CDATA[
 if (!$forum_user['is_guest'] || $forum_config['o_online_plus_today_show'] == '0' || $forum_config['o_online_plus_week_show'] == '0')
 {
+	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php'))
+		require $ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php';
+	else
+		require $ext_info['path'].'/lang/English/'.$ext_info['id'].'.php';
+
 	$show_today = ($forum_config['o_online_plus_today'] != '0' && (!$forum_user['is_guest'] || $forum_config['o_online_plus_today_show'] == '0'));
 	$show_week = ($forum_config['o_online_plus_week'] != '0' && (!$forum_user['is_guest'] || $forum_config['o_online_plus_week_show'] == '0'));
 	
@@ -139,10 +144,10 @@ if (!$forum_user['is_guest'] || $forum_config['o_online_plus_today_show'] == '0'
 		$orderby .= ' DESC';
 	
 	$query = array(
-        'SELECT'    => 'id, group_id, username, last_visit AS visit',
-        'FROM'        => 'users',
-        'WHERE'        => 'group_id > 0 AND last_visit > '.$limit, 
-        'ORDER BY'    => $orderby
+        'SELECT'	=> 'id, group_id, username, last_visit AS visit',
+        'FROM'      => 'users',
+        'WHERE'     => 'group_id > 0 AND last_visit > '.$limit, 
+        'ORDER BY'  => $orderby
     );
 	$result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
 	$forum_page['num_today'] = $forum_page['num_week'] = 0;
@@ -151,24 +156,19 @@ if (!$forum_user['is_guest'] || $forum_config['o_online_plus_today_show'] == '0'
 	{
 		if (!$show_week || ($show_today && $forum_user_online['visit'] > $limitd))
 		{
-			$online_today[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
-			if ($show_week && $forum_config['o_online_plus_duplicate'] == '1')
-				$online_week[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
+			$online_today[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'" title="'.sprintf($lang_online_plus['Last visit'], $forum_user_online['username']).' : '.format_time($forum_user_online['visit']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
+            if ($show_week && $forum_config['o_online_plus_duplicate'] == '1')
+				$online_week[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'" title="'.sprintf($lang_online_plus['Last visit'], $forum_user_online['username']).' : '.format_time($forum_user_online['visit']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
 			++$forum_page['num_today'];
 			++$forum_page['num_week'];
 		}
 		else
 		{
-			$online_week[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
+			$online_week[] = ($forum_user['g_view_users'] == '1') ? '<span class="group_color_'.$forum_user_online['group_id'].'"><a href="'.forum_link($forum_url['user'], $forum_user_online['id']).'" title="'.sprintf($lang_online_plus['Last visit'], $forum_user_online['username']).' : '.format_time($forum_user_online['visit']).'">'.forum_htmlencode($forum_user_online['username']).'</a></span>' : forum_htmlencode($forum_user_online['username']);
 			++$forum_page['num_week'];
 		}
 	}
-	
-	if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php'))
-		require $ext_info['path'].'/lang/'.$forum_user['language'].'/'.$ext_info['id'].'.php';
-	else
-		require $ext_info['path'].'/lang/English/'.$ext_info['id'].'.php';
-	
+			
 	if (empty($users)) echo '<p>&nbsp;</p>';
 	
 	if (!empty($guests)):

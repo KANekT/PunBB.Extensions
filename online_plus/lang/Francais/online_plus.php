@@ -8,6 +8,7 @@ $lang_online_plus = array(
 	'Last day'			=> 'Dernier 24h (%s)',
 	'This week'			=> 'Cette semaine (%s)',
 	'Last week'			=> 'Dernier 7 jours (%s)'
+	'Last visit'		=> 'Last visit of %s'
 );
 
 ?>
