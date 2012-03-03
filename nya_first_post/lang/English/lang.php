@@ -10,6 +10,7 @@
 
 return array(
 	'First post'                => 'Lock the first post in the topic',
+    'First post legend'         => 'First post',
     'Allow first post label'    => 'Allow first post in post',
     'First Post Category'       => 'Category',
     'First Post Head'           => 'Fixed first posts in forum',

@@ -132,10 +132,10 @@ class FirstPost_Hook_Dispatcher extends Base
 			'name'	=>	'nya_first_post',
 			'code'	=>	'FirstPost_Hook_Dispatcher::agr_edit_end_qr_update_group($query, $is_admin_group);'
 		));
-		
-		App::inject_hook('agr_add_edit_group_pre_user_permissions_fieldset_end',array(
+
+		App::inject_hook('agr_add_edit_group_user_permissions_fieldset_end',array(
 			'name'	=>	'nya_first_post',
-			'code'	=>	'FirstPost_Hook_Dispatcher::agr_add_edit_group_pre_user_permissions_fieldset_end($group);'
+			'code'	=>	'FirstPost_Hook_Dispatcher::agr_add_edit_group_user_permissions_fieldset_end($group);'
 		));
 
         App::inject_hook('afo_pre_header_load',array(
@@ -155,7 +155,7 @@ class FirstPost_Hook_Dispatcher extends Base
 	 * 
 	 * @param $group
 	 */
-	public function agr_add_edit_group_pre_user_permissions_fieldset_end($group)
+	public function agr_add_edit_group_user_permissions_fieldset_end($group)
 	{
 		View::$instance = View::factory(FORUM_ROOT.'extensions/nya_first_post/view/admin_group_setting', array('group' => $group));
 		echo  View::$instance->render();

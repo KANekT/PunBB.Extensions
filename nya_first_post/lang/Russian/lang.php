@@ -10,6 +10,7 @@
 
 return array(
 	'First post'                => 'Закрепить первое сообщение в теме',
+    'First post legend'         => 'Первое сообщение',
     'Allow first post label'    => 'Разрешить выделение первого сообщения в теме',
     'First Post Category'       => 'Категория',
     'First Post Head'           => 'Закрепление первого сообщения в форуме',
