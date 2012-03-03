@@ -12,11 +12,11 @@
 <extension engine="1.0">
 	<id>nya_topic_desc</id>
 	<title>Topic Description</title>
-	<version>0.6.0</version>
+	<version>0.7.0</version>
 	<description>Topic Description</description>
 	<author>KANekT</author>
 	<minversion>1.4RC2</minversion>
-	<maxtestedon>1.4RC2</maxtestedon>
+	<maxtestedon>1.4.2</maxtestedon>
 	<install>
 		<![CDATA[
 			$forum_db->add_field('topics', 'topic_desc', 'varchar(255)', true);
@@ -49,20 +49,24 @@
 			}
 			]]>
 		</hook>
+
 		<hook id="po_end_validation, mr_confirm_split_posts_form_submitted"><![CDATA[
 			if (!empty($_POST['topic_desc']))
 				$new_desc = utf8_trim($_POST['topic_desc']);
 		]]></hook>
+
 		<hook id="po_pre_add_topic"><![CDATA[
 		if(isset($new_desc)) $post_info['topic_desc'] = $new_desc;
-		]]></hook>		
+		]]></hook>
+
 		<hook id="fn_add_topic_qr_add_topic"><![CDATA[
 			if (!empty($post_info['topic_desc']))
 			{
 				$query['INSERT'] .= ', topic_desc';
 				$query['VALUES'] .= ', \''.$forum_db->escape($post_info['topic_desc']).'\'';
 			}
-		]]></hook>		
+		]]></hook>
+
 		<hook id="ed_pre_message_box" priority = "2"><![CDATA[
 				if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
 					require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
@@ -81,13 +85,22 @@
 			<?php
 			endif; 
 		]]></hook>
+
 		<hook id="ed_qr_update_subject"><![CDATA[
 			$topic_desc = forum_trim($_POST['topic_desc']);
 			$query['SET'] .= ', topic_desc=\''.$forum_db->escape($topic_desc).'\'';
 		]]></hook>
-		<hook id="vf_qr_get_topics, ed_qr_get_post_info"><![CDATA[
-				$query['SELECT'] .= ', t.topic_desc';
+
+        <hook id="hd_template_loaded"><![CDATA[
+		if (!empty($cur_topic['topic_desc']))
+		{
+			if ($forum_config['o_topic_desc'] != '0' )
+			{
+				$forum_head['descriptions_topic'] = '<meta name="description" content="'.$cur_topic['topic_desc'].'" />';
+			}
+		}
 		]]></hook>
+
 		<hook id="vf_row_pre_item_subject_merge"><![CDATA[
 		if (!empty($cur_topic['topic_desc']))
 		{
@@ -97,7 +110,8 @@
 			}
 		}
 		]]></hook>
-		<hook id="vf_topic_loop_normal_topic_pre_item_title_merge"><![CDATA[
+
+        <hook id="vf_topic_loop_normal_topic_pre_item_title_merge"><![CDATA[
 		if (!empty($cur_topic['topic_desc']))
 		{
 			if ($forum_config['o_topic_desc'] != '0' )
@@ -107,11 +121,16 @@
 			}
 		}
 		]]></hook>
-		<hook id="ape_start"><![CDATA[
+
+        <hook id="vf_qr_get_topics, ed_qr_get_post_info, vt_qr_get_topic_info"><![CDATA[
+				$query['SELECT'] .= ', t.topic_desc';
+		]]></hook>
+
+        <hook id="ape_start"><![CDATA[
 			define('FORUM_PAGE', 'ajax_post_edit');
 		]]></hook>
 		<hook id="aop_features_validation"><![CDATA[
-if (!isset($form['topic_desc'])) $form['topic_desc'] = '0';
+            if (!isset($form['topic_desc'])) $form['topic_desc'] = '0';
 		]]></hook>
 		
 		<hook id="aop_features_message_fieldset_end"><![CDATA[
@@ -147,5 +166,6 @@ if (!isset($form['topic_desc'])) $form['topic_desc'] = '0';
 			</fieldset>
 <?php		
 				
-		]]></hook>	</hooks>
+		]]></hook>
+    </hooks>
 </extension>
