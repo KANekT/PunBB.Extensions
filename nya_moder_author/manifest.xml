@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for Author topic - Moderator
+ *
+ * @copyright Copyright (C) KANekT 2008-2012 @ http://blog.kanekt.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
+ * @package Author topic - Moderator
+*/
+-->
+<extension engine="1.0">
+	<id>nya_moder_author</id>
+	<title>Author topic - Moderator</title>
+	<version>0.2.1</version>
+	<description>Author topic - Moderator</description>
+	<author>KANekT</author>
+	<minversion>1.4</minversion>
+	<maxtestedon>1.4.2</maxtestedon>
+
+    <dependencies>
+        <dependency>developer_helper</dependency>
+    </dependencies>
+
+    <install><![CDATA[
+        define('MTA_INSTALL', 1);
+        require $ext_info['path'].'/install.php';
+	]]></install>
+
+    <uninstall><![CDATA[
+        define('MTA_UNINSTALL', 1);
+        require $ext_info['path'].'/uninstall.php';
+	]]></uninstall>
+
+	<hooks>
+
+        <hook id="vt_start, ed_start, mr_start"><![CDATA[
+            require $ext_info['path'].'/hook_dispatcher.php';
+            ModerAuthor_Hook_Dispatcher::user_init();
+		]]></hook>
+
+        <hook id="agr_start"><![CDATA[
+            require $ext_info['path'].'/hook_dispatcher.php';
+            ModerAuthor_Hook_Dispatcher::admin_init();
+		]]></hook>
+		</hooks>
+</extension>
