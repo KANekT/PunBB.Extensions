@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for topic description
+ *
+ * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
+ * @package topic description
+*/
+-->
+<extension engine="1.0">
+	<id>nya_smiles_dev</id>
+	<title>Smiles for Developer</title>
+	<version>0.2.1</version>
+	<description>Smiles for Developer</description>
+	<author>KANekT</author>
+	<minversion>1.4.2</minversion>
+	<maxtestedon>1.4.2</maxtestedon>
+	<hooks>
+        <hook id="es_essentials"><![CDATA[
+			require $ext_info['path'].'/class.smilies.php';
+			($hook = get_hook('nya_add_smilies')) ? eval($hook) : null;
+        ]]></hook>
+        <hook id="ps_do_smilies_start" priority="10"><![CDATA[
+            global $ext_Smilie;
+            $text = ' '.$text.' ';
+            $smilies = $ext_Smilie->Smiles;
+            foreach ($smilies as $smile => $prop)
+            {
+                if (strpos($text, $smile) !== false)
+                {
+                    $text = preg_replace("#(?<=[>\s])".preg_quote($smile, '#')."(?=\W)#m", '<img src="'.$prop['src'].'"'.(($prop['width'] != NULL) ? ' width="'.$prop['width'].'"' : '').(($prop['height'] != NULL) ? ' height="'.$prop['height'].'"' : '').' alt="'.$prop['title'].'" />', $text);
+                }
+            }
+            return substr($text, 1, -1);
+		]]></hook>
+
+        <hook id="he_pre_smile_display"><![CDATA[
+            $return = ($hook = get_hook('nya_pre_smile_display')) ? eval($hook) : '';
+            if ($return != '')
+            {
+                echo $return;
+                $smilies = array();
+            }
+		]]></hook>
+
+        <hook id="nya_pre_smile_display"><![CDATA[
+            $smilies = $ext_Smilie->Smiles;
+            $text = '';
+            foreach ($smilies as $smile => $prop)
+            {
+		        $text .= "\t\t\t\t".'<p>'.$prop['title'].' <span>'.$lang_help['produces'].'</span> <img src="'.$prop['src'].'"'.(($prop['width'] != NULL) ? ' width="'.$prop['width'].'"' : '').(($prop['height'] != NULL) ? ' height="'.$prop['height'].'"' : '').' alt="'.$prop['title'].'" /></p>'."\n";
+            }
+            return $text;
+		]]></hook>
+    </hooks>
+</extension>
