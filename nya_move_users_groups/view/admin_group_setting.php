@@ -18,7 +18,7 @@
         <div class="sf-box checkbox">
 
             <label for="fld<?php echo ++App::$forum_page['fld_count'] ?>"><?php echo App::$lang['Allow move user to group'] ?></label><br />
-            <span class="fld-input"><input type="checkbox" id="fld<?php echo ++App::$forum_page['fld_count'] ?>" name="mta_enable" value="1"<?php if ($group['g_mug_enable'] == '1') echo ' checked="checked"' ?> /></span>
+            <span class="fld-input"><input type="checkbox" id="fld<?php echo ++App::$forum_page['fld_count'] ?>" name="mug_enable" value="1"<?php if ($group['g_mug_enable'] == '1') echo ' checked="checked"' ?> /></span>
         </div>
     </div>
 </fieldset>
