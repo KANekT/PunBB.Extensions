@@ -10,7 +10,7 @@
 <extension engine="1.0">
 	<id>nya_move_users_groups</id>
 	<title>Move users to group</title>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<description>The user moves to another group for a certain number of messages</description>
 	<author>KANekT</author>
 	<minversion>1.4</minversion>
