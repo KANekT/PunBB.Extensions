@@ -46,6 +46,29 @@ class ModerAuthor_Hook_Dispatcher extends Base
             'name'	=>	'nya_moder_author',
             'code'	=>	'ModerAuthor_Hook_Dispatcher::mr_qr_get_forum_data($query, $lang_common);'
         ));
+
+        App::inject_hook('po_pre_permission_check',array(
+            'name'	=>	'nya_moder_author',
+            'code'	=>	'ModerAuthor_Hook_Dispatcher::po_pre_permission_check($cur_posting);'
+        ));
+
+        App::inject_hook('po_qr_get_topic_forum_info',array(
+            'name'	=>	'nya_moder_author',
+            'code'	=>	'ModerAuthor_Hook_Dispatcher::po_qr_get_topic_forum_info($query);'
+        ));
+    }
+
+    public function po_pre_permission_check($cur_posting)
+    {
+        if (App::$forum_user['g_mta_enable'] == '1' && App::$forum_user['username'] == $cur_posting['poster'])
+        {
+            App::$forum_page['is_admmod'] = true;
+        }
+    }
+
+    public function po_qr_get_topic_forum_info( & $query)
+    {
+        $query['SELECT'] .= ', t.poster';
     }
 
     public function ed_pre_permission_check($cur_post)
@@ -66,6 +89,7 @@ class ModerAuthor_Hook_Dispatcher extends Base
         if (App::$forum_user['g_mta_enable'] == '1' && App::$forum_user['username'] == $cur_topic['post_user'])
         {
             App::$forum_user['may_post'] = App::$forum_page['is_admmod'] = App::$forum_user['is_admmod'] = true;
+            App::$forum_config['o_quickpost'] = 1;
         }
     }
 
