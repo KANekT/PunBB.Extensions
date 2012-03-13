@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE extension SYSTEM "ext-1.0.dtd">
+
+<!--
+/**
+ * Allow users to give reputation points to other users.
+ * 
+ *
+ * @copyright (C) 2011 hcs reputation extension for PunBB (C)
+ * @copyright Copyright (C) 2011 PunBB
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @package reputation
+ */
+-->
+
+<extension engine="1.0">
+    <id>nya_thanks</id>
+    <title>Thanks</title>
+    <version>0.7.0 Beta</version>
+    <description><![CDATA[Allow users to say thanks to post.]]></description>
+    <author>KANekT</author>
+    <minversion>1.4.2</minversion>
+    <maxtestedon>1.4.2</maxtestedon>
+
+    <dependencies>
+        <dependency>developer_helper</dependency>
+        <dependency>pun_jquery</dependency>
+    </dependencies>
+
+    <install><![CDATA[
+        define('THANKS_INSTALL', 1);
+        require $ext_info['path'].'/install.php';
+	]]></install>
+
+    <uninstall><![CDATA[
+        define('THANKS_UNINSTALL', 1);
+        require $ext_info['path'].'/uninstall.php';
+	]]></uninstall>
+
+	<hooks>
+		<hook id="vt_start"><![CDATA[
+            require $ext_info['path'].'/hook_dispatcher.php';
+            Thanks_Hook_Dispatcher::front_end_init();
+		]]></hook>
+
+		<hook id="agr_start, aop_start"><![CDATA[
+            require $ext_info['path'].'/hook_dispatcher.php';
+            Thanks_Hook_Dispatcher::back_end_init();
+		]]></hook>
+
+		<hook id="pf_start"><![CDATA[
+            require $ext_info['path'].'/hook_dispatcher.php';
+            Thanks_Hook_Dispatcher::profile_init();
+		]]></hook>
+
+		<hook id="co_modify_url_scheme"><![CDATA[
+            if (file_exists($ext_info['path'].'/url/'.$forum_config['o_sef'].'.php'))
+                require $ext_info['path'].'/url/'.$forum_config['o_sef'].'.php';
+            else
+                require $ext_info['path'].'/url/Default.php';
+		]]></hook>
+		
+		<hook id="re_rewrite_rules"><![CDATA[
+            require $ext_info['path'].'/url/rewrite_rule.php';
+		]]></hook>	
+	</hooks>
+</extension>

@@ -1,0 +1,67 @@
+#tooltip_content {
+	background-color: #FFF;
+}
+table.thanks_popup td {
+	border-width: 0; 
+	padding: 0 0;
+}
+table.thanks_popup {
+	width: auto;
+	max-width:400px;
+	position: absolute;
+	display: none;
+	z-index: 50;
+	border-collapse: collapse;
+	font-size:0.8em;
+}
+.thanks_popup td.corner {
+	height: 15px;
+	width: 19px;
+}
+.thanks_popup td#topleft {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-1.png);
+	background-repeat:none;
+}
+.thanks_popup td.top {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-2.png);
+}
+.thanks_popup td#topright {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-3.png);
+}
+.thanks_popup td.left {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-4.png);
+}
+.thanks_popup td.right {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-5.png);
+}
+.thanks_popup td#bottomleft {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-6.png);
+}
+.thanks_popup td.bottom {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-7.png);
+	text-align: center;
+}.thanks_popup td.bottom span {
+	display: block;
+	margin: 0 auto;
+	width: 30px;
+	height: 29px;
+	background-image: url(/extensions/nya_thanks/js/img/bubble-tail2.png);
+}
+
+.thanks_popup td#bottomright {
+	background-image: url(/extensions/nya_thanks/js/img/bubble-8.png); 
+}
+
+.thanks {
+    float: right;
+    display: block;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 1px 6px;
+    display: inline-block;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background: #dedede;
+    color: #6e6e6e;
+}
