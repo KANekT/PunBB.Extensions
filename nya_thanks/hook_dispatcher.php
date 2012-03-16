@@ -2,9 +2,9 @@
 /**
  * Thanks hook dispatcher class
  * 
- * 
- * @author hcs
- * @copyright (C) 2011 hcs thanks extension for PunBB Copyright (C) 2011 PunBB
+ *
+ * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
+ * @copyright Copyright (C) 2012 PunBB
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package thanks
  */
@@ -15,7 +15,7 @@ class Thanks_Hook_Dispatcher extends Base {
 	 */
 	public function front_end_init()
 	{
-        App::$forum_loader->add_css('.thanks_sig { font-style:italic; font-size: 90%; border-radius: 8px 8px; background-color:#F3F3F3; padding: 6px 12px !important;} .thanks_sig_head { font-style:normal; color:#008000; } .habr_minus_head { font-style:normal; color:#FF0000; }', array('type' => 'inline'));
+        App::$forum_loader->add_css('.thanks_sig { font-style:italic; font-size: 90%; border-radius: 8px 8px; background-color:#F3F3F3; padding: 6px 12px !important;} .thanks_mess { font-style:normal; color:#008000; } .habr_error { font-style:normal; color:#FF0000; }', array('type' => 'inline'));
         App::$forum_loader->add_css($GLOBALS['ext_info']['url'].'/css/style.css', array('type' => 'url'));
         App::load_language('nya_thanks.thanks');
 
@@ -47,13 +47,13 @@ class Thanks_Hook_Dispatcher extends Base {
     {
         if ($cur_post['poster_id']!=1 && $forum_user['g_thanks_enable'] == 1 && $cur_post['thanks_enable'] == 1 && $forum_user['thanks_disable_adm'] == 0 && $forum_user['thanks_enable'] == 1)
         {
-			App::$forum_page['author_info']['thanks'] = '<a href="'.forum_link(App::$forum_url['thanks_view'], $cur_post['poster_id']).'">'.App::$lang['Thanks'].'</a><strong>: '.$cur_post['thanks'].'</strong>';
+			App::$forum_page['author_info']['thanks'] = '<a href="'.forum_link(App::$forum_url['thanks_view'], $cur_post['poster_id']).'">'.App::$lang['Thanks'].'</a><strong>: <span id="thp'.$cur_post['id'].'" class="thu'.$cur_post['poster_id'].'">'.$cur_post['thanks_user'].'</span></strong>';
 
             if(!$forum_user['is_guest'] AND $forum_user['id'] != $cur_post['poster_id'])// AND $cur_post['thanks_id'] == NULL)// AND $GLOBALS['forum_page']['thanks_info'][$cur_post['id']]['thanks_time'] < $GLOBALS['forum_page']['time'])
             {
-                if (App::$forum_user['g_thanks_min'] < App::$forum_user['num_posts'])
+                if ($forum_user['g_thanks_min'] < App::$forum_user['num_posts'])
                 {
-                    App::$forum_page['post_actions']['thanks'] = '<a class="thanks_info_link" href="'.forum_link(App::$forum_url['thanks'], array($cur_post['id'],$cur_post['poster_id'],generate_form_token('thanks'.$cur_post['id'].$cur_post['poster_id']))).'">'.App::$lang['Thanks on post'].'</a>&nbsp;&nbsp;';
+                    App::$forum_page['post_actions']['thanks'] = '<span><a class="thanks_info_link thl'.$cur_post['id'].'" href="'.forum_link(App::$forum_url['thanks'], array($cur_post['id'],$cur_post['poster_id'],generate_form_token('thanks'.$cur_post['id'].$cur_post['poster_id']))).'">'.App::$lang['Thanks on post'].'</a></span>';
                 }
             }
         }
@@ -73,7 +73,9 @@ class Thanks_Hook_Dispatcher extends Base {
 		{
 			foreach ($forum_page['thanks_info'][$cur_post['id']] as $cur_thanks_info )
 			{
-                $bufer[]= '<a href="'.forum_link(App::$forum_url['user'], $cur_thanks_info['from_user_id']).'" rel="'.forum_link(App::$forum_url['thanks_by_id'], $cur_thanks_info['thanks_id']).'">'.forum_htmlencode($cur_thanks_info['username']).'</a>';
+                if ($cur_post['id'] == $cur_thanks_info['post_id'] && App::$forum_user['id'] == $cur_thanks_info['from_user_id'])
+                    $forum_page['post_actions']['thanks'] = '';
+                $bufer[]= '<a href="'.forum_link(App::$forum_url['user'], $cur_thanks_info['from_user_id']).'">'.forum_htmlencode($cur_thanks_info['username']).'</a>';
 			}
 
 			if (!empty($bufer))
@@ -90,6 +92,7 @@ class Thanks_Hook_Dispatcher extends Base {
 				}
 			}	
 		}
+        $forum_page['post_options']['actions'] = '<p class="post-actions">'.implode(' ', $forum_page['post_actions']).'</p>';
 	}
 	
 	/**
@@ -104,7 +107,7 @@ class Thanks_Hook_Dispatcher extends Base {
 	 */
 	public function vt_qr_get_posts(& $query, $user_id, $time, $posts_id)
 	{
-		App::$forum_loader->add_js($GLOBALS['ext_info']['url'].'/js/thanks.js', array('type' => 'url'));
+		App::$forum_loader->add_js($GLOBALS['ext_info']['url'].'/js/thanks.min.js', array('type' => 'url'));
 		
 		$GLOBALS['forum_page']['thanks_info'] = array();
 		$query_thanks = array(
@@ -132,7 +135,7 @@ class Thanks_Hook_Dispatcher extends Base {
  * temporary fix
  */		
 		//$query['SELECT'] .= ', u.thanks_plus, u.thanks_minus, u.thanks_enable, u.thanks_disable_adm, h.id as thanks_id';
-		$query['SELECT'] .= ', p.thanks, u.thanks_enable, u.thanks_disable_adm';
+		$query['SELECT'] .= ', p.thanks, u.thanks_enable, u.thanks_disable_adm, u.thanks as thanks_user';
 		/*
 		$query['JOINS'][] = array(
 			'LEFT JOIN'	=> 'thanks AS h',

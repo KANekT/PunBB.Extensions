@@ -1,10 +1,9 @@
 <?php
 /**
  * Thanks controller class
- * 
- * @author hcs
- * @copyright (C) 2011 hcs thanks extension for PunBB
- * @copyright Copyright (C) 2011 PunBB
+ *
+ * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
+ * @copyright Copyright (C) 2012 PunBB
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package thanks
  */
@@ -101,7 +100,7 @@ class Nya_Thanks_Controller_Thanks extends Controller
                 {
                     App::send_json(array(
                         'message'	=>  App::$lang['Redirect Message'],
-                        'uid'       =>  App::$forum_user['id'],
+                        'uid'       =>  $this->uid,
                         'pid'       =>  $this->pid
                     ));
                 }
@@ -160,7 +159,7 @@ class Nya_Thanks_Controller_Thanks extends Controller
 
 		if ($target['post_id'] AND $this->pid == $target['post_id'])
 		{
-			message(App::$lang['Error thanks revote']);
+			message(App::$lang['Duplicate error']);
 		}			
 			
 		if ($target['thanks_enable'] != 1)

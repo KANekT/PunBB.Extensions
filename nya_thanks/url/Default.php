@@ -9,7 +9,6 @@
  */
 
 $forum_url['thanks_view'] = 'misc.php?r=nya_thanks/thanks/view/uid/$1';
-$forum_url['thanks_by_id'] = 'misc.php?r=nya_thanks/thanks/view/id/$1';
 $forum_url['thanks_delete'] = 'misc.php?r=nya_thanks/thanks/delete/uid/$1';
 $forum_url['thanks'] = 'misc.php?r=nya_thanks/thanks/add/pid/$1/uid/$2/token/$3';
 

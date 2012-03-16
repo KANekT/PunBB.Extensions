@@ -13,15 +13,18 @@ $(document).ready(function(){
             success:function(data){
                 if (data.error != undefined)
                 {
-                    habr.updateTips(data.error);
-                    $("#habr_form_reason").addClass("ui-state-error");
+                    var mess = $('<span class="sig-line"><!-- --></span><div class=\"thanks_sig\"><span class=\"thanks_error\">'+data.error+'</span></div>');
+                    $("#p"+data.pid).next().append(mess);
                     return;
                 }
 
                 if (data.message != undefined)
                 {
-                    var stick = $('<span class="sig-line"><!-- --></span><div class=\"thanks_sig\"><span class=\"thanks_sig_head\">'+data.message+'</span></div>');
-                    $("#p"+data.pid+"").next().append(stick);
+                    var mess = $('<span class="sig-line"><!-- --></span><div class=\"thanks_sig\"><span class=\"thanks_mess\">'+data.message+'</span></div>');
+                    $("#p"+data.pid).next().append(mess);
+                    var usid = parseInt($("#thp"+data.pid).text()) + 1;
+                    $(".thu"+data.uid).text(usid);
+                    $(".thanks_info_link.thl"+data.pid).hide();
                     return;
                 }
                 return;
@@ -33,7 +36,6 @@ $(document).ready(function(){
             }
 
         });
-        $(".thanks_info_link").hide();
         return false;
     });
 });

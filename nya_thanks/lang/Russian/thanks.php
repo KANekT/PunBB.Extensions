@@ -1,12 +1,11 @@
 <?php
 /**
- * Language definitions for reputation
- * 
- * @author hcs
- * @copyright (C) 2011 hcs reputation extension for PunBB (C)
- * @copyright Copyright (C) 20011 PunBB
+ * Language definitions
+ *
+ * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
+ * @copyright Copyright (C) 2012 PunBB
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- * @package reputation
+ * @package thanks
  */
 
 return array(
@@ -27,8 +26,8 @@ return array(
      //Profile
     'User thanks' 	        =>  'Благодарности для пользователя %s',
     'Individual Disabled'	=>  'Возможность поблагодарить за сообщения отключено администратором',
-    'Individual adm'		=>	'Принудительно отлючить возможность сказать спасибо за сообщения этому пользователю',
-    'User Disable'		    =>	'Пользователь не благодарит за сообщения',
+    'Individual adm'		=>	'Принудительно отключить возможность сказать спасибо за сообщения этому пользователю',
+    'User Disable'		    =>	'Пользователь не может выразить благодарность за сообщения',
     'Your Disabled'		    =>	'Вы не можете сказать спасибо за сообщение, т.к. отключили эту возможность',
     'Manage thanks'		    =>	'Спасибо',
     'Manage thanks help'	=>	'Включить Спасибо. Если отключить, то сказать спасибо за сообщения других участников будет невозможно.',

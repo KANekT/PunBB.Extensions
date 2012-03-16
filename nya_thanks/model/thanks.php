@@ -1,10 +1,9 @@
 <?php
 /**
  * Thanks model class
- * 
- * @author hcs
- * @copyright (C) 2011 hcs thanks extension for PunBB
- * @copyright Copyright (C) 2011 PunBB
+ *
+ * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
+ * @copyright Copyright (C) 2012 PunBB
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package thanks
  */
