@@ -35,7 +35,7 @@
 			define('JQUERY_UI_INCLUDE_METHOD_LOCAL', 0);
 			define('JQUERY_UI_INCLUDE_METHOD_GOOGLE', 1);
 
-			define('JQUERY_UI_VERSION', '1.8.16');
+			define('JQUERY_UI_VERSION', '1.8.18');
 			require $ext_info['path'].'/ui.php';
 		]]></hook>
 
