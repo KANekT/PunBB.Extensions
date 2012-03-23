@@ -17,13 +17,17 @@ class jQueryUI {
     public $UI_style;
     public $UI_style_url;
 
-
     //
     public function __construct() {
         $this->UI_js = array();
         $this->UI_css = array();
         $this->UI_style = array();
         $this->UI_style_url = array();
+    }
+
+    public function add_UI_style($UI_style = NULL, $exp)
+    {
+        add_jQuery_UI_style($UI_style, $exp);
     }
 
     //
@@ -36,6 +40,10 @@ class jQueryUI {
         $this->UI_style[$exp] = $UI_style;
     }
 
+    public function add_UI_url($UI_style_url = NULL, $exp)
+    {
+        add_jQuery_UI_style_url($UI_style_url, $exp);
+    }
 
     //
     public function add_jQuery_UI_style_url($UI_style_url = NULL, $exp) {
@@ -45,6 +53,11 @@ class jQueryUI {
         }
 
         $this->UI_style_url[$exp] = $UI_style_url;
+    }
+
+    public function add_UI($UI_js = NULL)
+    {
+        return add_jQuery_UI($UI_js);
     }
 
     public function add_jQuery_UI($UI_js = NULL) {
@@ -230,4 +243,4 @@ class jQueryUI {
     }
 }
 
-$ext_jQuery_UI = new jQueryUI();
+$jQ_UI = $ext_jQuery_UI = new jQueryUI();
