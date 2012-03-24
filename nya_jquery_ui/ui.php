@@ -27,7 +27,7 @@ class jQueryUI {
 
     public function add_UI_style($UI_style = NULL, $exp)
     {
-        add_jQuery_UI_style($UI_style, $exp);
+        $this->add_jQuery_UI_style($UI_style, $exp);
     }
 
     //
@@ -42,7 +42,7 @@ class jQueryUI {
 
     public function add_UI_url($UI_style_url = NULL, $exp)
     {
-        add_jQuery_UI_style_url($UI_style_url, $exp);
+        $this->add_jQuery_UI_style_url($UI_style_url, $exp);
     }
 
     //
@@ -57,7 +57,7 @@ class jQueryUI {
 
     public function add_UI($UI_js = NULL)
     {
-        return add_jQuery_UI($UI_js);
+        return $this->add_jQuery_UI($UI_js);
     }
 
     public function add_jQuery_UI($UI_js = NULL) {
