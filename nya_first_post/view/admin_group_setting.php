@@ -1,4 +1,4 @@
-<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+<fieldset class="mf-set set<?php echo ++App::$forum_page['item_count'] ?>">
     <legend>
         <span><?php echo App::$lang['First post legend'] ?></span>
     </legend>
