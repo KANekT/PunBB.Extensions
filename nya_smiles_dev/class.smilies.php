@@ -9,29 +9,34 @@
 if (!defined('FORUM'))
 	die();
 
-class iSmilies {
-	public $Smilies;
+class iSmiles {
+	public $Smiles;
 
 	//
 	public function __construct() {
-		$this->Smilies = array();
+		$this->Smiles = array();
 	}
 
-    public function add_Smilie($smilie, $src, $title = NULL, $width = NULL, $height = NULL) {
-        if (is_null($smilie))// || !is_array($Smile)
-        {
+    public function add_Smile($smile) {
+        if (is_null($smile))// || !is_array($Smile)
             return false;
-        }
-        if($title != NULL)
-            $this->Smiles[$smilie]['title'] = $title;
-        else
-            $this->Smiles[$smilie]['title'] = $smilie;
-        $this->Smiles[$smilie]['src'] = $src;
-        $this->Smiles[$smilie]['width'] = $width;
-        $this->Smiles[$smilie]['height'] = $height;
+        $this->Smiles = array_merge($this->Smiles, $smile);
+    }
+
+    public function add_Smilie($smile, $src, $title = NULL, $width = NULL, $height = NULL) {
+        if (is_null($smile))// || !is_array($Smile)
+            return false;
+
+            if($title != NULL)
+                $this->Smiles[$smile]['title'] = $title;
+            else
+                $this->Smiles[$smile]['title'] = $smile;
+
+            $this->Smiles[$smile]['src'] = $src;
+            $this->Smiles[$smile]['width'] = $width;
+            $this->Smiles[$smile]['height'] = $height;
     }
 }
 
-//$ext_Smilies     = new iSmilies();
-$ext_Smilie     = new iSmilies();
+$ext_Smiles = $ext_Smilie = new iSmiles();
 ?>
