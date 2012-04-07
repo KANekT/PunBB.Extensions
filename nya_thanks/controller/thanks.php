@@ -119,7 +119,7 @@ class Nya_Thanks_Controller_Thanks extends Controller
         }
         else
         {
-            echo $this->token.'|'.generate_form_token('thanks'.$this->uid.$this->pid).'|'.generate_form_token('thanks'.$this->pid.$this->uid);
+            message(App::$lang_common['Bad request']);
         }
     }
 	

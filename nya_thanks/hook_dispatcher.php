@@ -51,7 +51,7 @@ class Thanks_Hook_Dispatcher extends Base {
 
             if(!$forum_user['is_guest'] AND $forum_user['id'] != $cur_post['poster_id'])// AND $cur_post['thanks_id'] == NULL)// AND $GLOBALS['forum_page']['thanks_info'][$cur_post['id']]['thanks_time'] < $GLOBALS['forum_page']['time'])
             {
-                if ($forum_user['g_thanks_min'] < App::$forum_user['num_posts'])
+                if ($forum_user['g_thanks_min'] <= App::$forum_user['num_posts'])
                 {
                     App::$forum_page['post_actions']['thanks'] = '<span><a class="thanks_info_link thl'.$cur_post['id'].'" href="'.forum_link(App::$forum_url['thanks'], array($cur_post['id'],$cur_post['poster_id'],generate_form_token('thanks'.$cur_post['id'].$cur_post['poster_id']))).'">'.App::$lang['Thanks on post'].'</a></span>';
                 }
