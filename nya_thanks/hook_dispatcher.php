@@ -195,9 +195,9 @@ class Thanks_Hook_Dispatcher extends Base {
 	{
 		App::load_language('nya_thanks.thanks');
 		
-		App::inject_hook('pf_change_details_settings_local_fieldset_end',array(
+		App::inject_hook('pf_change_details_settings_pre_local_fieldset_end',array(
 			'name'	=>	'thanks',
-			'code'	=>	'Thanks_Hook_Dispatcher::pf_change_details_settings_local_fieldset_end($user, $lang_profile);'
+			'code'	=>	'Thanks_Hook_Dispatcher::pf_change_details_settings_pre_local_fieldset_end($user);'
 		));
 
 		App::inject_hook('pf_change_details_settings_validation',array(
@@ -226,10 +226,9 @@ class Thanks_Hook_Dispatcher extends Base {
 	 * @param array $user 
 	 * @param array $lang_profile 
 	 */
-	public function pf_change_details_settings_local_fieldset_end($user, $lang_profile)
+	public function pf_change_details_settings_pre_local_fieldset_end($user)
 	{
-		$forum_page['group_count'] = $forum_page['item_count'] = 0;
-		View::$instance = View::factory(FORUM_ROOT.'extensions/nya_thanks/view/profile_settings', array('user' => $user, 'lang_profile' => $lang_profile));	
+		View::$instance = View::factory(FORUM_ROOT.'extensions/nya_thanks/view/profile_settings', array('user' => $user));
 		echo  View::$instance->render();
 	}	
 	
