@@ -23,13 +23,13 @@ return array(
     'Are you sure'          =>  'Are you sure?',
 	
      //Profile
-    'User thanks' 	        =>  'Gratitude for the user %s',
-    'Individual Disabled'	=>  'Opportunity to thank you for your posts disabled by your administrator',
-    'Individual adm'		=>	'Forced off the opportunity to say thanks for the message to this user',
-    'User Disable'		    =>	'The user can not express my gratitude for the message',
-    'Your Disabled'		    =>	'You can not say thank you for the message, since this feature turned off',
-    'Manage thanks'		    =>	'Thanks',
-    'Manage thanks help'	=>	'Turn Thanks. If you turn off, then say thanks for the posts of other participants will not be.',
+    'User thanks' 		        =>  'Gratitude for the user %s',
+    'Thanks Individual Disabled'=>  'Opportunity to thank you for your posts disabled by your administrator',
+    'Thanks Individual adm'		=>	'Forced off the opportunity to say thanks for the message to this user',
+    'Thanks User Disable'		=>	'The user can not express my gratitude for the message',
+    'Thanks Your Disabled'		=>	'You can not say thank you for the message, since this feature turned off',
+    'Thanks Manage'		    	=>	'Thanks',
+    'Thanks Manage help'		=>	'Turn Thanks. If you turn off, then say thanks for the posts of other participants will not be.',
 	
     //View Topic
     'Thanks on post'		=>  'Thanks',
@@ -44,5 +44,4 @@ return array(
     'Thanks enable'			=>	'Allow the use of "Thank You"',
     'Min post'		        =>	'Minimum post',
     'Min post help'	        =>	'The minimum number of messages to be able to thank you for the post',
-
 );
