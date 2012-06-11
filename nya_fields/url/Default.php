@@ -1,4 +1,5 @@
 <?php
+
 $forum_url['admin_fields']		= 'admin/settings.php?section=route&r=nya_fields/fields';
 $forum_url['admin_fields_add']	= 'admin/settings.php?section=route&r=nya_fields/fields/add';
 $forum_url['admin_fields_del']	= 'admin/settings.php?section=route&r=nya_fields/fields/delete';
