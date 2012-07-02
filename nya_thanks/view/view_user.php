@@ -13,7 +13,7 @@
 <?php foreach ($records as $cur_rep) : 
 ?>
 				<tr>					
-					<td><?php echo $cur_rep['from_user_name'] ? '<a href="'.forum_link(App::$forum_url['habr_view'], $cur_rep['from_user_id']).'">'. forum_htmlencode($cur_rep['from_user_name']).'</a>' :  App::$lang['Profile deleted'] ?></td>
+					<td><?php echo $cur_rep['from_user_name'] ? '<a href="'.forum_link(App::$forum_url['thanks_view'], $cur_rep['from_user_id']).'">'. forum_htmlencode($cur_rep['from_user_name']).'</a>' :  App::$lang['Profile deleted'] ?></td>
 					<td>
 <?php 
 	if ($cur_rep['read_forum'] == null ||  $cur_rep['read_forum'] == 1)
