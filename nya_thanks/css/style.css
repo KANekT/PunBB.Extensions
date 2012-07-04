@@ -1,3 +1,7 @@
+.thanks_sig { font-style:italic; font-size: 90%; border-radius: 8px 8px; background-color:#F3F3F3; padding: 6px 12px !important;} 
+.thanks_mess { font-style:normal; color:#008000; } 
+.thanks_error { font-style:normal; color:#FF0000; }
+
 #tooltip_content {
 	background-color: #FFF;
 }
@@ -65,3 +69,4 @@ table.thanks_popup {
     background: #dedede;
     color: #6e6e6e;
 }
+

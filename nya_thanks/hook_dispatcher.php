@@ -15,7 +15,6 @@ class Thanks_Hook_Dispatcher extends Base {
 	 */
 	public function front_end_init()
 	{
-        App::$forum_loader->add_css('.thanks_sig { font-style:italic; font-size: 90%; border-radius: 8px 8px; background-color:#F3F3F3; padding: 6px 12px !important;} .thanks_mess { font-style:normal; color:#008000; } .thanks_error { font-style:normal; color:#FF0000; }', array('type' => 'inline'));
         App::$forum_loader->add_css($GLOBALS['ext_info']['url'].'/css/style.css', array('type' => 'url'));
         App::load_language('nya_thanks.thanks');
 
