@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE extension SYSTEM "ext-1.0.dtd">
+
+<extension engine="1.0">
+	<id>pm_email</id>
+	<title>Private Messaging Email</title>
+	<version>1.2.1</version>
+	<description>An addon to the PunPM extension that was created by the PunBB Dev Team</description>
+	<author>Smith (edit for 1.4 by KANekT)</author>
+	<minversion>1.3.2</minversion>
+	<maxtestedon>1.4.2</maxtestedon>
+
+	<dependencies>
+	  <dependency>pun_pm</dependency>
+	</dependencies>
+	
+	<install><![CDATA[
+
+		if(!$forum_db->field_exists('users', 'enable_pm_email'))
+			$forum_db->add_field('users', 'enable_pm_email', 'TINYINT(1)', false, 1);
+
+	]]></install>
+
+	<uninstall><![CDATA[
+	
+		$forum_db->drop_field('users', 'enable_pm_email');
+
+	]]></uninstall>
+
+	<hooks>
+
+		<hook id="pun_pm_pf_change_details_settings_pre_pm_settings_fieldset_end"><![CDATA[
+		
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+			?>
+				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<legend><span><?php echo $lang_pm_email['PM Email'] ?></span></legend>
+					<div class="mf-box">
+						<div class="mf-item">
+							<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="form[enable_pm_email]" value="1"<?php if ($user['enable_pm_email'] == '1') echo ' checked="checked"' ?> /></span>
+							<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_pm_email['Enable Legend'] ?></label>
+						</div>
+					</div>
+				</fieldset>
+			<?php
+			
+		]]></hook>
+
+		<hook id="pf_change_details_settings_validation"><![CDATA[
+
+			if (!isset($_POST['form']['enable_pm_email']) || $_POST['form']['enable_pm_email'] != '1')
+				$form['enable_pm_email'] = '0';
+			else
+				$form['enable_pm_email'] = '1';
+
+		]]></hook>
+
+		<hook id="pun_pm_fn_send_message_pre_redirect"><![CDATA[
+
+			if($forum_user['enable_pm_email'] == '1')
+			{
+				global $lang_common, $base_url;
+				
+				if (file_exists($ext_info['path'].'/lang/mail_template/'.$forum_user['language'].'.tpl'))
+					$mail_tpl = forum_trim(file_get_contents($ext_info['path'].'/lang/mail_template/'.$forum_user['language'].'.tpl'));
+				else
+					$mail_tpl = forum_trim(file_get_contents($ext_info['path'].'/lang/mail_template/English.tpl'));
+
+				// The first row contains the subject
+				$first_crlf = strpos($mail_tpl, "\n");
+				$mail_subject = forum_trim(substr($mail_tpl, 8, $first_crlf-8));
+				$mail_message = forum_trim(substr($mail_tpl, $first_crlf));
+
+				$mail_subject = str_replace('<username>', $receiver_username, $mail_subject);
+				$mail_message = str_replace('<board_title>', $forum_config['o_board_title'], $mail_message);
+				$mail_message = str_replace('<base_url>', $base_url.'/', $mail_message);
+				$mail_message = str_replace('<board_mailer>', sprintf($lang_common['Forum mailer'], $forum_config['o_board_title']), $mail_message);
+
+				$query = array(
+					'SELECT'	=> 'email',
+					'FROM'		=> 'users',
+					'WHERE'		=> 'username=\''.$forum_db->escape($receiver_username).'\''
+				);
+				$results = $forum_db->query_build($query) or error(__FILE__, __LINE__);
+				list($receiver) = $forum_db->fetch_row($result);
+
+				if (!defined('FORUM_EMAIL_FUNCTIONS_LOADED'))
+					require FORUM_ROOT.'include/email.php';
+
+				forum_mail(forum_htmlencode($receiver), $mail_subject, $mail_message);
+			}
+
+		]]></hook>
+
+	</hooks>
+</extension>
