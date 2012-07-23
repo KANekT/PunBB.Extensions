@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for Hide
+ *
+ * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
+ * @package hide
+*/
+-->
+<extension engine="1.0">
+	<id>nya_hide</id>
+	<title>Hide</title>
+	<version>0.4.1</version>
+	<description>Hide text</description>
+	<author>KANekT</author>
+	<minversion>1.4</minversion>
+	<maxtestedon>1.4.2</maxtestedon>
+
+	<hooks>
+		<hook id="ps_preparse_tags_start"><![CDATA[
+		   // add our tag to the list
+			$tags[] = 'hide';
+			$tags_fix[] = 'hide';
+			$tags_block[] = 'hide';
+		]]></hook>
+
+		<hook id="ps_parse_message_pre_split"><![CDATA[
+			global $forum_url;
+
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+		
+			if (strpos($text, 'hide') !== false && strpos($text, '/hide') !== false)
+			{
+				if ($forum_user['is_guest'])
+				{
+					$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', '[code]'.sprintf($lang_hide['Hidden text guest'], '<a href="'.forum_link($forum_url['login']).'">'.$lang_hide['login'].'</a>').'[/code]', $text);
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', '[code]'.sprintf($lang_hide['Hidden text guest'], '<a href="'.forum_link($forum_url['login']).'">'.$lang_hide['login'].'</a>').'[/code]', $text);
+				}
+				else if ($forum_user['is_admmod'])
+				{
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', '</p><div class="hidebox"><cite>'.$lang_hide['Hidden text'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $text);
+					$text = preg_replace('#\[hide](.*?)\[/hide\]#si', '</p><div class="hidebox"><cite>'.$lang_hide['Hidden text'].':</cite><blockquote><p><i>$1</i></p></blockquote></div><p>', $text);
+				}
+				else 
+				{
+					$text = preg_replace('#\[hide](.*?)\[/hide\]#si', '</p><div class="hidebox"><cite>'.$lang_hide['Hidden text'].':</cite><blockquote><p><i>$1</i></p></blockquote></div><p>', $text);
+					
+					$occurances = preg_match_all("#\[hide\=(.+?)\](.+?)\[/hide\]#si", $text, $temp);
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide\=(.+?)\](.+?)\[/hide\]#si", $temp[0][$i],$hide_count);
+						if($forum_user['num_posts'] >= $hide_count[1])
+						{
+							$text_hide = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', '</p><div class="hidebox"><cite>'.$lang_hide['Hidden text'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $temp[0][$i]);
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide=([0-9]*)](.*?)\[/hide\]#si", '<b>['.$lang_hide['Hidden count begin'].' '.$hide_count[1].' '.$lang_hide['Hidden count end'].']</b>', $temp[0][$i]);
+							
+						}
+						if (isset($text_hide))
+						{
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+				
+				preg_match("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $text, $hide_group);
+				if (strpos($text, 'hide=gr') !== false && strpos($text, '/hide') !== false)
+				{
+					$occurances = preg_match_all("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $text, $temp);
+					for($i=0;$i<$occurances;$i++) 
+					{ 
+						preg_match("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $temp[0][$i],$hide_group);
+						if ($forum_user['is_guest'])
+						{
+							$text_hide = preg_replace('#\[hide\=gr(.+?)\](.+?)\[/hide\]#si', '[code]'.sprintf($lang_hide['Hidden text guest'], '<a href="'.forum_link($forum_url['login']).'">'.$lang_hide['login'].'</a>').'[/code]', $temp[0][$i]);
+						}
+						else if($forum_user['g_id'] == $hide_group[1] || $forum_user['is_admmod'])
+						{
+							$text_hide = preg_replace('#\[hide\=gr(.+?)\](.+?)\[/hide\]#si', '</p><div class="hidebox"><cite>'.$lang_hide['Hidden text group'].'[$1]:</cite><blockquote><p><i>$2</i></p></blockquote></div><p>', $temp[0][$i]);
+						}
+						else
+						{
+							$text_hide = preg_replace("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", '<b>['.$lang_hide['Hidden text group'].' '.$hide_group[1].']</b>', $temp[0][$i]);
+						}
+						if (isset($text_hide))
+						{
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+			}
+		]]></hook>
+
+		<hook id="po_modify_quote_info"><![CDATA[
+			$text = $quote_info['message'];
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+
+			if (!$forum_user['is_admmod'] && strpos($text, 'hide') !== false && strpos($text, '/hide') !== false)
+			{
+				if ($forum_user['is_guest'])
+				{
+					$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', $lang_hide['Hidden text'], $text);
+					$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', $lang_hide['Hidden text'], $text);
+				}
+				else
+				{
+					$occurances = preg_match_all("#\[hide\=.+?\](.+?)\[/hide\]#si", $text, $temp);
+					for($i=0;$i<$occurances;$i++)
+					{
+						preg_match("#\[hide\=(.+?)\].+?\[/hide\]#s", $temp[0][$i],$hide_count);
+
+						if($forum_user['num_posts'] < $hide_count[1])
+						{
+							$text_hide = preg_replace("#\[hide=([0-9]*)](.*?)\[/hide\]#si", $lang_hide['Hidden text'], $temp[0][$i]);
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+
+				preg_match("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $text, $hide_group);
+				if (isset($hide_group[1]))
+				{
+					$occurances = preg_match_all("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $text, $temp);
+					for($i=0;$i<$occurances;$i++)
+					{
+						preg_match("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $temp[0][$i],$hide_group);
+						if($forum_user['g_id'] != $hide_group[1])
+						{
+							$text_hide = preg_replace("#\[hide\=gr(.+?)\](.+?)\[/hide\]#si", $lang_hide['Hidden text group'].' '.$hide_group[1], $temp[0][$i]);
+							$text = str_replace($temp[0][$i], $text_hide, $text);
+						}
+					}
+				}
+			}
+			$quote_info['message'] = $text;
+		]]></hook>
+
+		<hook id="fn_send_forum_subscriptions_start, fn_send_subscriptions_start"><![CDATA[
+			if (isset($post_info['message']))
+				$text = $post_info['message'];
+			else
+				$text = $topic_info['message'];
+
+			if (strpos($text, 'hide') !== false && strpos($text, '/hide') !== false)
+			{
+				$text = preg_replace('#\[hide\](.*?)\[\/hide\]#si', 'Hidden text', $text);
+				$text = preg_replace('#\[hide=([0-9]*)](.*?)\[/hide\]#si', 'Hidden text', $text);
+				$text = preg_replace('#\[hide\=gr(.+?)\](.+?)\[/hide\]#si', 'Hidden text', $text);
+			}
+			$post_info['message'] = $text;
+		]]></hook>
+
+		<hook id="pun_bbcode_pre_buttons_output"><![CDATA[
+			$this->add_button(array('name'  => 'hide', 'title' => 'hide', 'tag' => 'hide', 'image' => false));
+		]]></hook>
+
+		<hook id="he_new_bbcode_text_style"><![CDATA[
+			if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'.php'))
+				require $ext_info['path'].'/lang/'.$forum_user['language'].'.php';
+			else
+				require $ext_info['path'].'/lang/English.php';
+			?>
+				<div class="entry-content">
+					<code>[hide]<?php echo $lang_hide['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<div class="hidebox"><cite><?php echo $lang_hide['Hidden text'] ?></cite><blockquote><p><i><?php echo $lang_hide['Hidden text'] ?></i></blockquote></p></div>
+					<code>[hide=1]<?php echo $lang_hide['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<div class="hidebox"><cite><?php echo $lang_hide['Hidden text'] ?>[1]</cite><blockquote><p><i><?php echo $lang_hide['Hidden text'] ?></i></blockquote></p></div>
+					<code>[hide=gr1]<?php echo $lang_hide['Hidden text'] ?>[/hide]</code> <span><?php echo $lang_help['produces'] ?></span>
+					<div class="hidebox"><cite><?php echo $lang_hide['Hidden text group'] ?>[1]</cite><blockquote><p><i><?php echo $lang_hide['Hidden text group'] ?>1</i></p></blockquote></div>
+				</div>
+			<?
+		]]></hook>
+
+		<!-- pun_bbcode - add styles for button -->
+		<hook id="pun_bbcode_styles_loaded"><![CDATA[
+			if ($forum_user['pun_bbcode_use_buttons'] == '1') {
+
+				if (!isset($hide_styles_loaded )) {
+					$hide_styles_loaded = TRUE;
+
+					if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/hide.css')) {
+						$forum_loader->add_css($ext_info['url'].'/css/'.$forum_user['style'].'/hide.css', array('type' => 'url', 'media' => 'screen'));
+					} else {
+						$forum_loader->add_css($ext_info['url'].'/css/Oxygen/hide.css', array('type' => 'url', 'media' => 'screen'));
+					}
+				}
+			}
+		]]></hook>
+
+		<!-- -->
+		<hook id="hd_head"><![CDATA[
+			if (defined('FORUM_PAGE')) {
+				if (in_array(FORUM_PAGE, array('news', 'postdelete', 'modtopic',
+					'post', 'viewtopic', 'searchposts',
+					'pun_pm-inbox', 'pun_pm-outbox', 'postedit', 'pun_pm-write'))) {
+
+					if (!isset($hide_styles_loaded )) {
+						$hide_styles_loaded = TRUE;
+
+						if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/hide.css')) {
+							$forum_loader->add_css($ext_info['url'].'/css/'.$forum_user['style'].'/hide.css', array('type' => 'url', 'media' => 'screen'));
+						} else {
+							$forum_loader->add_css($ext_info['url'].'/css/Oxygen/hide.css', array('type' => 'url', 'media' => 'screen'));
+						}
+					}
+				}
+			}
+		]]></hook>
+	</hooks>
+</extension>

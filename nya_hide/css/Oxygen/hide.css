@@ -1,0 +1,18 @@
+.entry-content .hidebox
+{
+    border-style: solid;
+    border-width: 1px;
+    margin: 0.75em 1em;
+    padding: 1em 0.75em;
+}
+
+.entry-content .hidebox cite {
+    display: block;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.entry-content .hidebox {
+    background: #fff;
+    border-color: #ddd;
+}
