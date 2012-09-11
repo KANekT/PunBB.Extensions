@@ -85,9 +85,19 @@ var myOpt = {
 		}
 	},
 	bodyClass: "entry-content",
-	smileList:false
+	smileList: []
 }
 $(document).ready(function()	{
 	$('textarea').wysibb(myOpt);
-	$('textarea').prop('required', false)
+	$('textarea').prop('required', false);
+	$('iframe.wysibb-text-iframe').load(function(){
+		$(this).contents().keypress(function(e){
+			if (e.ctrlKey && e.keyCode == 13) {
+				if ($(this).contents().find('.wysibb-body').text().length > 0) {
+					$('input[name=submit_button]').click();
+				}
+			}
+		});
+		$(this).contents().find('.wysibb-body').css({'background' : 'none'});
+	});
 });

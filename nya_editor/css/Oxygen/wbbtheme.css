@@ -141,7 +141,7 @@ ul,ol{padding:0 0 0 30px}
 /* CONTENT */
 .wysibb-text{margin:5px;}
 .wysibb-text .wysibb-text-iframe{max-width:100%;width:100%;margin:0;}
-.wysibb-body{text-align:left;min-width:0 !important;overflow:auto !important;margin:0 !important;padding:0 !important;}
+.wysibb-body{text-align:left;min-width:0 !important;overflow:auto !important;margin:0 !important;padding:0 !important; }
 /* END CONTENT */
 
 /* DEFAULT STYLES */
