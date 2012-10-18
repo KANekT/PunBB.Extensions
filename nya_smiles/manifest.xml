@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>nya_smiles</id>
 	<title>Smiles</title>
-	<version>0.3.1</version>
+	<version>0.4.0</version>
 	<description>KOLOBOK Smiles</description>
 	<author>KANekT</author>
 	<minversion>1.4.2</minversion>
@@ -33,13 +33,15 @@
 			$text = '<div id="pun_bbcode_smilies">';
 			foreach ($smilies as $smile => $prop)
 			{
-				$text .= '<a onclick="PUNBB.pun_bbcode.insert_text(\' '.$prop['title'].' \', \'\')"><img src="'.$prop['src'].'"'.((isset($prop['width'])) ? ' width="'.$prop['width'].'"' : '').((isset($prop['height'])) ? ' height="'.$prop['height'].'"' : '').' alt="'.$prop['title'].'" /></a>'."\n";
+				if (!isset($prop['view'])){
+					$text .= '<a onclick="PUNBB.pun_bbcode.insert_text(\' '.$prop['title'].' \', \'\')"><img src="'.$prop['src'].'"'.((isset($prop['width'])) ? ' width="'.$prop['width'].'"' : '').((isset($prop['height'])) ? ' height="'.$prop['height'].'"' : '').' alt="'.$prop['title'].'" /></a>'."\n";
+				}
 			}
 			$text .= '</div>';
 			echo $text;
 		]]></hook>
 
-				<hook id="pun_bbcode_styles_loaded"><![CDATA[
+		<hook id="pun_bbcode_styles_loaded"><![CDATA[
 			if ($forum_user['pun_bbcode_enabled'] == '1')
 			{
 				if (!isset($smiles_styles_loaded )) {
@@ -59,25 +61,25 @@
 			$ext_Smiles->add_Smile(array(
 				'O:)' => array('title' => 'O:)', 'src' => $ext_info['url'].'/img/aa.gif'),
 				':)' => array('title' => ':)', 'src' => $ext_info['url'].'/img/ab.gif'),
-				'=)' => array('title' => '=)', 'src' => $ext_info['url'].'/img/ab.gif'),
+				'=)' => array('title' => '=)', 'src' => $ext_info['url'].'/img/ab.gif', 'view' => 0),
 				':(' => array('title' => ':(', 'src' => $ext_info['url'].'/img/ac.gif'),
-				'=(' => array('title' => '=(', 'src' => $ext_info['url'].'/img/ac.gif'),
+				'=(' => array('title' => '=(', 'src' => $ext_info['url'].'/img/ac.gif', 'view' => 0),
 				';)' => array('title' => ';)', 'src' => $ext_info['url'].'/img/ad.gif'),
 				':P' => array('title' => ':P', 'src' => $ext_info['url'].'/img/ae.gif'),
-				':p' => array('title' => ':p', 'src' => $ext_info['url'].'/img/ae.gif'),
+				':p' => array('title' => ':p', 'src' => $ext_info['url'].'/img/ae.gif', 'view' => 0),
 				'8)' => array('title' => '8)', 'src' => $ext_info['url'].'/img/af.gif'),
 				':D' => array('title' => ':D', 'src' => $ext_info['url'].'/img/ag.gif'),
-				'=D' => array('title' => '=D', 'src' => $ext_info['url'].'/img/ag.gif'),
+				'=D' => array('title' => '=D', 'src' => $ext_info['url'].'/img/ag.gif', 'view' => 0),
 				':[' => array('title' => ':[', 'src' => $ext_info['url'].'/img/ah.gif'),
 				'o_O' => array('title' => 'o_O', 'src' => $ext_info['url'].'/img/ai.gif'),
 				':o' => array('title' => ':o', 'src' => $ext_info['url'].'/img/ai.gif'),
-				':O' => array('title' => ':O', 'src' => $ext_info['url'].'/img/ai.gif'),
+				':O' => array('title' => ':O', 'src' => $ext_info['url'].'/img/ai.gif', 'view' => 0),
 				':-*' => array('title' => ':-*', 'src' => $ext_info['url'].'/img/aj.gif'),
 				':\'(' => array('title' => ':\'(', 'src' => $ext_info['url'].'/img/ak.gif'),
 				':-X' => array('title' => ':-X', 'src' => $ext_info['url'].'/img/al.gif'),
 				'>:o' => array('title' => '>:o', 'src' => $ext_info['url'].'/img/am.gif'),
 				':|' => array('title' => ':|', 'src' => $ext_info['url'].'/img/an.gif'),
-				'=|' => array('title' => '=|', 'src' => $ext_info['url'].'/img/an.gif'),
+				'=|' => array('title' => '=|', 'src' => $ext_info['url'].'/img/an.gif', 'view' => 0),
 				':-/' => array('title' => ':-/', 'src' => $ext_info['url'].'/img/ao.gif'),
 				':lol:' => array('title' => ':lol:', 'src' => $ext_info['url'].'/img/ag.gif'),
 				':mad:' => array('title' => ':mad:', 'src' => $ext_info['url'].'/img/ac.gif'),
@@ -89,11 +91,11 @@
 				'[:}' => array('title' => '[:}', 'src' => $ext_info['url'].'/img/ar.gif'),
 				'*KISSED*' => array('title' => '*KISSED*', 'src' => $ext_info['url'].'/img/as.gif'),
 				':!' => array('title' => ':!', 'src' => $ext_info['url'].'/img/at.gif'),
-				':-~' => array('title' => ':-~', 'src' => $ext_info['url'].'/img/at.gif'),
+				':-~' => array('title' => ':-~', 'src' => $ext_info['url'].'/img/at.gif', 'view' => 0),
 				'*TIRED*' => array('title' => '*TIRED*', 'src' => $ext_info['url'].'/img/au.gif'),
 				'*STOP*' => array('title' => '*STOP*', 'src' => $ext_info['url'].'/img/av.gif'),
 				'*KISSING*' => array('title' => '*KISSING*', 'src' => $ext_info['url'].'/img/aw.gif'),
-				'@}->--' => array('title' => '@}->--', 'src' => $ext_info['url'].'/img/ax.gif'),
+				'*ROSE*' => array('title' => '*ROSE*', 'src' => $ext_info['url'].'/img/ax.gif'),
 				'*THUMBSUP*' => array('title' => '*THUMBSUP*', 'src' => $ext_info['url'].'/img/ay.gif'),
 				'*DRINK*' => array('title' => '*DRINK*', 'src' => $ext_info['url'].'/img/az.gif'),
 				'*INLOVE*' => array('title' => '*INLOVE*', 'src' => $ext_info['url'].'/img/ba.gif'),
