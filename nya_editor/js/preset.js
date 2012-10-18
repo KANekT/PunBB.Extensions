@@ -82,13 +82,35 @@ var myOpt = {
 			transform: {
 				'<font size="6">{SELTEXT}</font>':'[size=6]{SELTEXT}[/size]'
 			}
+		},
+		video: {
+			title: 'Вставка video',
+			buttonHTML: '<span class="ve-tlb-video"></span>',
+			buttonText: 'video',
+			modal: { //Описание модального окна
+				title: "Добавление видеоролика",
+				width: "600px",
+				tabs: [
+					{
+						input: [ //Список полей формы
+							{param: "SRC",title:"Введите адрес видео:",validation: '^http(s)?://.*?\.*'},
+						]
+					}
+				],
+			},
+			transform: {
+				'<div class="video2">Видео: {SRC}</div>':'[video]{SRC}[/video]'
+			}
 		}
 	},
 	bodyClass: "entry-content",
 	smileList: []
 }
 $(document).ready(function()	{
-	$('textarea').wysibb(myOpt);
+	if ($('textarea').attr('name') == 'req_message'){
+		$('textarea[name=req_message]').wysibb(myOpt);
+	}
+
 	$('textarea').prop('required', false);
 	$('iframe.wysibb-text-iframe').load(function(){
 		$(this).contents().keypress(function(e){

@@ -1,6 +1,6 @@
 /* wysibb */
 html{height:100% !important;}
-ul,ol{padding:0 0 0 30px}
+.wysibb ul,ol{padding:0 0 0 30px}
 .wysibb{margin:0 0 15px 0 !important;border:1px solid #ddd;position:relative;background:#fff;font-family:Arial,Verdana,Tahoma;}
 .wysibb-texarea{
   border:none !important;
@@ -40,9 +40,17 @@ ul,ol{padding:0 0 0 30px}
   padding:1px 2px;
   cursor:pointer;
   margin:0 0 0 1px;
+  font-size: 12px;
 }
+.wysibb .wysibb-toolbar .wysibb-toolbar-container .dis,.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.dis:hover{
+    opacity:0.3;
+    cursor:default;
+    overflow:hidden;
+    border:0;
+    padding:1px 2px;
+}
+
 .wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.on,.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.on:hover {
-  cursor:default;
   background:#ccc;
   padding:0px 1px;
   box-shadow:inset 0px 0px 3px #aaa;
@@ -189,7 +197,9 @@ ul,ol{padding:0 0 0 30px}
   background: url(./img/icons.png) -8px -400px;
   cursor:default;
 }
-
+.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-dropdown.dis,.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-dropdown.dis:hover{
+    padding-right:9px;
+}
 
 .wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-dropdown:hover,.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-dropdown.on{
   padding-right:9px;
@@ -271,6 +281,9 @@ ul,ol{padding:0 0 0 30px}
 .wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-select{
   width:100px;
   padding: 1px 1px 1px 5px;
+}
+.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-select.dis,.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-select.dis:hover{
+    padding: 1px 1px 1px 5px;
 }
 .wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-select:hover,.wysibb .wysibb-toolbar .wysibb-toolbar-container .wysibb-toolbar-btn.wbb-select.on{
   padding: 0 0 0 4px;
@@ -575,9 +588,3 @@ ul,ol{padding:0 0 0 30px}
 }
 /* END IMAGE UPLOAD */
 /* MODAL WINDOW */
-
-
-/* PHPBB3 */
-.content-phpbb3{
-  font-size:13px;
-}

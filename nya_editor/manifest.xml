@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
- * manifest file for CLEditor
+ * manifest file for Editor
  *
  * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>nya_editor</id>
 	<title>WysiBB</title>
-	<version>1.0.2-2</version>
+	<version>1.1.0</version>
 	<description>jQuery WYSIWYG editor [WysiBB]</description>
 	<author>KANekT</author>
 	<minversion>1.4.2</minversion>
@@ -26,6 +26,11 @@
 		<hook id="ft_js_include"><![CDATA[
 			if ((FORUM_PAGE == 'viewtopic' && $forum_config['o_quickpost']) || in_array(FORUM_PAGE, array('post', 'postedit','profile-signature')) || defined('FORUM_PAGE') && 'pun_pm' == substr(FORUM_PAGE, 0, 6))
 			{
+				if ($forum_user['language'] != 'English' && file_exists($ext_info['path'].'/js/lang/'.$forum_user['language'].'.js'))
+					$forum_loader->add_js($ext_info['url'].'/js/lang/'.$forum_user['language'].'.js', array('type' => 'url'));
+				else
+					$forum_loader->add_js($ext_info['url'].'/js/lang/English.js', array('type' => 'url'));
+
 				$forum_loader->add_js($ext_info['url'].'/js/jquery.wysibb.min.js', array('type' => 'url'));
 				$forum_loader->add_js($ext_info['url'].'/js/preset.js', array('type' => 'url'));
 			}

@@ -1,5 +1,4 @@
-if (typeof (WBBLANG)=="undefined") {WBBLANG = {};}
-WBBLANG['en'] = {
+var CURLANG = {
 	bold: "Bold",
 	italic: "Italic",
 	underline: "Underline",
