@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * manifest file for BBCode Strikethrough
+ *
+ * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
+ * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * Donate Web Money Z104136428007 R346491122688
+ * @package BBCode Strikethrough
+*/
+-->
+<extension engine="1.0">
+	<id>strikethrough</id>
+	<title>WysiBB</title>
+	<version>1.0.0</version>
+	<description>BBCode Strikethrough</description>
+	<author>KANekT</author>
+	<minversion>1.4.0</minversion>
+	<maxtestedon>1.4.3</maxtestedon>
+
+	<hooks>
+		<!-- pun_bbcode - add button -->
+		<hook id="pun_bbcode_pre_buttons_output"><![CDATA[
+			$this->add_button(array('name'	=> 'Strikethrough', 'title' => 'Strikethrough', 'tag' => 'S', 'image' => true));
+		]]></hook>
+
+		<!-- pun_bbcode - add styles for button -->
+		<hook id="pun_bbcode_styles_loaded"><![CDATA[
+			if ($forum_user['pun_bbcode_use_buttons'] == '1') {
+				if ($forum_user['style'] != 'Oxygen' && file_exists($ext_info['path'].'/css/'.$forum_user['style'].'/strikethrough.css')) {
+					$forum_loader->add_css($ext_info['url'].'/css/'.$forum_user['style'].'/strikethrough.css', array('type' => 'url', 'media' => 'screen'));
+				} else {
+					// Optimize: inline for Oxygen
+					$forum_loader->add_css('#pun_bbcode_bar #pun_bbcode_button_strikethrough.image{background:url("'.$ext_info['url'].'/css/Oxygen/img/strikethrough.png") 50% 50% no-repeat}');
+				}
+			}
+		]]></hook>
+
+		<hook id="ps_preparse_tags_start"><![CDATA[
+		
+			// add our tag to the list
+			$tags[] = 's';
+			$tags_opened[] = 's';
+			$tags_closed[] = 's';
+			$tags_inline[] = 's';
+			$tags_trim[] = 's';
+		
+		]]></hook>
+
+		<hook id="ps_do_bbcode_replace"><![CDATA[
+			$pattern[] = '#\[s\](.*?)\[/s\]#ms';
+			$replace[] = '<s>$1</s>';
+		]]></hook>
+		
+	</hooks>
+</extension>
