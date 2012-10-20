@@ -5,11 +5,11 @@
 <extension engine="1.0">
 	<id>nya_jquery_ui</id>
 	<title>jQuery UI</title>
-	<description>Extension that provide jQueryUI lib (version 1.8.18)</description>
+	<description>Extension that provide jQueryUI lib (version 1.8.24)</description>
 	<author>KANekT</author>
-	<version>0.4.0</version>
+	<version>0.4.1</version>
 
-	<minversion>1.4RC1</minversion>
+	<minversion>1.4.0</minversion>
 	<maxtestedon>1.4.2</maxtestedon>
 	
 	<dependencies>
