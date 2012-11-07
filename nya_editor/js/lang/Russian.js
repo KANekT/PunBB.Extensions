@@ -1,4 +1,4 @@
-var CURLANG = {
+CURLANG = {
 	bold: "Полужирный",
 	italic: "Курсив",
 	underline: "Подчеркнутый",
@@ -17,6 +17,10 @@ var CURLANG = {
 	offtop: "Оффтоп",
 	code: "Код",
 	spoiler: "Сворачиваемый текст",
+	spoilerBtn: 'Спойлер',
+	hide: "Скрываемый текст",
+	hideBtn: 'Скрыть текст',
+	search: 'Поиск',
 	fontcolor: "Цвет текста",
 	fontsize: "Размер текста",
 	fontfamily: "Шрифт текста",
@@ -28,37 +32,41 @@ var CURLANG = {
 	smilebox: "Вставить смайл",
 	video: "Вставить видео",
 	removeFormat: "Удалить форматирование",
-	
+
 	modal_link_title: "Вставить ссылку",
 	modal_link_text: "Отображаемый текст",
 	modal_link_url: "URL ссылки",
 	modal_email_text: "Отображаемый эл.адрес",
 	modal_email_url: "Email",
 	modal_link_tab1: "Вставить URL",
-	
+
 	modal_img_title: "Вставить изображение",
 	modal_img_tab1: "Ввести URL",
 	modal_img_tab2: "Загрузить файл",
 	modal_imgsrc_text: "Введите адрес изображения",
-	modal_img_btn: "Выберите изображение для загрузки",
-	
+	modal_img_btn: "Выберите файл для загрузки",
+	add_attach: "Добавить вложение",
+
+	modal_video_title: "Добавление видеоролика",
 	modal_video_text: "Введите URL видео",
-	
+
 	close: "Закрыть",
 	save: "Сохранить",
 	cancel: "Отмена",
 	remove: "Удалить",
-	
+
 	validation_err: "Введенные данные некорректны",
-	error_onupload: "Ошибка во время загрузки файла",
-	
-	fileupload_text1: "Перетащите изображение сюда",
+	error_onupload: "Ошибка во время загрузки файла или такое расширение файла не поддерживается",
+
+	fileupload_text1: "Перетащите файл сюда",
 	fileupload_text2: "или",
-	
+
 	loading: "Загрузка",
 	auto: "Авто",
-	
-	//smiles
+	views: "Просмотров",
+	downloads: "Скачиваний",
+
+//smiles
 	sm1: "Улыбка",
 	sm2: "Смех",
 	sm3: "Подмигивание",
@@ -68,5 +76,4 @@ var CURLANG = {
 	sm7:"Злой",
 	sm8: "Огорчение",
 	sm9: "Тошнит"
-	
 };

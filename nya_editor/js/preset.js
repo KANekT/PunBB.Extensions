@@ -14,25 +14,25 @@ var myOpt = {
 			}
 		},
 		spoiler: {
-			title: 'Сворачиваемый текст',
+			title: CURLANG.spoiler,
 			buttonHTML: '<span class="ve-tlb-spoiler"></span>',
-			buttonText: 'Спойлер',
+			buttonText: CURLANG.spoilerBtn,
 			transform: {
-				'<div class="fancy_spoiler_switcher"><div class="fancy_spoiler_switcher_header">Спойлер (+/-)</div><div class="fancy_spoiler_">{SELTEXT}</div></div>':'[spoiler]{SELTEXT}[/spoiler]'
+				'<div class="fancy_spoiler_switcher"><div class="fancy_spoiler_switcher_header">Spoiler (+/-)</div><div class="fancy_spoiler_">{SELTEXT}</div></div>':'[spoiler]{SELTEXT}[/spoiler]'
 			}
 		},
 		hide: {
-			title: 'Скрываемый текст',
+			title: CURLANG.hide,
 			buttonHTML: '<span style="background: url(/extensions/nya_editor/css/Oxygen/img/hide.png) no-repeat scroll 2px 2px transparent; width: 20px;"></span>',
-			buttonText: 'Hide',
+			buttonText: CURLANG.hideBtn,
 			transform: {
 				'<div class="hidebox"><blockquote><p>{SELTEXT}</p></blockquote></div>':'[hide]{SELTEXT}[/hide]',
 				'<div class="hidebox"><cite>Hidden text [{CNT}]:</cite><blockquote><p>{SELTEXT}</p></blockquote></div>':'[hide={CNT}]{SELTEXT}[/hide]'
 			}
 		},
 		search: {
-			title: 'Поиск',
-			buttonText: 'Поиск',
+			title: CURLANG.search,
+			buttonText: CURLANG.search,
 			transform: {
 				'<div class="search"><cite><p>Поиск: {SELTEXT}</p></cite></div>':'[search={SELTEXT}]Поиск[/search]'
 			}
@@ -84,19 +84,19 @@ var myOpt = {
 			}
 		},
 		video: {
-			title: 'Вставка video',
+			title: CURLANG.video,
 			buttonHTML: '<span class="ve-tlb-video"></span>',
-			buttonText: 'video',
-			modal: { //Описание модального окна
-				title: "Добавление видеоролика",
+			buttonText: CURLANG.video,
+			modal: {
+				title: CURLANG.modal_video_title,
 				width: "600px",
 				tabs: [
 					{
-						input: [ //Список полей формы
-							{param: "SRC",title:"Введите адрес видео:",validation: '^http(s)?://.*?\.*'},
+						input: [
+							{param: "SRC",title: CURLANG.modal_video_text,validation: '^http(s)?://.*?\.*'}
 						]
 					}
-				],
+				]
 			},
 			transform: {
 				'<div class="video2">Видео: {SRC}</div>':'[video]{SRC}[/video]'
