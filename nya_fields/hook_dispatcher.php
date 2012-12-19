@@ -51,7 +51,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 * Hook pf_change_details_settings_local_fieldset_end handler
 	 * @param array $user
 	 */
-	public function pf_change_details_identity_personal_fieldset_end($user)
+	static function pf_change_details_identity_personal_fieldset_end($user)
 	{
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
 			require FORUM_CACHE_DIR.'cache_fields.php';
@@ -89,7 +89,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 * @param int $user user id
 	 * @param array $form form data array
 	 */
-	public function pf_change_details_identity_validation(& $form)
+	static function pf_change_details_identity_validation(& $form)
 	{
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
 			require FORUM_CACHE_DIR.'cache_fields.php';
@@ -112,7 +112,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 * Hook pf_change_details_about_pre_header_load handler
 	 * @param array $user user data
 	 */
-	public function pf_change_details_about_pre_header_load(& $forum_page, $user)
+	static function pf_change_details_about_pre_header_load(& $forum_page, $user)
 	{
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
 			require FORUM_CACHE_DIR.'cache_fields.php';
@@ -150,7 +150,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 * Hook pf_delete_user_form_submitted handler
 	 * @param int $id user id for delete fields
 	 */
-	public function pf_change_details_about_pre_user_contact_info($forum_page)
+	static function pf_change_details_about_pre_user_contact_info($forum_page)
 	{
 		if (!empty($forum_page['user_fields'])): ?>
 		<div class="ct-set data-set set<?php echo ++$forum_page['item_count'] ?>">
@@ -164,7 +164,7 @@ class Fields_Hook_Dispatcher extends Base {
 		<?php endif;
 	}
 
-	public function menu(& $forum_page)
+	static function menu(& $forum_page)
 	{
 		App::load_language('nya_fields.fields');
 		if (FORUM_PAGE_SECTION == 'users')
@@ -199,7 +199,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 *
 	 * @param int $group
 	 */
-	public function agr_add_edit_group_flood_fieldset_end($group)
+	static function agr_add_edit_group_flood_fieldset_end($group)
 	{
 		View::$instance = View::factory(FORUM_ROOT.'extensions/nya_fields/view/admin_group_setting', array('group' => $group));
 		echo  View::$instance->render();
@@ -210,7 +210,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 * @param array $query
 	 * @param bool $is_admin_group
 	 */
-	public function agr_edit_end_qr_update_group(& $query, $is_admin_group)
+	static function agr_edit_end_qr_update_group(& $query, $is_admin_group)
 	{
 		$fields_enable = (isset($_POST['fields_enable']) && $_POST['fields_enable'] == '1') || $is_admin_group ? '1' : '0';
 		$fields_min = isset($_POST['fields_min']) ? intval($_POST['fields_min']) : '0';
