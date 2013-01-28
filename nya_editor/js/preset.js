@@ -1,5 +1,5 @@
 var myOpt = {
-	buttons: "bold,italic,underline,strike,bullist2,numlist,quote,code,spoiler,hide,search,link,video,fontcolor,fontsize,justifyleft,justifycenter,justifyright",
+	buttons: "bold,italic,underline,strike,bullist2,numlist,quote,code,spoiler,hide,search,link,video,fontcolor,fontsize,justifyleft,justifycenter,justifyright,removeformat",
 	allButtons: {
 		quote: {
 			transform: {
@@ -85,7 +85,6 @@ var myOpt = {
 		},
 		video: {
 			title: CURLANG.video,
-			buttonHTML: '<span class="ve-tlb-video"></span>',
 			buttonText: CURLANG.video,
 			modal: {
 				title: CURLANG.modal_video_title,
@@ -104,22 +103,16 @@ var myOpt = {
 		}
 	},
 	bodyClass: "entry-content",
-	smileList: []
+	smileList: false
 }
 $(document).ready(function()	{
-	if ($('textarea').attr('name') == 'req_message'){
-		$('textarea[name=req_message]').wysibb(myOpt);
-	}
-
+	$('textarea[name=req_message]').wysibb(myOpt);
 	$('textarea').prop('required', false);
-	$('iframe.wysibb-text-iframe').load(function(){
-		$(this).contents().keypress(function(e){
-			if (e.ctrlKey && e.keyCode == 13) {
-				if ($(this).contents().find('.wysibb-body').text().length > 0) {
-					$('input[name=submit_button]').click();
-				}
+	$('.wysibb-text-editor').keypress(function(e){
+		if (e.ctrlKey && e.keyCode == 13) {
+			if ($('.wysibb-text-editor').text().length > 0) {
+				$('input[name=submit_button]').click();
 			}
-		});
-		$(this).contents().find('.wysibb-body').css({'background' : 'none'});
+		}
 	});
 });
