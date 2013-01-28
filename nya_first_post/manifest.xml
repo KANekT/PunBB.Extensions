@@ -12,11 +12,11 @@
 <extension engine="1.0">
 	<id>nya_first_post</id>
 	<title>First post</title>
-	<version>0.4.1</version>
+	<version>0.4.2</version>
 	<description>Fixed First Post.</description>
 	<author>KANekT</author>
 	<minversion>1.4RC2</minversion>
-	<maxtestedon>1.4.2</maxtestedon>
+	<maxtestedon>1.4.3</maxtestedon>
 
     <dependencies>
         <dependency>developer_helper</dependency>

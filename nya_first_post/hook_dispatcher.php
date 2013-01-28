@@ -168,7 +168,7 @@ class FirstPost_Hook_Dispatcher extends Base
 	 */
 	public function agr_edit_end_qr_update_group(& $query, $is_admin_group)
 	{
-		$query['SET'] .= ', g_fp_enable= '.((isset($_POST['pf_enable']) && $_POST['pf_enable'] == '1') || $is_admin_group ? '1' : '0');
+		$query['SET'] .= ', g_fp_enable= '.((isset($_POST['fp_enable']) && $_POST['fp_enable'] == '1') || $is_admin_group ? '1' : '0');
 	}
 
     public function afo_pre_header_load($lang_common)
