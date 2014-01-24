@@ -43,7 +43,9 @@ class Nya_Fields_Controller_Fields extends Controller
 
 	public function add()
 	{
-		if ($_POST['fields_name'] == '')
+        $fields_name = preg_replace("/[^A-Z]+/ui","",(string)$_POST['fields_name']);
+
+        if ($fields_name == '')
 			message(App::$lang['Fields name error']);
 
 		if ($_POST['fields_desc'] == '')
