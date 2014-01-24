@@ -88,7 +88,7 @@ class Nya_Thanks_Model_Thanks
 			$records[] = $row;
 		}
 
-		return $records;		
+		return $records;
 	}
 	
 	public function get_post_info($post_id, $user_id, $from_user_id)

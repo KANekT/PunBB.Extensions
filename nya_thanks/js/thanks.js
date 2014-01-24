@@ -30,9 +30,9 @@ $(document).ready(function(){
                 return;
             },
 
-            error: function(){
-                alert('error!');
-                window.location = habr.url;
+            error: function(e){
+                alert(e.message);
+                window.location = thanks.url;
             }
 
         });
