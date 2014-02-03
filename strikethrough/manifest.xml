@@ -11,7 +11,7 @@
 -->
 <extension engine="1.0">
 	<id>strikethrough</id>
-	<title>WysiBB</title>
+	<title>Strikethrough</title>
 	<version>1.0.0</version>
 	<description>BBCode Strikethrough</description>
 	<author>KANekT</author>
@@ -21,7 +21,7 @@
 	<hooks>
 		<!-- pun_bbcode - add button -->
 		<hook id="pun_bbcode_pre_buttons_output"><![CDATA[
-			$this->add_button(array('name'	=> 'Strikethrough', 'title' => 'Strikethrough', 'tag' => 'S', 'image' => true));
+			$this->add_button(array('name'	=> 'strikethrough', 'title' => 'strikethrough', 'tag' => 's', 'image' => true));
 		]]></hook>
 
 		<!-- pun_bbcode - add styles for button -->
@@ -31,7 +31,7 @@
 					$forum_loader->add_css($ext_info['url'].'/css/'.$forum_user['style'].'/strikethrough.css', array('type' => 'url', 'media' => 'screen'));
 				} else {
 					// Optimize: inline for Oxygen
-					$forum_loader->add_css('#pun_bbcode_bar #pun_bbcode_button_strikethrough.image{background:url("'.$ext_info['url'].'/css/Oxygen/img/strikethrough.png") 50% 50% no-repeat}');
+					$forum_loader->add_css('#pun_bbcode_bar #pun_bbcode_button_strikethrough.image{background:url("'.$ext_info['url'].'/css/Oxygen/img/strikethrough.png") 50% 50% no-repeat}', array('type' => 'inline'));
 				}
 			}
 		]]></hook>
@@ -44,6 +44,7 @@
 			$tags_closed[] = 's';
 			$tags_inline[] = 's';
 			$tags_trim[] = 's';
+			$tags_limit_bbcode['*'][] = 's';
 		
 		]]></hook>
 
