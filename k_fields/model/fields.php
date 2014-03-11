@@ -1,5 +1,5 @@
 <?php
-class Nya_Fields_Model_Fields
+class K_Fields_Model_Fields
 {
 	function count_fields()
 	{

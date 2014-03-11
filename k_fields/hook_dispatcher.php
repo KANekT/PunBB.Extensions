@@ -3,9 +3,10 @@
  * Fields hook dispatcher class
  * 
  *
- * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
- * @copyright Copyright (C) 2012 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @copyright (C) 2012-2014 KANekT Based on hcs extension for PunBB (C)
+ * @copyright Copyright (C) 2012-2014 PunBB
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * @package fields
  */
 class Fields_Hook_Dispatcher extends Base {
@@ -14,7 +15,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 */
     public static function pf_init()
 	{
-		App::load_language('nya_fields.fields');
+		App::load_language('k_fields.fields');
 		
 		App::inject_hook('pf_change_details_identity_personal_fieldset_end',array(
 			'name'	=>	'fields',
@@ -54,9 +55,13 @@ class Fields_Hook_Dispatcher extends Base {
     public static function pf_change_details_identity_personal_fieldset_end($user)
 	{
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
-			require FORUM_CACHE_DIR.'cache_fields.php';
-		else
-			Nya_Fields_Module_Cache::fields();
+			require_once FORUM_CACHE_DIR.'cache_fields.php';
+
+        if (!defined('FORUM_FIELDS_LOADED'))
+        {
+			K_Fields_Module_Cache::fields();
+            require_once FORUM_CACHE_DIR.'cache_fields.php';
+        }
 
 		if (!empty($forum_fields))
 		{
@@ -64,11 +69,10 @@ class Fields_Hook_Dispatcher extends Base {
 		<fieldset class="frm-group group<?php echo ++App::$forum_page['group_count'] ?>">
 			<legend class="group-legend"><strong><?php echo App::$lang['Fields legend'] ?></strong></legend>
 			<?php
-			$forum_page['item_count'] = 0;
+			$forum_page['item_count'] = $forum_page['fld_count'] = 0;
 			foreach ($forum_fields as $fields_key => $cur_fields)
 			{
 				$key = forum_htmlencode($cur_fields['fields_name']);
-
 				?>
 				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
 					<div class="sf-box text">
@@ -76,7 +80,7 @@ class Fields_Hook_Dispatcher extends Base {
 						<span class="fld-input"><input id="fld<?php echo $forum_page['fld_count'] ?>" type="text" name="form[f_<?php echo $key ?>]" value="<?php echo(isset($form['f_'.$key]) ? forum_htmlencode($form['f_'.$key]) : $user['f_'.$key]) ?>" size="40" maxlength="100" /></span>
 					</div>
 				</div>
-				<?
+				<?php
 			}
 			?>
 		</fieldset>
@@ -86,17 +90,20 @@ class Fields_Hook_Dispatcher extends Base {
 	
 	/**
 	 * Hook pf_change_details_settings_validation handler
-	 * @param int $user user id
 	 * @param array $form form data array
 	 */
 	public static function pf_change_details_identity_validation(& $form)
 	{
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
-			require FORUM_CACHE_DIR.'cache_fields.php';
-		else
-			Nya_Fields_Module_Cache::fields();
+            require_once FORUM_CACHE_DIR.'cache_fields.php';
 
-		if (!empty($forum_fields))
+        if (!defined('FORUM_FIELDS_LOADED'))
+        {
+            K_Fields_Module_Cache::fields();
+            require_once FORUM_CACHE_DIR.'cache_fields.php';
+        }
+
+        if (!empty($forum_fields))
 		{
 			foreach ($forum_fields as $fields_key => $cur_fields)
 			{
@@ -111,15 +118,20 @@ class Fields_Hook_Dispatcher extends Base {
 	/**
 	 * Hook pf_change_details_about_pre_header_load handler
 	 * @param array $user user data
+     * @param array $forum_page forum_page data array
 	 */
 	public static function pf_change_details_about_pre_header_load(& $forum_page, $user)
 	{
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
-			require FORUM_CACHE_DIR.'cache_fields.php';
-		else
-			Nya_Fields_Module_Cache::fields();
+            require_once FORUM_CACHE_DIR.'cache_fields.php';
 
-		if (!empty($forum_fields))
+        if (!defined('FORUM_FIELDS_LOADED'))
+        {
+            K_Fields_Module_Cache::fields();
+            require_once FORUM_CACHE_DIR.'cache_fields.php';
+        }
+
+        if (!empty($forum_fields))
 		{
 			foreach ($forum_fields as $fields_key => $cur_fields)
 			{
@@ -148,7 +160,7 @@ class Fields_Hook_Dispatcher extends Base {
 
 	/**
 	 * Hook pf_delete_user_form_submitted handler
-	 * @param int $id user id for delete fields
+     * @param array $forum_page forum_page data array
 	 */
 	public static function pf_change_details_about_pre_user_contact_info($forum_page)
 	{
@@ -166,7 +178,7 @@ class Fields_Hook_Dispatcher extends Base {
 
 	public static function menu(& $forum_page)
 	{
-		App::load_language('nya_fields.fields');
+		App::load_language('k_fields.fields');
 		if (FORUM_PAGE_SECTION == 'users')
 		{
 			$forum_page['admin_submenu']['fields'] = '<li'.((FORUM_PAGE == 'admin-fields') ? ' class="active"' : '').'><a href="'.forum_link(App::$forum_url['admin_fields']).'">'.App::$lang['Fields'].'</a></li>';
@@ -180,7 +192,7 @@ class Fields_Hook_Dispatcher extends Base {
 
 	public static function back_end_init()
 	{
-		App::load_language('nya_fields.fields');
+		App::load_language('k_fields.fields');
 
 		App::inject_hook('agr_edit_end_qr_update_group',array(
 			'name'	=>	'fields',
@@ -201,7 +213,7 @@ class Fields_Hook_Dispatcher extends Base {
 	 */
 	public static function agr_add_edit_group_flood_fieldset_end($group)
 	{
-		View::$instance = View::factory(FORUM_ROOT.'extensions/nya_fields/view/admin_group_setting', array('group' => $group));
+		View::$instance = View::factory(FORUM_ROOT.'extensions/k_fields/view/admin_group_setting', array('group' => $group));
 		echo  View::$instance->render();
 	}
 

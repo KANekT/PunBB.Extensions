@@ -1,11 +1,7 @@
 <?php
 /**
- * Language definitions used in nya_fields
- * 
+ * Language definitions used in k_fields
  *
- * @copyright Copyright (C) 2008 PunBB, partially based on code copyright (C) 2008 FluxBB.org
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- * @package fields
  */
 
 return array(

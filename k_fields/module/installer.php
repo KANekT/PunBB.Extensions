@@ -1,16 +1,17 @@
 <?php
 /**
- * Pun_store installer
+ * Installer
  *
- * @author PunBB team
- * @copyright Copyright (C) 2008-2012 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- * @package pun_store
+ * @copyright (C) 2012-2014 KANekT Based on hcs extension for PunBB (C)
+ * @copyright Copyright (C) 2012-2014 PunBB
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
+ * @package fields
  */
 
 defined('FORUM_ROOT') or die('Direct access not allowed');
 
-class Nya_Fields_Module_Installer
+class K_Fields_Module_Installer
 {
 	static function install()
 	{

@@ -4,16 +4,17 @@
  * manifest file for kanekt_fields
  *
  * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * Donate Web Money Z104136428007 R346491122688
  * @package kanekt_fields
 */
 -->
 
 <extension engine="1.0">
-	<id>nya_fields</id>
+	<id>k_fields</id>
 	<title>Add Fields</title>
-	<version>0.4.3</version>
+	<version>0.4.4</version>
 	<description>Add fields in profile.</description>
 	<author>KANekT</author>
 
@@ -25,11 +26,11 @@
 	</dependencies>
 
 	<install><![CDATA[
-		Nya_Fields_Module_Installer::install();
+		K_Fields_Module_Installer::install();
 	]]></install>
 
 	<uninstall><![CDATA[
-		Nya_Fields_Module_Installer::uninstall();
+		K_Fields_Module_Installer::uninstall();
 	]]></uninstall>
 
 	<hooks>
@@ -37,7 +38,7 @@
 		if (file_exists(FORUM_CACHE_DIR.'cache_fields.php'))
 			require FORUM_CACHE_DIR.'cache_fields.php';
 		else
-			Nya_Fields_Module_Cache::fields();
+			K_Fields_Module_Cache::fields();
 
 
 		if (!empty($forum_fields))
