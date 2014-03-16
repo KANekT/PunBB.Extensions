@@ -1,11 +1,8 @@
 <?php
 /**
+ *
  * Uninstaller
  *
- * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
- * @copyright Copyright (C) 2012 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- * @package thanks
  */
 
 defined('THANKS_UNINSTALL') or die('Direct access not allowed');

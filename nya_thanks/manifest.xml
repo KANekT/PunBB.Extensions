@@ -9,7 +9,8 @@
  * @copyright (C) 2014 KANekT Based on hcs reputation extension for PunBB (C)
  * @copyright (C) 2011-2014 thanks extension for PunBB (C)
  * @copyright Copyright (C) 2011-2014 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * @package thanks
  */
 -->
@@ -17,7 +18,7 @@
 <extension engine="1.0">
     <id>nya_thanks</id>
     <title>Thanks</title>
-    <version>0.7.5</version>
+    <version>0.7.6</version>
     <description><![CDATA[Allow users to say thanks to post.]]></description>
     <author>KANekT</author>
     <minversion>1.4.2</minversion>

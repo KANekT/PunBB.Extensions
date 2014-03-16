@@ -2,10 +2,10 @@
 /**
  * Thanks hook dispatcher class
  *
- *
  * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
  * @copyright Copyright (C) 2012 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * @package thanks
  */
 class Thanks_Hook_Dispatcher extends Base {

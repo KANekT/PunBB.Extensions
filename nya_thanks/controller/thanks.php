@@ -3,8 +3,8 @@
  * Thanks controller class
  *
  * @copyright (C) 2012 KANekT Based on hcs extension for PunBB (C)
- * @copyright Copyright (C) 2012 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * @package thanks
  */
 class Nya_Thanks_Controller_Thanks extends Controller
@@ -30,7 +30,7 @@ class Nya_Thanks_Controller_Thanks extends Controller
 			message(App::$lang['Individual Disabled']);
 
 		if (App::$forum_user['thanks_enable'] == 0)
-			message(App::$lang['Your Disabled']);		
+			message(App::$lang['Your Disabled']);
 	}
 
 	public function view()
@@ -107,7 +107,8 @@ class Nya_Thanks_Controller_Thanks extends Controller
                 else
                 {
                     App::send_json(array(
-                        'error'	=> implode('<br />',$errors),
+                        'code'   => -1,
+                        'message' => implode('<br />',$errors)
                     ));
                 }
             }
