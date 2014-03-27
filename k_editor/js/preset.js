@@ -1,5 +1,5 @@
 var myOpt = {
-	buttons: "bold,italic,underline,strike,bullist2,numlist,quote,code,spoiler,hide,search,link,video,fontcolor,fontsize,justifyleft,justifycenter,justifyright,removeformat",
+	buttons: "bold,italic,underline,strike,bullist,numlist,quote,code,spoiler,hide,search,link,video,fontcolor,fontsize,justifyleft,justifycenter,justifyright,removeformat",
 	allButtons: {
 		quote: {
 			transform: {
@@ -23,7 +23,7 @@ var myOpt = {
 		},
 		hide: {
 			title: CURLANG.hide,
-			buttonHTML: '<span style="background: url(/extensions/nya_editor/css/Oxygen/img/hide.png) no-repeat scroll 2px 2px transparent; width: 20px;"></span>',
+			buttonHTML: '<span style="background: url(./extensions/k_editor/css/Oxygen/img/hide.png) no-repeat scroll 2px 2px transparent; width: 20px;"></span>',
 			buttonText: CURLANG.hideBtn,
 			transform: {
 				'<div class="hidebox"><blockquote><p>{SELTEXT}</p></blockquote></div>':'[hide]{SELTEXT}[/hide]',

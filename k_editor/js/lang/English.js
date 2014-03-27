@@ -20,6 +20,7 @@ var CURLANG = {
 	spoilerBtn: 'Spoiler',
 	hide: "Hide text",
 	hideBtn: 'Hide',
+    search: 'Search',
 	fontcolor: "Font color",
 	fontsize: "Font size",
 	fontfamily: "Font family",
