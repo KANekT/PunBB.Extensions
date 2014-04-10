@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ *
+ * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
+ * Donate Web Money Z104136428007 R346491122688
+*/
+-->
+
+<extension engine="1.0">
+	<id>k_tags</id>
+	<title>Автопоиск по PunBB Tags</title>
+	<version>1.0.1</version>
+	<description>Автопоиск по PunBB Tags</description>
+	<author>KANekT</author>
+	<minversion>1.4</minversion>
+	<maxtestedon>1.4.2</maxtestedon>
+	<dependencies>
+		<dependency>k_jquery_ui</dependency>
+		<dependency>pun_tags</dependency>
+	</dependencies>
+	<hooks>
+		<hook id="hd_head"><![CDATA[
+		if(FORUM_PAGE === 'postedit' || FORUM_PAGE === 'post') {
+			$jQ_UI->add_UI("Autocomplete");
+		}
+		]]></hook>
+		
+		<hook id="ft_js_include"><![CDATA[
+		if(FORUM_PAGE === 'postedit' || FORUM_PAGE === 'post') {
+			$forum_loader->add_js($ext_info['url'].'/script.js', array('type' => 'url', 'async' => true));
+		}
+		]]></hook>
+		
+		<hook id="po_pre_post_contents, ed_pre_message_box" priority = "2"><![CDATA[
+		if ($forum_user['g_pun_tags_allow'] && (isset($can_edit_subject) || isset($fid)))
+		{
+			if (isset($pun_tags['forums']))
+			{
+				foreach ($pun_tags['forums'] as $forum_id => $tags_list)
+				{
+					//Can user read this forum?
+					if (in_array($forum_id, $pun_tags_groups_perms[$forum_user['group_id']]))
+					{
+						foreach ($tags_list as $tag_id => $tag_weight)
+						if (!isset($output_results[$tag_id]))
+							$output_results[$tag_id] = array('tag' => $pun_tags['index'][$tag_id], 'weight' => $tag_weight);
+						else
+							$output_results[$tag_id]['weight'] += $tag_weight;
+					}
+				}
+			}
+			function k_tags_get_link($size, $tag_id, $weight, $tag)
+			{
+				return '<a style="font-size:'.$size.'%;" class="k_tags" href = "#"  title="'.$weight.(($weight == 1) ? (' topic') : (' topics')).'">'.$tag.'</a>';
+			}
+			if (!empty($output_results))
+			{
+				$minfontsize = 100;
+				$maxfontsize = 200;
+				list($min_pop, $max_pop) = min_max_tags_weights($output_results);
+				if ($max_pop - $min_pop == 0)
+					$step = $maxfontsize - $minfontsize;
+				else
+					$step = ($maxfontsize - $minfontsize) / ($max_pop - $min_pop);
+			
+				uasort($output_results, 'compare_tags');
+				$output_results = array_tags_slice($output_results);
+				$results = array();
+				foreach ($output_results as $tag_id => $tag_info)
+					$results[] = k_tags_get_link(round(($tag_info['weight'] - $min_pop) * $step + $minfontsize), $tag_id, $tag_info['weight'], $tag_info['tag']);
+						
+			?>
+			<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="sf-box text longtext">
+					<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_pun_tags['Title']; ?></span></label><br />
+						<span class="fld-input"><?php echo implode($forum_config['o_pun_tags_separator'], $results); ?></span>
+				</div>
+			</div>
+			<?php
+				unset($minfontsize, $maxfontsize, $step, $results, $min_pop, $max_pop);
+			}
+			unset($output_results, $tags_weights);
+		}
+		]]></hook>
+	</hooks>
+</extension>
