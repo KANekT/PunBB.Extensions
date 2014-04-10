@@ -2,8 +2,7 @@
 
 /**
  * @copyright (C) 2012 KANekT
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- * @package nya_smiles
+ * @package k_smiles
  */
 
 if (!defined('FORUM'))
@@ -40,4 +39,3 @@ class iSmiles {
 }
 
 $ext_Smiles = $ext_Smilie = new iSmiles();
-?>

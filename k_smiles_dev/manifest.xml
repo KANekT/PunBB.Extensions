@@ -4,12 +4,13 @@
  * manifest file
  *
  * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * Donate Web Money Z104136428007 R346491122688
 */
 -->
 <extension engine="1.0">
-	<id>nya_smiles_dev</id>
+	<id>k_smiles_dev</id>
 	<title>Smiles for Developer</title>
 	<version>0.4.0</version>
 	<description>Smiles for Developer</description>
@@ -20,7 +21,7 @@
 	<hooks>
 		<hook id="es_essentials"><![CDATA[
 			require $ext_info['path'].'/class.smilies.php';
-			($hook = get_hook('nya_add_smilies')) ? eval($hook) : null;
+			($hook = get_hook('k_add_smilies')) ? eval($hook) : null;
 		]]></hook>
 
 		<hook id="ps_do_smilies_start" priority="10"><![CDATA[
@@ -38,7 +39,7 @@
 		]]></hook>
 
 		<hook id="he_pre_smile_display"><![CDATA[
-			$return = ($hook = get_hook('nya_pre_smile_display')) ? eval($hook) : '';
+			$return = ($hook = get_hook('k_pre_smile_display')) ? eval($hook) : '';
 			if ($return != '')
 			{
 				echo $return;
@@ -46,7 +47,7 @@
 			}
 		]]></hook>
 
-		<hook id="nya_pre_smile_display"><![CDATA[
+		<hook id="k_pre_smile_display"><![CDATA[
 			$smilies = $ext_Smiles->Smiles;
 			$text = '';
 			foreach ($smilies as $smile => $prop)

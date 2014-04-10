@@ -1,8 +1,0 @@
-#pun_bbcode_bar #pun_bbcode_button_smiles.image {
-    background: url(img/smiles.png) 50% 50% no-repeat;
-}
-
-div#pun_bbcode_smilies
-{
-	display:none;
-}
