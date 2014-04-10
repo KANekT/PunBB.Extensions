@@ -3,9 +3,9 @@
  * hook dispatcher class
  * 
  * @author KANekT
- * @copyright (C) 2011 KANekT extension for PunBB
- * @copyright Copyright (C) 2011 PunBB
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @copyright (C) 2011-2014 KANekT extension for PunBB
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * @package first post
  */
 class FirstPost_Hook_Dispatcher extends Base
@@ -17,15 +17,15 @@ class FirstPost_Hook_Dispatcher extends Base
 
     public function post_init()
     {
-        App::load_language('nya_first_post.lang');
+        App::load_language('k_first_post.lang');
 
         App::inject_hook('po_pre_optional_fieldset',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::po_pre_optional_fieldset();'
         ));
 
         App::inject_hook('po_pre_add_topic',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::po_pre_add_topic($post_info);'
         ));
     }
@@ -43,20 +43,20 @@ class FirstPost_Hook_Dispatcher extends Base
 
     public function edit_init()
     {
-        App::load_language('nya_first_post.lang');
+        App::load_language('k_first_post.lang');
 
         App::inject_hook('ed_pre_checkbox_display',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::ed_pre_checkbox_display($can_edit_subject, $cur_post);'
         ));
 
         App::inject_hook('ed_qr_update_subject',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::ed_qr_update_subject($query);'
         ));
 
         App::inject_hook('ed_qr_get_post_info',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::select_first_post($query);'
         ));
     }
@@ -74,25 +74,25 @@ class FirstPost_Hook_Dispatcher extends Base
 
     public function topic_init()
     {
-        App::load_language('nya_first_post.lang');
+        App::load_language('k_first_post.lang');
 
         App::inject_hook('vt_qr_get_posts',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::vt_qr_get_posts($query, $cur_topic, $id);'
         ));
 
         App::inject_hook('vt_row_pre_post_ident_merge',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::vt_row_pre_post_ident_merge($cur_topic);'
         ));
 
         App::inject_hook('vt_qr_get_topic_info',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::select_first_post($query);'
         ));
 
         App::inject_hook('vf_qr_get_topics',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::select_first_post($query);'
         ));
     }
@@ -126,25 +126,25 @@ class FirstPost_Hook_Dispatcher extends Base
 	
 	public function admin_init()
 	{
-		App::load_language('nya_first_post.lang');
+		App::load_language('k_first_post.lang');
 		
 		App::inject_hook('agr_edit_end_qr_update_group',array(
-			'name'	=>	'nya_first_post',
+			'name'	=>	'k_first_post',
 			'code'	=>	'FirstPost_Hook_Dispatcher::agr_edit_end_qr_update_group($query, $is_admin_group);'
 		));
 
 		App::inject_hook('agr_add_edit_group_user_permissions_fieldset_end',array(
-			'name'	=>	'nya_first_post',
+			'name'	=>	'k_first_post',
 			'code'	=>	'FirstPost_Hook_Dispatcher::agr_add_edit_group_user_permissions_fieldset_end($group);'
 		));
 
         App::inject_hook('afo_pre_header_load',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::afo_pre_header_load($lang_common);'
         ));
 
         App::inject_hook('afo_end',array(
-            'name'	=>	'nya_first_post',
+            'name'	=>	'k_first_post',
             'code'	=>	'FirstPost_Hook_Dispatcher::afo_end($forums, $lang_admin_forums);'
         ));
  	}
@@ -157,7 +157,7 @@ class FirstPost_Hook_Dispatcher extends Base
 	 */
 	public function agr_add_edit_group_user_permissions_fieldset_end($group)
 	{
-		View::$instance = View::factory(FORUM_ROOT.'extensions/nya_first_post/view/admin_group_setting', array('group' => $group));
+		View::$instance = View::factory(FORUM_ROOT.'extensions/k_first_post/view/admin_group_setting', array('group' => $group));
 		echo  View::$instance->render();
 	}
 
@@ -195,7 +195,7 @@ class FirstPost_Hook_Dispatcher extends Base
 
     public function afo_end($forums, $lang_admin_forums)
     {
-        View::$instance = View::factory(FORUM_ROOT.'extensions/nya_first_post/view/admin_forums', array('forums' => $forums,'lang_admin_forums' => $lang_admin_forums));
+        View::$instance = View::factory(FORUM_ROOT.'extensions/k_first_post/view/admin_forums', array('forums' => $forums,'lang_admin_forums' => $lang_admin_forums));
         echo  View::$instance->render();
     }
 } 

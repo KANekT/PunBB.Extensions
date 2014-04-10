@@ -4,13 +4,14 @@
  * manifest file for First Post
  *
  * @copyright Copyright (C) KANekT @ http://blog.kanekt.ru
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @license http://creativecommons.org/licenses/by-nc/4.0/deed.ru
+ * Attribution-NonCommercial
  * Donate Web Money Z104136428007 R346491122688
  * @package First Post
 */
 -->
 <extension engine="1.0">
-	<id>nya_first_post</id>
+	<id>k_first_post</id>
 	<title>First post</title>
 	<version>0.4.2</version>
 	<description>Fixed First Post.</description>
