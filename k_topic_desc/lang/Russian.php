@@ -2,7 +2,6 @@
 /*
  * Lang file for topic description
  *
- * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package topic description
 */
 
@@ -14,4 +13,3 @@ $lang_topic = array(
 	'Topic enable mouse'	=>	'Показывать описание темы когда пользователь наводит курсор мыши на ссылку темы',
 	'Topic enable and mouse'=>	'Показывать описание темы после названия и когда пользователь наводит курсор мыши на ссылку темы',
 );
-?>
