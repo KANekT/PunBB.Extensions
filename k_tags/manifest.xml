@@ -12,7 +12,7 @@
 <extension engine="1.0">
 	<id>k_tags</id>
 	<title>Автопоиск по PunBB Tags</title>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<description>Автопоиск по PunBB Tags</description>
 	<author>KANekT</author>
 	<minversion>1.4</minversion>
@@ -24,6 +24,7 @@
 	<hooks>
 		<hook id="hd_head"><![CDATA[
 		if(FORUM_PAGE === 'postedit' || FORUM_PAGE === 'post') {
+		    global $jQ_UI;
 			$jQ_UI->add_UI("Autocomplete");
 		}
 		]]></hook>
