@@ -180,7 +180,7 @@ class Thanks_Hook_Dispatcher extends Base {
      * @param array $query
      * @param bool $is_admin_group
      */
-    public function agr_edit_end_qr_update_group(& $query, $is_admin_group)
+    public static function agr_edit_end_qr_update_group(& $query, $is_admin_group)
     {
         $thanks_enable = (isset($_POST['thanks_enable']) && $_POST['thanks_enable'] == '1') || $is_admin_group ? '1' : '0';
         $thanks_min = isset($_POST['thanks_min']) ? intval($_POST['thanks_min']) : '0';
