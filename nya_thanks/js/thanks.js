@@ -28,13 +28,7 @@ $(document).ready(function(){
                     return;
                 }
                 return;
-            },
-
-            error: function(e){
-                alert(e.message);
-                window.location = thanks.url;
             }
-
         });
         return false;
     });
