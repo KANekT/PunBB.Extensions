@@ -39,14 +39,15 @@ class Thanks_Hook_Dispatcher extends Base {
      * Hook vt_row_pre_post_actions_merge
      * Create block thanks info
      *
-     * @param array $forum_page
      * @param array $cur_post
+     * @param $forum_user
+     * @internal param array $forum_page
      */
     public static function vt_row_pre_post_actions_merge($cur_post, $forum_user)
     {
         if ($cur_post['poster_id']!=1 && $forum_user['g_thanks_enable'] == 1 && $cur_post['thanks_enable'] == 1 && $forum_user['thanks_disable_adm'] == 0 && $forum_user['thanks_enable'] == 1)
         {
-            App::$forum_page['author_info']['thanks'] = '<a href="'.forum_link(App::$forum_url['thanks_view'], $cur_post['poster_id']).'">'.App::$lang['Thanks'].'</a><strong>: <span id="thp'.$cur_post['id'].'" class="thu'.$cur_post['poster_id'].'">'.$cur_post['thanks_user'].'</span></strong>';
+            App::$forum_page['author_info']['thanks'] = '<li><a href="'.forum_link(App::$forum_url['thanks_view'], $cur_post['poster_id']).'">'.App::$lang['Thanks'].'</a><strong>: <span id="thp'.$cur_post['id'].'" class="thu'.$cur_post['poster_id'].'">'.$cur_post['thanks_user'].'</span></strong></li>';
 
             if(!$forum_user['is_guest'] AND $forum_user['id'] != $cur_post['poster_id'])// AND $cur_post['thanks_id'] == NULL)// AND $GLOBALS['forum_page']['thanks_info'][$cur_post['id']]['thanks_time'] < $GLOBALS['forum_page']['time'])
             {
@@ -106,19 +107,19 @@ class Thanks_Hook_Dispatcher extends Base {
      */
     public static function vt_qr_get_posts(& $query, $user_id, $time, $posts_id)
     {
-        App::$forum_loader->add_js($GLOBALS['ext_info']['url'].'/js/thanks.min.js', array('type' => 'url'));
+        App::$forum_loader->add_js($GLOBALS['ext_info']['url'].'/js/thanks.js', array('type' => 'url'));
 
         $GLOBALS['forum_page']['thanks_info'] = array();
         $query_thanks = array(
-            'SELECT'	=> 'h.id AS thanks_id, h.post_id, u.username, h.from_user_id, h.time AS thanks_time',
-            'FROM'		=> 'thanks AS h',
-            'JOINS'		=> array(
+            'SELECT'    => 'h.id AS thanks_id, h.post_id, u.username, h.from_user_id, h.time AS thanks_time',
+            'FROM'      => 'thanks AS h',
+            'JOINS'     => array(
                 array(
-                    'INNER JOIN'	=> 'users AS u',
-                    'ON'			=> 'u.id = h.from_user_id'
+                    'INNER JOIN'    => 'users AS u',
+                    'ON'            => 'u.id = h.from_user_id'
                 ),
             ),
-            'WHERE'		=> 'h.post_id IN ('.implode(',', $posts_id).')'
+            'WHERE'     => 'h.post_id IN ('.implode(',', $posts_id).')'
         );
 
         $thanks_result = App::$forum_db->query_build($query_thanks) or error(__FILE__, __LINE__);
@@ -147,7 +148,6 @@ class Thanks_Hook_Dispatcher extends Base {
      * Back-end hook  dispatcher
      * Inject hooks for manage global admin options of the thanks
      */
-
     public static function back_end_init()
     {
         App::load_language('nya_thanks.thanks');
