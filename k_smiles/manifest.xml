@@ -13,7 +13,7 @@
 <extension engine="1.0">
 	<id>k_smiles</id>
 	<title>Smiles</title>
-	<version>0.5.0</version>
+	<version>0.6.0</version>
 	<description>KOLOBOK Smiles</description>
 	<author>KANekT</author>
 	<minversion>1.4.0</minversion>
@@ -77,7 +77,7 @@
 				':o' => array('title' => ':o', 'src' => $ext_info['url'].'/img/ai.gif'),
 				':O' => array('title' => ':O', 'src' => $ext_info['url'].'/img/ai.gif', 'view' => 0),
 				':-*' => array('title' => ':-*', 'src' => $ext_info['url'].'/img/aj.gif'),
-				':\'(' => array('title' => ':\'(', 'src' => $ext_info['url'].'/img/ak.gif'),
+				':\\\'(' => array('title' => ':\\\'(', 'src' => $ext_info['url'].'/img/ak.gif'),
 				':-X' => array('title' => ':-X', 'src' => $ext_info['url'].'/img/al.gif'),
 				'>:o' => array('title' => '>:o', 'src' => $ext_info['url'].'/img/am.gif'),
 				':|' => array('title' => ':|', 'src' => $ext_info['url'].'/img/an.gif'),
@@ -103,7 +103,7 @@
 				'*INLOVE*' => array('title' => '*INLOVE*', 'src' => $ext_info['url'].'/img/ba.gif'),
 				'@=' => array('title' => '@=', 'src' => $ext_info['url'].'/img/bb.gif'),
 				'*HELP*' => array('title' => '*HELP*', 'src' => $ext_info['url'].'/img/bc.gif'),
-				'\m\/' => array('title' => '\m\/', 'src' => $ext_info['url'].'/img/bd.gif'),
+				'\\\m\/' => array('title' => '\\\m\/', 'src' => $ext_info['url'].'/img/bd.gif'),
 				'%)' => array('title' => '%)', 'src' => $ext_info['url'].'/img/be.gif'),
 				'*OK*' => array('title' => '*OK*', 'src' => $ext_info['url'].'/img/bf.gif'),
 				'*WASSUP*' => array('title' => '*WASSUP*', 'src' => $ext_info['url'].'/img/bg.gif'),
