@@ -85,7 +85,7 @@
 					'WHERE'		=> 'username=\''.$forum_db->escape($receiver_username).'\''
 				);
 				$results = $forum_db->query_build($query) or error(__FILE__, __LINE__);
-				list($receiver) = $forum_db->fetch_row($result);
+				list($receiver) = $forum_db->fetch_row($results);
 
 				if (!defined('FORUM_EMAIL_FUNCTIONS_LOADED'))
 					require FORUM_ROOT.'include/email.php';
